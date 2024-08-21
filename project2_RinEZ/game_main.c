@@ -328,7 +328,7 @@ void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y
             *x -= 1;
             map[*p_loc][*y][*x] = 2;
 
-            if(map[*p_loc][ylen-1][xlen-1] != 2)
+            if (map[*p_loc][ylen-1][xlen-1] != 2)
                 map[*p_loc][*y][(*x) + 1] = temp;
             else
                 map[*p_loc][*y][(*x) + 1] = 5;
@@ -341,12 +341,15 @@ void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y
         // 움직이는 방향의 좌표가 이동 가능하면,
         if (*x < xlen - 1 && (map[*p_loc][*y][(*x)+1] != 1 || map[*p_loc][*y][(*x)+1] != 6 || map[*p_loc][*y][(*x)+1] != 10 || map[*p_loc][*y][(*x)+1] != 12 || map[*p_loc][*y][(*x)+1] != 13 || map[*p_loc][*y][(*x)+1] != 19 || map[*p_loc][*y][(*x)+1] != 22 || map[*p_loc][*y][(*x)+1] != 23 || map[*p_loc][*y][(*x)+1] != 24 || map[*p_loc][*y][(*x)+1] != 25 || map[*p_loc][*y][(*x)+1] != 26 || map[*p_loc][*y][(*x)+1] != 28 || map[*p_loc][*y][(*x)+1] != 29 || map[*p_loc][*y][(*x)+1] != 30 || map[*p_loc][*y][(*x)+1] != 32 || map[*p_loc][*y][(*x)+1] != 34 || map[*p_loc][*y][(*x)+1] != 37))
         {
-            //temp = map[*p_loc][*y][*x];
+            temp = map[*p_loc][*y][*x];
             *x += 1;
             map[*p_loc][*y][*x] = 2;
-            map[*p_loc][*y][(*x) - 1] = 0;
 
-            
+            if (map[*p_loc][0][0] != 2)
+                map[*p_loc][*y][(*x) - 1] = temp;
+            else
+                map[*p_loc][*y][(*x) - 1] = 4;
+
         }
         // break;
     }
@@ -355,11 +358,14 @@ void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y
         // 움직이는 방향의 좌표가 이동 가능하면,
         if (*y > 0 && (map[*p_loc][(*y)-1][*x] != 1 || map[*p_loc][(*y)-1][*x] != 6 || map[*p_loc][(*y)-1][*x] != 10 || map[*p_loc][(*y)-1][*x] != 12 || map[*p_loc][(*y)-1][*x] != 13 || map[*p_loc][(*y)-1][*x] != 19 || map[*p_loc][(*y)-1][*x] != 22 || map[*p_loc][(*y)-1][*x] != 23 || map[*p_loc][(*y)-1][*x] != 24 || map[*p_loc][(*y)-1][*x] != 25 || map[*p_loc][(*y)-1][*x] != 26 || map[*p_loc][(*y)-1][*x] != 28 || map[*p_loc][(*y)-1][*x] != 29 || map[*p_loc][(*y)-1][*x] != 30 || map[*p_loc][(*y)-1][*x] != 32 || map[*p_loc][(*y)-1][*x] != 34 || map[*p_loc][(*y)-1][*x] != 37))
         {
-            //temp = map[*p_loc][*y][*x];
+            temp = map[*p_loc][*y][*x];
             *y -= 1;
             map[*p_loc][*y][*x] = 2;
-            map[*p_loc][(*y) + 1][*x] = 0;
 
+            if (map[*p_loc][ylen-1][xlen-1] != 2)
+                map[*p_loc][(*y) + 1][*x] = temp;
+            else
+                map[*p_loc][(*y) + 1][*x] = 5;
             
         }
         // break;
@@ -372,7 +378,10 @@ void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y
             temp = map[*p_loc][*y][*x];
             *y += 1;
             map[*p_loc][*y][*x] = 2;
-            map[*p_loc][(*y) - 1][*x] = 0;
+            if (map[*p_loc][0][0] != 2)
+                map[*p_loc][(*y) - 1][*x] = temp;
+            else
+                map[*p_loc][(*y) - 1][*x] = 4;
 
             
         }
