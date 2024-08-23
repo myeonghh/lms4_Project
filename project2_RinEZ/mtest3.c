@@ -10,6 +10,22 @@
 #define x_len 50
 // ctrl + shift + l ==> 변수 일괄 변경(드래그 해놓고)
 
+struct p_skill
+{
+    char name[50];
+    int cnum;
+    double min_dmg;
+    double max_dmg;
+    int mp;
+};
+
+struct m_skill
+{
+    char name[50];
+    int cnum;
+    double min_dmg;
+    double max_dmg;
+};
 
 struct player
 {
@@ -17,11 +33,15 @@ struct player
     int level;
     double max_hp;
     double hp;
+    int max_mp;
+    int mp;
     double dmg;
     double defence;
     int max_xp;
     int xp;
-
+    int gold;
+    int t_portal;
+    struct p_skill skill_list[5];
 };
 
 
@@ -30,31 +50,46 @@ struct monster
     int snum;
     int icon_num;
     char name[20];
-    double max_hp;
+    double full_hp;
     double hp;
-    int dmg;
+    int min_hp;
+    int max_hp;
+    double dmg;
+    int min_dmg;
+    int max_dmg;
     int gold;
+    int min_gold;
+    int max_gold;
     double plus_hp;
-    double tmove_chance;
-    double equip2_chance;
+    int tmove_chance;
+    int equip2_chance;
     int xp;
+    int min_xp;
+    int max_xp;
+    struct m_skill m_skill;
 };
 
 typedef struct player Player;
 typedef struct monster Monster;
+typedef struct p_skill P_skill;
+typedef struct m_skill M_skill;
+
+
 
 int getch();
 void enter(int num);
-void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc);
+int slot_intro();
+int num_dot(int num);
+void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc, int *money);
 int map_move(int xlen, int ylen, int *x, int *y, int *p_loc);
 void map_print(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc);
 
 void monster_make(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc, int *pp_loc);
 void slot(int map[][50][50], int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int *mon, int *p1, int *p2, int *p3, int *p4, int *p5, int *p6, int *s_play);
 
-int fight(int map[][50][50], Monster mon_list[], Player *player, Monster *monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int xlen, int ylen);
-int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y);
-int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y);
+int fight(int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int xlen, int ylen);
+int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_stirng1[], char p_stirng2[], char p_stirng3[]);
+int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[]);
 
 int main(void)
 {
@@ -467,29 +502,44 @@ int main(void)
 {24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	12,	24,	24,	24,	24,	27,	27,	27,	1,	27,	27,	1,	27,	27,	12,	12,	12,	12,	12,	12,	12,	12},
 {24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	24,	1,	27,	27,	27,	27,	27,	27,	27,	12,	12,	12,	12,	12,	12,	12,	12,	12,	12}}};
 
-    Player player = {"김민석", 1, 100, 100, 10, 0, 100, 0};
-
-//     struct monster
+//     struct p_skill
 // {
-//     int snum;
-//     int icon_num;
-//     char name[15];
-//     double max_hp;
-//     double hp;
-//     int dmg;
-//     int gold;
-//     double plus_hp;
-//     double tmove_chance;
-//     double equip2_chance;
-//     int xp;
+//     char name[50];
+//     int cnum;
+//     double min_dmg;
+//     double max_dmg;
 // };
-    // 랜덤 변수 : max_hp, dmg, gold
+
+    P_skill p_skill_list[5] = {
+        {"몸통박치기", 1, 1.2, 1.8, 30},
+        {"날라차기", 2, 1.5, 2.3, 50},
+        {"팔콘펀치", 3, 2, 3, 70},
+        {"아이스볼", 4, 2, 3.8, 100},
+        {"메탈클로", 5, 3, 5, 150}
+    }; 
+//     struct m_skill
+// {
+//     char name[50];
+//     int cnum;
+//     double min_dmg;
+//     double max_dmg;
+// };
+    M_skill m_skill_list[5] = {
+        {"도끼던지기", 1, 1.2, 2},
+        {"피뿌리기", 2, 1.5, 2.3},
+        {"물어뜯기", 3, 1.5, 3},
+        {"뼈던지기", 4, 2, 3},
+        {"스파토이", 5, 2, 5}
+    };
+    
+    Player player = {"김민석", 1, 100, 100, 100, 100, 10, 0, 100, 0, 300, 0, *p_skill_list};
+
     Monster mon_list[5] = {
-        {0, -5, "오크전사", 0, 0, 0, 0, 1.01, 0.2, 0, 10},
-        {1, -6, "좀비", 0, 0, 0, 0, 1.02, 0.2, 0, 15},
-        {2, -7, "구울", 0, 0, 0, 0, 1.03, 0.2, 0, 20},
-        {3, -8, "해골", 0, 0, 0, 0, 1.05, 0.2, 0.2, 30},
-        {4, -9, "스파토이", 0, 0, 0, 0, 1.07, 0.2, 0.2, 35}
+        {0, -5, "오크전사", 0, 0, 50, 100, 0, 10, 15, 0, 5, 30, 1.01, 20, 0, 0, 5, 10, m_skill_list[0]},
+        {1, -6, "좀비", 0, 0, 50, 180, 0, 17, 30, 0, 5, 60, 1.02, 20, 0, 0, 10, 15, m_skill_list[1]},
+        {2, -7, "구울", 0, 0, 120, 280, 0, 20, 45, 0, 5, 100, 1.03, 20, 0, 0, 15, 20, m_skill_list[2]},
+        {3, -8, "해골", 0, 0, 200, 260, 0, 28, 55, 0, 5, 130, 1.05, 20, 20, 0, 20, 30, m_skill_list[3]},
+        {4, -9, "스파토이", 0, 0, 260, 360, 0, 32, 75, 0, 5, 200, 1.07, 20, 20, 0, 30, 35, m_skill_list[4]}
     };
     Monster present_mon;
 
@@ -581,11 +631,16 @@ int main(void)
         }
 
         if (present_loc == 0)
-            printf("현재 장소 : 마을\n");
+        {   
+            printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
+            printf(" 현재 장소 : 말하는섬 마을\n");
+        }
         else
-            printf("현재 장소 : 던전 %d 층\n", present_loc);
-        
-        player_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &present_loc);
+        {
+            printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
+            printf(" 현재 장소 : 던전 %d 층\n", present_loc);
+        }
+        player_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &present_loc, &money);
         
         map_move(x_len, y_len, &loc_x, &loc_y, &present_loc);
 
@@ -629,9 +684,7 @@ int main(void)
             }
         }
         
-        printf("최종 결과 - 잔액: %d원\n", money);
-        printf("1등: %d번, 2등: %d번, 3등: %d번, 4등: %d번, 5등: %d번, 6등: %d번\n", prize1, prize2, prize3, prize4, prize5, prize6);
-        printf("총 도박 횟수: %d \n", slot_play);
+        
         
         //map[*p_loc][yy][xx] == -5 || map[*p_loc][yy][xx] == -6 || map[*p_loc][yy][xx] == -7 || map[*p_loc][yy][xx] == -8 || map[*p_loc][yy][xx] == -9
         //map[present_loc][y][x] > -10 && map[present_loc][y][x] < -4
@@ -644,19 +697,20 @@ int main(void)
 }
 
 
-void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc)
+void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc,int *money)
 {
     int temp, temp1, temp2, temp3;
 
 
     char move = 0;
 
-    printf("\n");
-    printf("   w     \n");
-    printf("   ↟    \n");
-    printf("a↞  ↠d 플레이어(x,y) %d,%d\n", *x, *y);
-    printf("   ↡    \n");
-    printf("   s     >> %c", move);
+    printf(" 좌표(x,y)(%d,%d)\n", *x, *y);
+    printf("      🅆                                               이름 : 복이     직업 : 전설의 용사  \n");
+    printf("      ⬆    \n");
+    printf(" 🄰 ⬅     ⮕ 🄳                                            🄸  : 가방       🄾  : 스테이터스\n");
+    printf("      ⬇   \n");
+    printf("      🅂                                                                   돈 : %d원\n", *money);
+    printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
     move = getch();
 
     if (move == 65 || move == 97) // ↞a
@@ -714,20 +768,40 @@ int map_move(int xlen, int ylen, int *x, int *y, int *p_loc)
     }
 }
 
-int fight(int map[][50][50], Monster mon_list[], Player *player, Monster *monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int xlen, int ylen)
+int fight(int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int xlen, int ylen)
 {   
     system("clear");
     
-    int num;
-    int run_check;
+    int num, move;
+    int run_check, hp_rannum, dmg_rannum, gold_rannum, xp_rannum;
+    char p_stirng[500] = "";
+    char p_string1[500] = "";
+    char p_string2[500] = "";
+    char p_string3[500] = "";
 
+    char m_stirng[500] = "";
+    char m_string1[500] = "";
+    char m_string2[500] = "";
+    char m_string3[500] = "";
+    srand(time(NULL));
     
 
     for (int i = 0; i < 5; i++)
     {
         if (map[*p_loc][*y][*x] == mon_list[i].icon_num)
         {
-            *monster = mon_list[i];
+            *p_monster = mon_list[i];
+           
+            hp_rannum = rand() % (mon_list[i].max_hp - mon_list[i].min_hp + 1) + mon_list[i].min_hp;
+            dmg_rannum = rand() % (mon_list[i].max_dmg - mon_list[i].min_dmg + 1) + mon_list[i].min_dmg;
+            gold_rannum = rand() % (mon_list[i].max_gold - mon_list[i].min_gold + 1) + mon_list[i].min_gold;
+            xp_rannum = rand() % (mon_list[i].max_xp - mon_list[i].min_xp + 1) + mon_list[i].min_xp;
+
+            (*p_monster).full_hp = hp_rannum;
+            p_monster->hp = hp_rannum;
+            p_monster->dmg = dmg_rannum;
+            p_monster->gold = gold_rannum;
+            p_monster->xp = xp_rannum;
         }
     }
     // x : 31칸 / y :29칸
@@ -736,38 +810,118 @@ int fight(int map[][50][50], Monster mon_list[], Player *player, Monster *monste
     {
         system("clear");
         printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
-        enter(19);
+        enter(20);
         printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
-        enter(6);
+        //6칸 공백 필요
+        enter(1);
+        printf("  플레이어 이름 : %s\t\t\t\t", player->name);  
+        printf("  몬스터 이름 : %s\n", p_monster->name);
+        printf("  플레이어 체력 : %.1lf / %.1lf\t\t\t\t", player->hp, player->max_hp); 
+        printf("  몬스터 체력 : %.1lf / %.1lf\n", p_monster->hp, p_monster->full_hp);
+        printf("  플레이어 공격력 : %.1lf\t\t\t\t", player->dmg);
+        printf("  몬스터 공격력 : %.0lf\n", p_monster->dmg);
+        enter(2);
         printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
         printf("몬스터를 만났다!!!!!!!!!!\n");
-        printf("몬스터 번호 : %d\n", map[*p_loc][*y][*x]);
-        printf("현재 몬스터 이름 : %s\n", monster->name);
-        run_check = p_fight(map, mon_list, player, monster, x, y, p_loc, pp_x, pp_y);
+        
+        run_check = p_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, p_stirng, p_string1, p_string2, p_string3);
 
-        if(run_check == 0) break;
+        if (run_check == 0)
+            return 0;
 
-        m_fight(map, mon_list, player, monster, x, y, p_loc, pp_x, pp_y);
+        if (p_monster->hp < 0)
+        {
+            int tp_drop_chance = rand() % 101 + 1;
+
+            map[*p_loc][*y][*x] = 41;
+            player->max_hp *= p_monster->plus_hp;
+            player->xp += p_monster->xp;
+            player->gold += p_monster->gold;
+
+            system("clear");
+            printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
+            enter(1);
+            printf("\t\t\t-------------------------------------------------\n");
+            printf("\t\t\t\t계속 진행하려면 아무키나 누르세요.\n");
+            printf("\t\t\t-------------------------------------------------\n\n");
+            enter(5);
+            printf("\t\t\t플레이어의 총 체력이 %d%% 상승하였습니다.\n", (int)((p_monster->plus_hp - 1)*100));
+            printf("\t\t\t골드 %d 원을 얻었습니다.\n", p_monster->gold);
+            if (tp_drop_chance <= p_monster->tmove_chance)
+            {
+                player->t_portal += 1;
+                printf("\t\t\t마을 이동 주문서를 1개 얻었습니다.\n");
+            }
+            enter(14);
+            printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
+
+            move = getch();
+            if (move = -1)
+                return 0;
+        }
+
+        m_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, m_stirng, m_string1, m_string2, m_string3);
+
+        
 
     }
     
 }
 
-int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y)
+int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_stirng1[], char p_stirng2[], char p_stirng3[])
 {
+    srand(time(NULL));
+
+    char p_string4[500] = "";
+    int ran_n;
     char move = 0;
-    printf("1. 기본공격  2. 아이템 사용  3. 도망\n");
+    printf("1.기본공격  2.스킬사용  3.아이템사용  4.도망\n");
+    printf("\n%s\n", p_string);
+
     move = getch();
 
-    if (move == 51)
+
+    if (move == 49) // 기본 공격
     {
-        printf("3번 입력\n");
-        *x = *pp_x;
-        *y = *pp_y;
-        return 0;
+        p_monster->hp -= player->dmg;
+        
+        p_stirng1 = "적에게 ";
+        sprintf(p_stirng2, "%.1lf", player->dmg);
+        p_stirng3 = " 의 피해를 입혔습니다.";
+
+        strcat(p_string4, p_stirng1);
+        strcat(p_string4, p_stirng2);
+        strcat(p_string4, p_stirng3);
+        strcpy(p_string, p_string4);
+    }
+    else if (move == 50) // 스킬 사용
+    {
+        for (int i = 0; i < ((player->level) / 3) + 1; i++)
+        {
+            printf("| %d. %s  |", (player->skill_list)[i].cnum, (player->skill_list)[i].name);
+        }
+    }
+    else if (move == 51) // 아이템 사용
+    {
+        
+    }
+    else if (move == 52) // 도망
+    {
+        ran_n = rand() % 2;
+        if(ran_n == 0)
+        {
+            *x = *pp_x;
+            *y = *pp_y;
+            return 0;
+        }
+        else
+        {   
+            strcpy(p_string, "도망에 실패하였습니다.");
+            return 1;
+        }
     }
 }
-int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y)
+int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[])
 {
 
 }
@@ -864,11 +1018,14 @@ void monster_make(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *
 void slot(int map[][50][50], int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int *mon, int *p1, int *p2, int *p3, int *p4, int *p5, int *p6, int *s_play)
 {
     system("clear");
+    enter(15);
+    slot_intro();
     printf("========================슬롯 머신 실행1=====================\n");
     
     int num = 0;
     int in_money = 0;
     int prize[5] = {10, 5, 3, 2, 1}; 
+    int num2;
     srand(time(NULL));
     while(1) {
         
@@ -886,6 +1043,9 @@ void slot(int map[][50][50], int *x, int *y, int *p_loc, int *pp_x, int *pp_y, i
 
         if (in_money == 0) {
             printf("게임을 종료합니다.\n");
+            printf("최종 결과 - 잔액: %d원\n", *mon);
+            printf("1등: %d번, 2등: %d번, 3등: %d번, 4등: %d번, 5등: %d번, 6등: %d번\n", *p1, *p2, *p3, *p4, *p5, *p6);
+            printf("총 도박 횟수: %d \n", *s_play);
             *x = *pp_x;
             *y = *pp_y;
             break;
@@ -893,45 +1053,69 @@ void slot(int map[][50][50], int *x, int *y, int *p_loc, int *pp_x, int *pp_y, i
 
         if (in_money > *mon) {
             printf("잔액이 부족합니다. 다시 입력하세요.\n");
+            sleep(1);
+            system("clear");
             continue;
         }
 
         *mon -= in_money;
         num = (rand() % 100) + 1;
+        for(int cnt = 0; cnt<10; cnt++)
+        {
+            system("clear");
+            num2 = rand()%6 +1;
+            enter(15);
+            num_dot(num2);
+            usleep(300000);
+            
+        }
+        system("clear");
 
         if (num <= 3) {
             (*p1)++;
             (*s_play)++;
             *mon += in_money * prize[0];
+            enter(15);
+            num_dot(1);
             printf("1등 당첨! 상금: %d원\n", in_money * prize[0]);
         }
         else if (num <= 9) {
             (*p2)++;
             (*s_play)++;
             *mon += in_money * prize[1];
+            enter(15);
+            num_dot(2);
             printf("2등 당첨! 상금: %d원\n", in_money * prize[1]);
         }
         else if (num <= 18) {
             (*p3)++;
             (*s_play)++;
             *mon += in_money * prize[2];
+            enter(15);
+            num_dot(3);
             printf("3등 당첨! 상금: %d원\n", in_money * prize[2]);
         }
         else if (num <= 32) {
             (*p4)++;
             (*s_play)++;
             *mon += in_money * prize[3];
+            enter(15);
+            num_dot(4);
             printf("4등 당첨! 상금: %d원\n", in_money * prize[3]);
         }
         else if (num <= 60) {
             (*p5)++;
             (*s_play)++;
             *mon += in_money * prize[4];
+            enter(15);
+            num_dot(5);
             printf("5등 당첨! 상금: %d원\n", in_money * prize[4]);
         }
         else {
             (*p6)++;
             (*s_play)++;
+            enter(15);
+            num_dot(6);
             printf("꽝! 상금을 받지 못했습니다.\n");
         }
 
@@ -1124,4 +1308,113 @@ void enter(int num)
 {
     for(int i = 0; i < num; i++)
         printf("\n");
+}
+int slot_intro()
+{
+    printf("   ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+    printf("   ⬜️ 🟥 🟥 🟥 🟥 🟥 ⬜️   ⬜️ 🟥 🟥 🟥 🟥 🟥 ⬜️   ⬜️ 🟥 🟥 🟥 🟥 🟥 ⬜️ \n");
+    printf("   ⬜️ 🟥 ⬜️ ⬜️ ⬜️ 🟥 ⬜️   ⬜️ 🟥 ⬜️ ⬜️ ⬜️ 🟥 ⬜️   ⬜️ 🟥 ⬜️ ⬜️ ⬜️ 🟥 ⬜️ \n");
+    printf("   ⬜️ 🟥 ⬜️ ⬜️ 🟥 ⬜️ ⬜️   ⬜️ 🟥 ⬜️ ⬜️ 🟥 ⬜️ ⬜️   ⬜️ 🟥 ⬜️ ⬜️ 🟥 ⬜️ ⬜️ \n");
+    printf("   ⬜️ ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ \n");
+    printf("   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️ \n");
+    printf("   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️ \n");
+    printf("   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️ \n");
+    printf("   ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️   ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+    usleep(1500000);
+    system("clear");
+}
+int num_dot(int num)
+{   
+    switch(num){
+        case 1:
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬛️ ⬛️ ⬛️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 2:
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬛️ ⬛️ ⬛️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 3:
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 4:
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬜️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬛️ ⬛️ ⬛️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 5:
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬛️ ⬛️ ⬛️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 6:
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ ⬛️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("          ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 7:
+            printf("⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ 🟥 🟥 🟥 🟥 🟥 ⬜️ \n");
+            printf("⬜️ 🟥 ⬜️ ⬜️ ⬜️ 🟥 ⬜️ \n");
+            printf("⬜️ 🟥 ⬜️ ⬜️ 🟥 ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ 🟥 ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+        case 8:
+            printf("⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬛️ ⬜️ ⬛️ ⬜️ ⬛️ ⬜️ \n");
+            printf("⬜️ ⬛️ ⬜️ ⬛️ ⬜️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬜️ ⬛️ ⬜️ ⬛️ ⬜️ \n");
+            printf("⬜️ ⬛️ ⬜️ ⬛️ ⬜️ ⬛️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬛️ ⬛️ ⬛️ ⬜️ ⬜️ \n");
+            printf("⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ ⬜️ \n");
+            break;
+
+
+    }
 }
