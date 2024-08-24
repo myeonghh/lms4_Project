@@ -93,9 +93,10 @@ void monster_make(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *
 void slot(int map[][50][50], int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int *mon, int *p1, int *p2, int *p3, int *p4, int *p5, int *p6, int *s_play);
 
 int fight(int map[][50][50], Monster mon_list[], Monster s_mon_list[], Monster boss_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, int xlen, int ylen);
-int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[]);
-int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[]);
-int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char p_string4[]);
+int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char m_string4[], char m_string5[]);
+int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[], char m_string4[], char m_string5[]);
+
+int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char p_string4[], char p_string5[]);
 
 
 int main(void)
@@ -549,26 +550,26 @@ int main(void)
     }
     
     Monster mon_list[5] = {
-        {0, -5, "오크전사", 0, 0, 50, 100, 0, 10, 15, 0, 5, 30, 1.01, 20, 0, 0, 5, 10, m_skill_list[0]},
-        {1, -6, "좀비", 0, 0, 50, 180, 0, 17, 30, 0, 5, 60, 1.02, 20, 0, 0, 10, 15, m_skill_list[1]},
-        {2, -7, "구울", 0, 0, 120, 280, 0, 20, 45, 0, 5, 100, 1.03, 20, 0, 0, 15, 20, m_skill_list[2]},
-        {3, -8, "해골", 0, 0, 200, 260, 0, 28, 55, 0, 5, 130, 1.05, 20, 20, 0, 20, 30, m_skill_list[3]},
-        {4, -9, "스파토이", 0, 0, 260, 360, 0, 32, 75, 0, 5, 200, 1.07, 20, 20, 0, 30, 35, m_skill_list[4]}
+        {1, -5, "오크전사", 0, 0, 50, 100, 0, 10, 15, 0, 5, 30, 1.01, 20, 0, 0, 5, 10, m_skill_list[0]},
+        {2, -6, "좀비", 0, 0, 50, 180, 0, 17, 30, 0, 5, 60, 1.02, 20, 0, 0, 10, 15, m_skill_list[1]},
+        {3, -7, "구울", 0, 0, 120, 280, 0, 20, 45, 0, 5, 100, 1.03, 20, 0, 0, 15, 20, m_skill_list[2]},
+        {4, -8, "해골", 0, 0, 200, 260, 0, 28, 55, 0, 5, 130, 1.05, 20, 20, 0, 20, 30, m_skill_list[3]},
+        {5, -9, "스파토이", 0, 0, 260, 360, 0, 32, 75, 0, 5, 200, 1.07, 20, 20, 0, 30, 35, m_skill_list[4]}
     };
 
     Monster s_mon_list[5] = {
-        {0, -10, "최윤식", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
-        {0, -11, "차수빈", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
-        {0, -12, "신정희", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
-        {0, -13, "임민호", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
-        {0, -14, "김수현", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0}
+        {6, -10, "최윤식", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
+        {7, -11, "차수빈", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
+        {8, -12, "신정희", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
+        {9, -13, "임민호", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0},
+        {10, -14, "김수현", 0, 0, 50, 100, 0, 100, 300, 0, 5, 500, 1.2, 20, 20, 0, 50, 100, m_skill_list[0], 2, 20, 0, 30, 0}
     };
     
 
     Monster boss_list[3] = {
-        {0, -17, "바포메트", 0, 0, 50, 100, 0, 180, 450, 0, 5, 700, 1.3, 0, 0, 0, 50, 200, m_skill_list[0], 5, 20, 5, 30, 0},
-        {1, -16, "이동녀크", 0, 0, 50, 100, 0, 300, 550, 0, 5, 1000, 1.6, 0, 0, 0, 200, 300, m_skill_list[0], 7, 20, 10, 30, 10},
-        {2, -15, "최상달", 0, 0, 50, 100, 0, 500, 1300, 0, 5, 3000, 2, 0, 0, 0, 300, 500, m_skill_list[0], 10, 20, 20, 30, 20}
+        {11, -17, "바포메트", 0, 0, 50, 100, 0, 180, 450, 0, 5, 700, 1.3, 0, 0, 0, 50, 200, m_skill_list[0], 5, 20, 5, 30, 0},
+        {12, -16, "이동녀크", 0, 0, 50, 100, 0, 300, 550, 0, 5, 1000, 1.6, 0, 0, 0, 200, 300, m_skill_list[0], 7, 20, 10, 30, 10},
+        {13, -15, "최상달", 0, 0, 50, 100, 0, 500, 1300, 0, 5, 3000, 2, 0, 0, 0, 300, 500, m_skill_list[0], 10, 20, 20, 30, 20}
     };
 
     Monster present_mon;
@@ -576,9 +577,9 @@ int main(void)
     int z, y, x, loc_x, loc_y, present_loc;
     int min_x_view, max_x_view, min_y_view, max_y_view, cnt, temp, pp_loc, pp_loc_x, pp_loc_y;
     
-    loc_x = 42;
-    loc_y = 44;
-    present_loc = 6;
+    loc_x = 0;
+    loc_y = 0;
+    present_loc = 0;
     pp_loc = 0;
 
     int money = 10000;
@@ -768,15 +769,20 @@ int fight(int map[][50][50], Monster mon_list[], Monster s_mon_list[], Monster b
     char move = 0;
     int num, i;
     int run_check, hp_rannum, dmg_rannum, gold_rannum, xp_rannum;
-    char p_stirng[500] = "";
-    char p_string1[500] = "";
-    char p_string2[500] = "";
-    char p_string3[500] = "";
+    char p_stirng[1000] = "";
+    char p_string1[1000] = "";
+    char p_string2[1000] = "";
+    char p_string3[1000] = "";
+    char p_string4[1000] = "";
+    char p_string5[1000] = "";
 
-    char m_stirng[500] = "";
-    char m_string1[500] = "";
-    char m_string2[500] = "";
-    char m_string3[500] = "";
+    char m_stirng[1000] = "";
+    char m_string1[1000] = "";
+    char m_string2[1000] = "";
+    char m_string3[1000] = "";
+    char m_string4[1000] = "";
+    char m_string5[1000] = "";
+
     srand(time(NULL));
     
 
@@ -851,7 +857,7 @@ int fight(int map[][50][50], Monster mon_list[], Monster s_mon_list[], Monster b
         enter(2);
         printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
     
-        run_check = p_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, p_stirng, p_string1, p_string2, p_string3);
+        run_check = p_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, p_stirng, p_string1, p_string2, p_string3, p_string4, p_string5);
 
         if (run_check == 0)
             return 0;
@@ -859,8 +865,18 @@ int fight(int map[][50][50], Monster mon_list[], Monster s_mon_list[], Monster b
         if (p_monster->hp <= 0)
         {
             int tp_drop_chance = rand() % 101 + 1;
-
-            map[*p_loc][*y][*x] = 3;
+            
+            if (p_monster->snum >= 1 && p_monster->snum <= 5)
+                map[*p_loc][*y][*x] = 3;
+            else if (p_monster->snum >= 6 && p_monster->snum <= 10)
+                map[*p_loc][*y][*x] = -4;
+            else if (p_monster->snum == 11)
+                map[*p_loc][*y][*x] = -3;
+            else if (p_monster->snum == 12)
+                map[*p_loc][*y][*x] = -2;
+            else if (p_monster->snum == 13)
+                map[*p_loc][*y][*x] = -1;
+            
             player->max_hp *= p_monster->plus_hp;
             player->xp += p_monster->xp;
             player->gold += p_monster->gold;
@@ -888,21 +904,19 @@ int fight(int map[][50][50], Monster mon_list[], Monster s_mon_list[], Monster b
                 return 0;
         }
 
-        m_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, m_stirng, m_string1, m_string2, m_string3);
-
-        
+        m_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, m_stirng, m_string1, m_string2, m_string3, m_string4, m_string5);
 
     }
     
 }
 
-int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[])
+int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char p_string4[], char p_string5[])
 {
     srand(time(NULL));
-
-    char p_string4[500] = "";
+    
     int ran_n;
     char move = 0;
+    
     printf("1.기본공격  2.스킬사용  3.아이템사용  4.도망\n");
     printf("\n%s\n", p_string);
 
@@ -913,6 +927,7 @@ int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_m
     {
         p_monster->hp -= player->dmg;
         
+        strcpy(p_string4, "");
         strcpy(p_string1, "적에게 ");
         sprintf(p_string2, "%.1lf", player->dmg);
         strcpy(p_string3, " 의 피해를 입혔습니다.");
@@ -924,7 +939,7 @@ int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_m
     }
     else if (move == 50) // 스킬 사용
     {
-        skill_use(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, p_string, p_string1, p_string2, p_string3, p_string4);
+        skill_use(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, p_string, p_string1, p_string2, p_string3, p_string4, p_string5);
         return 1;
     }
     else if (move == 52) // 도망
@@ -943,7 +958,7 @@ int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_m
         }
     }
 }
-int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[])
+int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[], char m_string4[], char m_string5[])
 {
     int mon_rannum;
     srand(time(NULL));   
@@ -956,7 +971,7 @@ int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_m
     }
 }
 
-int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char p_string4[])
+int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char p_string4[], char p_string5[])
 {
    srand(time(NULL));
    char s_choice = 0;
@@ -989,6 +1004,7 @@ int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_
             {
                 p_monster->hp -= skill_dmg;
                 player->mp -= (player->skill_list)[0].mp;
+                strcpy(p_string1, (player->skill_list)[0].name);
                 break;
             }
             else
@@ -1007,6 +1023,7 @@ int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_
             {
                 p_monster->hp -= skill_dmg;
                 player->mp -= (player->skill_list)[1].mp;
+                strcpy(p_string1, (player->skill_list)[1].name);
                 break;
             }
             else
@@ -1025,6 +1042,7 @@ int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_
             {
                 p_monster->hp -= skill_dmg;
                 player->mp -= (player->skill_list)[2].mp;
+                strcpy(p_string1, (player->skill_list)[2].name);
                 break;
             }
             else
@@ -1043,6 +1061,7 @@ int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_
             {
                 p_monster->hp -= skill_dmg;
                 player->mp -= (player->skill_list)[3].mp;
+                strcpy(p_string1, (player->skill_list)[3].name);
                 break;
             }
             else
@@ -1061,6 +1080,7 @@ int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_
             {
                 p_monster->hp -= skill_dmg;
                 player->mp -= (player->skill_list)[4].mp;
+                strcpy(p_string1, (player->skill_list)[4].name);
                 break;
             }
             else
@@ -1070,14 +1090,16 @@ int skill_use(int map[][50][50], Monster mon_list[], Player *player, Monster *p_
             }
         }
     }
-    strcpy(p_string1, "스킬을 사용하여 적에게 ");
-    sprintf(p_string2, "%d", skill_dmg);
-    strcpy(p_string3, " 의 피해를 입혔습니다.");
+    strcpy(p_string5, "");
+    strcpy(p_string2, " 을(를) 사용하여 적에게 ");
+    sprintf(p_string3, "%d", skill_dmg);
+    strcpy(p_string4, " 의 피해를 입혔습니다.");
 
-    strcat(p_string4, p_string1);
-    strcat(p_string4, p_string2);
-    strcat(p_string4, p_string3);
-    strcpy(p_string, p_string4);
+    strcat(p_string5, p_string1);
+    strcat(p_string5, p_string2);
+    strcat(p_string5, p_string3);
+    strcat(p_string5, p_string4);
+    strcpy(p_string, p_string5);
 }
 
 
