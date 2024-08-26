@@ -1147,9 +1147,8 @@ int fight(int map[][50][50], Monster mon_list[], Monster s_mon_list[], Monster b
         }
 
         m_fight(map, mon_list, player, p_monster, x, y, p_loc, pp_x, pp_y, m_stirng, m_string1, m_string2, m_string3, m_string4, m_string5, m_string6);
-
+        
     }
-    
 }
 
 int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char p_string[], char p_string1[], char p_string2[], char p_string3[], char p_string4[], char p_string5[], Item *item, char m_string[])
@@ -1213,6 +1212,7 @@ int p_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_m
         }
     }
 }
+
 int m_fight (int map[][50][50], Monster mon_list[], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, int *pp_x, int *pp_y, char m_string[], char m_string1[], char m_string2[], char m_string3[], char m_string4[], char m_string5[], char m_string6[])
 {
     int mon_rannum, i, j;
