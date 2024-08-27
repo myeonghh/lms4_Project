@@ -749,15 +749,22 @@ int main(void)
         {"타이거마스크",20}
     };  
 
+
+    
     Mul mul[11] = {{0,1},{1,1.1},{2,1.2},{3,1.3},{4,1.4},{5,1.5},{6,1.6},{7,1.7},{8,1.8},{9,1.9},{10,2}};
 
     Eqp eqp = {0,0,0,0,0,0,0,0,0,0,0,0};
+
+
+
+
+
     
     for(int i = 0; i < 6; i++)
     {
         player.skill_list[i] = p_skill_list[i];
     }
-
+    
     Monster mon_list[5] = {
         {1, -5, "오크전사", 0, 0, 50, 100, 0, 10, 15, 0, 5, 30, 1.01, 20, 0, 0, 5, 15, 0, 0, 0, 0, 0, *m_skill_list},
         {2, -6, "좀비", 0, 0, 50, 180, 0, 17, 30, 0, 5, 60, 1.02, 20, 0, 0, 10, 20, 0, 0, 0, 0, 0 , *m_skill_list},
@@ -804,7 +811,7 @@ int main(void)
     
     loc_x = 0;
     loc_y = 0;
-    present_loc = 5;
+    present_loc = 0;
     pp_loc = 0;
 
     s_loc_x = 0;  // 저장스크롤
@@ -1645,16 +1652,9 @@ int rematch_print(Monster s_mon_list[], int s_ran_num)
 
 int monster_die(int map[][50][50], Player *player, Monster *p_monster, int *x, int *y, int *p_loc, Item *item, int *mon_death, int bag[][4][6])
 {
-    srand(time(NULL));
-    int tel_cnt_ran, elx_cnt_ran, equip2_ch_ran, equip3_ch_ran, equip4_ch_ran;
     char move = 0;
-    int town_tel_ran = rand() % 100 + 1;
-    int tel_ran = rand() % 100 + 1;
-    int elx_ran = rand() % 100 + 1;
-    int equip2_ran = rand() % 100 + 1;
-    int equip3_ran = rand() % 100 + 1;
-    int equip4_ran = rand() % 100 + 1;
-
+    int tp_drop_chance = rand() % 101 + 1;
+                        
     map[*p_loc][*y][*x] = 0;
     player->max_hp *= p_monster->plus_hp;
     player->xp += p_monster->xp;
@@ -1672,108 +1672,9 @@ int monster_die(int map[][50][50], Player *player, Monster *p_monster, int *x, i
     printf("\t\t\t플레이어의 총 체력이 %d%% 상승하였습니다.\n", (int)((p_monster->plus_hp - 1)*100));
     printf("\t\t\t골드 %d 원을 얻었습니다.\n", p_monster->gold);
     printf("\t\t\t경험치 %d 을(를) 얻었습니다.\n", p_monster->xp);
-    if (town_tel_ran <= p_monster->tmove_chance)
-    {
-        item->scroll_v += 1;
-        printf("\t\t\t마을이동 주문서를 1개 획득했습니다.\n");
-    }
-    if (tel_ran <= p_monster->tel_chance)
-    {
-        tel_cnt_ran = rand() % 3 + 1;
-        item->scroll_s += tel_cnt_ran;
-        printf("\t\t\t순간이동 주문서를 %d개 획득했습니다.\n", tel_cnt_ran);
-    }
-    if (elx_ran <= p_monster->elixir_chance)
-    {
-        elx_cnt_ran = rand() % 3 + 1;
-        item->elx += elx_cnt_ran;
-        printf("\t\t\t엘릭서를 %d개 획득했습니다.\n", elx_cnt_ran);
-    }
-    if (equip2_ran <= p_monster->equip2_chance)
-    {
-        equip2_ch_ran = rand() % 6;
-        bag[0][1][equip2_ch_ran] += 1;
-        switch (equip2_ch_ran)
-        {
-        case 0:
-            printf("\t\t\t2티어 무기를 1개 획득했습니다.\n");
-            break;
-        case 1:
-            printf("\t\t\t2티어 갑옷을 1개 획득했습니다.\n");
-            break;
-        case 2:
-            printf("\t\t\t2티어 신발을 1개 획득했습니다.\n");
-            break;
-        case 3:
-            printf("\t\t\t2티어 장갑을 1개 획득했습니다.\n");
-            break;
-        case 4:
-            printf("\t\t\t2티어 망토를 1개 획득했습니다.\n");
-            break;
-        case 5:
-            printf("\t\t\t2티어 마스크를 1개 획득했습니다.\n");
-            break;
-        default:
-            break;
-        }
-    }
-    if (equip3_ran <= p_monster->equip3_chance)
-    {
-        equip3_ch_ran = rand() % 6;
-        bag[0][2][equip3_ch_ran] += 1;
-        switch (equip3_ch_ran)
-        {
-        case 0:
-            printf("\t\t\t3티어 무기를 1개 획득했습니다.\n");
-            break;
-        case 1:
-            printf("\t\t\t3티어 갑옷을 1개 획득했습니다.\n");
-            break;
-        case 2:
-            printf("\t\t\t3티어 신발을 1개 획득했습니다.\n");
-            break;
-        case 3:
-            printf("\t\t\t3티어 장갑을 1개 획득했습니다.\n");
-            break;
-        case 4:
-            printf("\t\t\t3티어 망토를 1개 획득했습니다.\n");
-            break;
-        case 5:
-            printf("\t\t\t3티어 마스크를 1개 획득했습니다.\n");
-            break;
-        default:
-            break;
-        }
-    }
-    if (equip4_ran <= p_monster->equip4_chance)
-    {
-        equip4_ch_ran = rand() % 6;
-        bag[0][3][equip4_ch_ran] += 1;
-        switch (equip4_ch_ran)
-        {
-        case 0:
-            printf("\t\t\t4티어 무기를 1개 획득했습니다.\n");
-            break;
-        case 1:
-            printf("\t\t\t4티어 갑옷을 1개 획득했습니다.\n");
-            break;
-        case 2:
-            printf("\t\t\t4티어 신발을 1개 획득했습니다.\n");
-            break;
-        case 3:
-            printf("\t\t\t4티어 장갑을 1개 획득했습니다.\n");
-            break;
-        case 4:
-            printf("\t\t\t4티어 망토를 1개 획득했습니다.\n");
-            break;
-        case 5:
-            printf("\t\t\t4티어 마스크를 1개 획득했습니다.\n");
-            break;
-        default:
-            break;
-        }
-    }
-    enter(12);
+    
+
+    enter(14);
     printf("═════════════════════════════════════════════════════════════════════════════════════════\n");
 
     move = getch();
