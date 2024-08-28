@@ -2874,7 +2874,7 @@ void map_print(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, 
         printf(" 🏥");
         break;
     case 43:
-        printf(" ❓");
+        printf(" ❔");
         break;
     case -1:
         printf(" ▫ ");
