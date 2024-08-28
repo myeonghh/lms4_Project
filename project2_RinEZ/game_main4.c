@@ -176,12 +176,12 @@ int buy();
 int slot_intro();
 int num_dot(int num);
 void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc,  int bag[bag_z][bag_y][bag_x],Player *player,int *s_loc_x, int *s_loc_y,int *s_loc_z,Item *item,W_inf w_inf[], Mul mul[], A_inf a_inf[], S_inf s_inf[], G_inf g_inf[], C_inf c_inf[], M_inf m_inf[], Eqp *eqp);
-void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2]);
-int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *pp_x, int *pp_y, int *p_loc, int qmyx[][2], int react_chk[][3]);
-int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt);
-int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt);
-int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt);
-int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *cnt, int skip_chk_arr[][2], int *q_cnt);
+void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *up_chk, int *r_chk, int *d_chk, int *l_chk);
+int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *pp_x, int *pp_y, int *p_loc, int qmyx[][2], int react_chk[][3], int *up_chk, int *r_chk, int *d_chk, int *l_chk);
+int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt, int *r_chk);
+int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt, int *l_chk);
+int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt, int *u_chk);
+int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *cnt, int skip_chk_arr[][2], int *q_cnt, int *d_chk);
 
 int map_move(int xlen, int ylen, int *x, int *y, int *p_loc,Item *item); 
 void map_print(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc);
@@ -791,7 +791,7 @@ int main(void)
         }
     }
     
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
     {
         for (j = 0; j < 16; j++)
             (boss_list[i]).m_skill_list[j] = m_skill_list[j];
@@ -815,12 +815,13 @@ int main(void)
     int money = 10000;
     int slot_play = 0;
     int prize1 = 0, prize2 = 0, prize3 = 0, prize4 = 0, prize5 = 0, prize6 = 0;
+    int u_chk = 0, r_chk = 0, d_chk = 0, l_chk = 0;
     int mon_death, die_check, meet_check;
     int s_move_cnt = 0;
    
     int qmyx[20][2];
     int qtemp[20];
-    int react_chk[50][3];
+    int react_chk[20][3];
 
     for (i = 0; i < 20; i++)
     {
@@ -833,7 +834,7 @@ int main(void)
     {
         qtemp[i] = 100;
     }
-    for (i = 0; i < 50; i++)
+    for (i = 0; i < 20; i++)
     {
         for (j = 0; j < 3; j++)
             react_chk[i][j] = -1;
@@ -850,22 +851,22 @@ int main(void)
 
 
        
-        for (i = 0; i < 5; i++)
-        {
-            printf("((");
-            for (j = 0; j < 2; j++)
-            {
-                printf("%d  ", qmyx[i][j]);
-            }
-            printf("))");
-        }
-        // for (i = 0; i < 3; i++)
-        // {   
+        // for (i = 0; i < 5; i++)
+        // {
         //     printf("((");
-        //     for (j = 0; j < 3; j++)
-        //         printf("%d, ", react_chk[i][j]);
+        //     for (j = 0; j < 2; j++)
+        //     {
+        //         printf("%d  ", qmyx[i][j]);
+        //     }
         //     printf("))");
         // }
+        for (i = 0; i < 4; i++)
+        {   
+            printf("((");
+            for (j = 0; j < 3; j++)
+                printf("%d, ", react_chk[i][j]);
+            printf("))");
+        }
 
         pp_loc_x = loc_x;
         pp_loc_y = loc_y;
@@ -927,6 +928,7 @@ int main(void)
         }
 
 
+
         for (i = 0; i < 20; i++)
         {
             for (j = 0; j < 2; j++)
@@ -985,12 +987,12 @@ int main(void)
 
         if (pp_loc == present_loc && mon_death != 1)
         {
-            monster_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &present_loc, qmyx);
+            monster_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &present_loc, qmyx, &u_chk, &r_chk, &d_chk, &l_chk);
         }
 
         if (pp_loc == present_loc && mon_death != 1)
         {                       
-            s_monster_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &pp_loc_x, &pp_loc_y, &present_loc, qmyx, react_chk);
+            s_monster_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &pp_loc_x, &pp_loc_y, &present_loc, qmyx, react_chk, &u_chk, &r_chk, &d_chk, &l_chk);
                 
         }
         
@@ -1152,7 +1154,7 @@ void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y
     }
 }
 
-void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2])
+void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *u_chk, int *r_chk, int *d_chk, int *l_chk)
 {
     int y, x, mon, ran_move, i, j, move;
     int cnt = 0;
@@ -1205,28 +1207,28 @@ void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int
 
                     if (ran_move == 1) // 좌
                     {
-                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                         if (move == 1)
                             break;
                         left_m_chk = 1;               
                     }
                     else if (ran_move == 2) // 우
                     {
-                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                         if (move == 1)
                             break;
                         right_m_chk = 1;                       
                     }
                     else if (ran_move == 3) // 상
                     {
-                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                         if (move == 1)
                             break;
                         up_m_chk = 1;                     
                     }
                     else // 하
                     {
-                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                         if (move == 1)
                             break;
                         down_m_chk = 1;                      
@@ -1241,7 +1243,7 @@ void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int
     }
 }
 
-int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *pp_x, int *pp_y, int *p_loc, int qmyx[][2], int react_chk[][3])
+int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *pp_x, int *pp_y, int *p_loc, int qmyx[][2], int react_chk[][3], int *u_chk, int *r_chk, int *d_chk, int *l_chk)
 {
     int y, x, mon, ran_move, i, j, y_min, y_max, x_min, x_max, yy, xx;
     int cnt = 0;
@@ -1303,7 +1305,20 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                     for (xx = x_min; xx <= x_max; xx++)
                     {
                         if (yy == *p_y && xx == *p_x)
-                        {                            
+                        {        
+                            int dup = 0;
+                            for (i = 0; i < 20; i++)
+                            {                    
+                                if (react_chk[i][0] == y && react_chk[i][1] == x)
+                                    {
+                                        dup = 1;
+                                    }
+                            }
+                            if (dup == 0)
+                            {
+                                react_chk[find_cnt][0] = y;
+                                react_chk[find_cnt][1] = x;
+                            }                                            
                             find = 1;                            
                             break;
                         }
@@ -1313,22 +1328,87 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                 }            
                 if (find == 0)
                 {
+                    for (i = 0; i < 20; i++)
+                    {
+                        if (react_chk[i][0] == y && react_chk[i][1] == x)
+                        {
+                            printf("삭제");
+                            react_chk[i][0] = -1;
+                            react_chk[i][1] = -1;
+                            react_chk[i][2] = -1;
+                            break;
+                        }
+                    }
                     continue;
                 }
-                                   
+                    
+                
+                printf("플레이어 발견!!!");
+                // qmyx[q_cnt][0] = y-1;
+                // qmyx[q_cnt][1] = x;
+                // q_cnt++;
+                // int dup = 0;
+                // for (i = 0; i < 20; i++)
+                // {                    
+                //     if (react_chk[i][0] == y && react_chk[i][1] == x)
+                //         {
+                //             dup = 1;
+                //         }
+                // }
+                // if (dup == 0)
+                // {
+                //     react_chk[find_cnt][0] = y;
+                //     react_chk[find_cnt][1] = x;
+                // }
+
+                int cnt_chk = 0;
+                for (i = 0; i < 20; i++)
+                {
+                    if (react_chk[i][0] == y && react_chk[i][1] == x)
+                    {
+                        if (react_chk[i][2] == 1)
+                        {
+                            cnt_chk = 1;
+                            break;
+                        }
+                        react_chk[find_cnt][2] = 1;
+
+                    }
+                }
+                if (cnt_chk == 0)
+                {
+                    
+                    continue;
+                }
+
+
+                printf("하이");
+
+
+
+                    
+                // if (react_chk[find_cnt][0] = y && react_chk[find_cnt][2] < 1)
+                // {
+                    
+                //     printf("react_chk[find_cnt][2])2 : %d ", react_chk[0][2]);
+                //     find_cnt++;
+                //     continue;
+                // }
+                // find_cnt++;
+                
                 if ((*p_y - y) < 0 && *p_x == x) // 상
                 {
-                    up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                    up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                         continue;
                 }
                 else if ((*p_y - y) < 0 && (*p_x - x) > 0) // 우상
                 {
                     if ((*p_y - y) + (*p_x - x) < 0) // 우상좌
                     {
-                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                         if (move == 1) 
                             continue;
-                        right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                             continue;                        
                     }
                     else if ((*p_y - y) + (*p_x - x) == 0) // 우상중
@@ -1338,14 +1418,14 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                             move_ran = rand() % 2;
                             if (move_ran == 0)
                             {
-                                move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                                 if (move == 1) 
                                     break;
                                 up_m_chk = 1;
                             }
                             else
                             {
-                                move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                                 if (move == 1) 
                                     break;
                                 right_m_chk = 1;
@@ -1357,27 +1437,27 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                     }
                     else // 우상우
                     {
-                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                         if (move == 1) 
                             continue;
-                        up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                             continue;
                     }
 
                 }
                 else if (*p_y == y && (*p_x - x) > 0)  // 우
                 {
-                    right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                    right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                         continue;
                 }
                 else if ((*p_y - y) > 0 && (*p_x - x) > 0) // 우하
                 {
                     if ((*p_y - y) - (*p_x - x) > 0) //우하우
                     {
-                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                         if (move == 1) 
                             continue;
-                        down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                             continue;
                     }
                     else if ((*p_y - y) - (*p_x - x) == 0) // 우하중
@@ -1387,14 +1467,14 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                             move_ran = rand() % 2;
                             if (move_ran == 0)
                             {
-                                move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                                 if (move == 1) 
                                     break;
                                 right_m_chk = 1;
                             }
                             else
                             {
-                                move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                                move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                                 if (move == 1) 
                                     break;
                                 down_m_chk = 1;
@@ -1406,27 +1486,27 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                     }
                     else // 우하좌
                     {
-                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                         if (move == 1) 
                             continue;
-                        right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, r_chk);
                             continue;
                     }
                     
                 }
                 else if ((*p_y - y) > 0 && *p_x == x) // 하
                 {
-                    down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                    down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                         continue;
                 }
                 else if ((*p_y - y) > 0 && (*p_x - x) < 0) // 좌하
                 {
                     if ((*p_y - y) + (*p_x - x) > 0) // 좌하우
                     {
-                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                         if (move == 1) 
                             continue;
-                        left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                             continue;
                     }
                     else if ((*p_y - y) + (*p_x - x) == 0) // 좌하중
@@ -1436,14 +1516,14 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                             move_ran = rand() % 2;
                             if (move_ran == 0)
                             {
-                                move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                                move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                                 if (move == 1) 
                                     break;
                                 down_m_chk = 1;
                             }
                             else
                             {
-                                move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                                 if (move == 1) 
                                     break;
                                 left_m_chk = 1;
@@ -1455,26 +1535,26 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                     }
                     else // 좌하좌
                     {
-                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                         if (move == 1) 
                             continue;
-                        down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt, d_chk);
                             continue;
                     }
                 }
                 else if (*p_y == y && (*p_x - x) < 0) // 좌
                 {
-                    left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                    left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                         continue;
                 }
                 else if ((*p_y - y) < 0 && (*p_x - x) < 0) // 좌상
                 {
                     if ((*p_y - y) - (*p_x - x) > 0) // 좌상좌
                     {
-                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                         if (move == 1) 
                             continue;
-                        up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                             continue;
                     }
                     else if ((*p_y - y) - (*p_x - x) == 0) // 좌상중
@@ -1484,14 +1564,14 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                             move_ran = rand() % 2;
                             if (move_ran == 0)
                             {
-                                move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                                 if (move == 1) 
                                     break;
                                 left_m_chk = 1;
                             }
                             else
                             {
-                                move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                                 if (move == 1) 
                                     break;
                                 up_m_chk = 1;
@@ -1503,10 +1583,10 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
                     }
                     else // 좌상우
                     {
-                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, u_chk);
                         if (move == 1) 
                             continue;
-                        left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt, l_chk);
                             continue;
                     }                
                 }
@@ -1515,7 +1595,7 @@ int s_monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, in
     }
 }
 
-int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt)
+int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt, int *r_chk)
 {
     if (*x < xlen-1 && map[*p_loc][*y][*x+1] != 1 && map[*p_loc][*y][*x+1] != 6 && map[*p_loc][*y][*x+1] != 10 && map[*p_loc][*y][*x+1] != 12 && map[*p_loc][*y][*x+1] != 13 && map[*p_loc][*y][*x+1] != 19 && map[*p_loc][*y][*x+1] != 22 && map[*p_loc][*y][*x+1] != 23 && map[*p_loc][*y][*x+1] != 24 
     && map[*p_loc][*y][*x+1] != 25 && map[*p_loc][*y][*x+1] != 26 && map[*p_loc][*y][*x+1] != 28 && map[*p_loc][*y][*x+1] != 29 && map[*p_loc][*y][*x+1] != 30 && map[*p_loc][*y][*x+1] != 32 && map[*p_loc][*y][*x+1] != 34 && map[*p_loc][*y][*x+1] != 37 && map[*p_loc][*y][*x+1] != 4 
@@ -1528,6 +1608,7 @@ int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p
                 qmyx[*q_cnt][0] = *y-1;
                 qmyx[*q_cnt][1] = *x+1;
                 *(q_cnt)++;
+                *r_chk = 1;
             }     
             map[*p_loc][*y][*x] = 0;
             map[*p_loc][*y][*x+1] = *mon;
@@ -1539,7 +1620,7 @@ int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p
     }
 }
 
-int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt)
+int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt, int *l_chk)
 {
     if (*x > 0 && map[*p_loc][*y][*x-1] != 1 && map[*p_loc][*y][*x-1] != 6 && map[*p_loc][*y][*x-1] != 10 && map[*p_loc][*y][*x-1] != 12 && map[*p_loc][*y][*x-1] != 13 && map[*p_loc][*y][*x-1] != 19 && map[*p_loc][*y][*x-1] != 22 && map[*p_loc][*y][*x-1] != 23 && map[*p_loc][*y][*x-1] != 24 
         && map[*p_loc][*y][*x-1] != 25 && map[*p_loc][*y][*x-1] != 26 && map[*p_loc][*y][*x-1] != 28 && map[*p_loc][*y][*x-1] != 29 && map[*p_loc][*y][*x-1] != 30 && map[*p_loc][*y][*x-1] != 32 && map[*p_loc][*y][*x-1] != 34 && map[*p_loc][*y][*x-1] != 37 && map[*p_loc][*y][*x-1] != 4 
@@ -1552,6 +1633,7 @@ int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_
                     qmyx[*q_cnt][0] = *y-1;
                     qmyx[*q_cnt][1] = *x-1;
                     *(q_cnt)++;
+                    *l_chk = 1;
                 }     
                 map[*p_loc][*y][*x] = 0;
                 map[*p_loc][*y][*x-1] = *mon;
@@ -1561,7 +1643,7 @@ int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_
         }
 }
 
-int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt)
+int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *q_cnt, int *u_chk)
 {
     if (*y > 0 && map[*p_loc][*y-1][*x] != 1 && map[*p_loc][*y-1][*x] != 6 && map[*p_loc][*y-1][*x] != 10 && map[*p_loc][*y-1][*x] != 12 && map[*p_loc][*y-1][*x] != 13 && map[*p_loc][*y-1][*x] != 19 && map[*p_loc][*y-1][*x] != 22 && map[*p_loc][*y-1][*x] != 23 && map[*p_loc][*y-1][*x] != 24 
     && map[*p_loc][*y-1][*x] != 25 && map[*p_loc][*y-1][*x] != 26 && map[*p_loc][*y-1][*x] != 28 && map[*p_loc][*y-1][*x] != 29 && map[*p_loc][*y-1][*x] != 30 && map[*p_loc][*y-1][*x] != 32 && map[*p_loc][*y-1][*x] != 34 && map[*p_loc][*y-1][*x] != 37 && map[*p_loc][*y-1][*x] != 4 
@@ -1574,6 +1656,7 @@ int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y,
                 qmyx[*q_cnt][0] = *y-2;
                 qmyx[*q_cnt][1] = *x;
                 *(q_cnt)++;
+                *u_chk = 1;
             }     
             map[*p_loc][*y][*x] = 0;
             map[*p_loc][*y-1][*x] = *mon;
@@ -1583,7 +1666,7 @@ int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y,
     }
 }
 
-int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *cnt, int skip_chk_arr[][2], int *q_cnt)
+int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y, int *p_loc, int qmyx[][2], int *x, int *y, int *mon, int *move_chk, int *cnt, int skip_chk_arr[][2], int *q_cnt, int *d_chk)
 {
     if (*y < ylen - 1 && map[*p_loc][*y+1][*x] != 1 && map[*p_loc][*y+1][*x] != 6 && map[*p_loc][*y+1][*x] != 10 && map[*p_loc][*y+1][*x] != 12 && map[*p_loc][*y+1][*x] != 13 && map[*p_loc][*y+1][*x] != 19 && map[*p_loc][*y+1][*x] != 22 && map[*p_loc][*y+1][*x] != 23 && map[*p_loc][*y+1][*x] != 24 
     && map[*p_loc][*y+1][*x] != 25 && map[*p_loc][*y+1][*x] != 26 && map[*p_loc][*y+1][*x] != 28 && map[*p_loc][*y+1][*x] != 29 && map[*p_loc][*y+1][*x] != 30 && map[*p_loc][*y+1][*x] != 32 && map[*p_loc][*y+1][*x] != 34 && map[*p_loc][*y+1][*x] != 37 && map[*p_loc][*y+1][*x] != 4 
@@ -1596,6 +1679,7 @@ int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_
                 qmyx[*q_cnt][0] = *y;
                 qmyx[*q_cnt][1] = *x;
                 *(q_cnt)++;
+                *d_chk = 1;
             }                 
             map[*p_loc][*y][*x] = 0;
             map[*p_loc][*y+1][*x] = *mon;

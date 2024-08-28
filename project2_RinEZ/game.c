@@ -1,267 +1,253 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <termios.h>
-#include <time.h>
-
-// ctrl + shift + l ==> 변수 일괄 변경(드래그 해놓고)
-
-int getch();
-void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc);
-int map_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc);
-
-
-struct Monster
-{
-    int maxhp;
-    int hp;
-    int dmg;
-    
-};
-
-
-int main(void)
-{
-    // 0: 빈공간, 1: 갈수 없는 곳, 2: 플레이어, 3: 몬스터, 4: 입구, 5: 출구
-    const int z_len = 8;
-    const int y_len = 50;
-    const int x_len = 50;
-
-    int map[z_len][y_len][x_len];
-    int z, y, x, loc_x, loc_y, present_loc;
-    //========================== 맵 생성 ===============================
-    for (z = 0; z < z_len; z++)
+for (y = 0; y < ylen; y++)
     {
-        for (y = 0; y < y_len; y++)
+        for (x = 0; x < xlen; x++)
         {
-            for (x = 0; x < x_len; x++)
+            d_check = 0;
+            for (i = 0; i < 50; i++)
             {
-                map[z][y][x] = 0;
-            }
-        }
-        map[z][y_len - 1][x_len - 1] = 5;
-    }
-    //==================================================================
+                if (skip_chk_arr[i][0] == -1)
+                    break;
 
-    loc_x = 0;
-    loc_y = 0;
-    present_loc = 0;
-    // 0: 마을 // 1 ~ 7: 던전1 ~ 던전7
-
-    map[0][0][0] = 2;
-    while (1)
-    {
-        for(z = 0; z < z_len; z++)
-        {
-        for (y = 0; y < y_len; y++)
-        {
-            for (x = 0; x < x_len; x++)
-            {
-                switch (map[z][y][x])
+                if (y == skip_chk_arr[i][0] && x == skip_chk_arr[i][1])
                 {
-                case 0:
-                    printf(" □ ");
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    printf("🤺 ");
-                    break;
-                case 4:
-                    printf(" ⛩ ");
-                    break;
-                case 5:
-                    printf(" ➡ ");
-                    break;
-                default:
+                    d_check = 1;
                     break;
                 }
             }
-            printf("\n");
-        }
-        printf("\n\n");
-        }
-        if (present_loc == 0)
-            printf("현재 장소 : 마을");
-        else
-            printf("현재 장소 : 던전 %d 층", present_loc+1);
-        
-
-        player_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &present_loc);
-
-        map_move(map, x_len, y_len, z_len, &loc_x, &loc_y, &present_loc);
-
-
-        system("clear");
-    }
-
-    return 0;
-}
-
-void player_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc)
-{
-    char level[5][5] = {"🤺", "🏇", "♖ ", "♕ ", "♔ "};
-    int temp;
-
-    char move = 0;
-    char arrow_list[8][5] = {"↖", "🔼", "↗", "◀", "▶", "↙", "🔽", "↘"};
-    char arrow = 0;
-
-    printf("\n");
-    printf("   w     \n");
-    printf("   ↟    \n");
-    printf("a↞  ↠d 플레이어(x,y) %d,%d\n", *x, *y);
-    printf("   ↡    이동방향: %s\n", arrow_list[arrow]);
-    printf("   s     >> %c", move);
-    move = getch();
-
-    if (move == 65 || move == 97) // ↞a
-    {
-        // 움직이는 방향의 좌표가 이동 가능하면,
-        if (*x > 0)
-        {
-            temp = map[*p_loc][*y][*x];
-
-            *x -= 1;
-            map[*p_loc][*y][*x] = 2;
-            map[*p_loc][*y][(*x) + 1] = 0;
-
-            arrow = 3;
-        }
-        // break;
-    }
-    else if (move == 68 || move == 100) // d↠
-    {
-        // 움직이는 방향의 좌표가 이동 가능하면,
-        if (*x < xlen - 1)
-        {
-            temp = map[*p_loc][*y][*x];
-            *x += 1;
-            map[*p_loc][*y][*x] = 2;
-            map[*p_loc][*y][(*x) - 1] = 0;
-
-            arrow = 4;
-        }
-        // break;
-    }
-    else if (move == 87 || move == 119) // w위로
-    {
-        // 움직이는 방향의 좌표가 이동 가능하면,
-        if (*y > 0)
-        {
-            temp = map[*p_loc][*y][*x];
-            *y -= 1;
-            map[*p_loc][*y][*x] = 2;
-            map[*p_loc][(*y) + 1][*x] = 0;
-
-            arrow = 1;
-        }
-        // break;
-    }
-    else if (move == 83 || move == 115) // s아래로
-    {
-        // 움직이는 방향의 좌표가 이동 가능하면,
-        if (*y < ylen - 1)
-        {
-            temp = map[*p_loc][*y][*x];
-            *y += 1;
-            map[*p_loc][*y][*x] = 2;
-            map[*p_loc][(*y) - 1][*x] = 0;
-
-            arrow = 6;
-        }
-        // break;
-    }
-
-    if (map[*p_loc][0][0] != 2)
-        map[*p_loc][0][0] = 4;
-    if (map[*p_loc][ylen - 1][xlen - 1] != 2)
-        map[*p_loc][ylen - 1][xlen - 1] = 5;
-
-    // system("clear");
-}
-
-int map_move(int map[][50][50], int xlen, int ylen, int zlen, int *x, int *y, int *p_loc)
-{
-    int cnum, scan;
-
-    if(*p_loc < 7)
-    {
-        if (map[*p_loc][ylen-1][xlen-1] == 2)
-        {
-            printf("던전 %d층 으로 이동 하시겠습니까?\n", *p_loc+1);
-            printf("1.예  2.아니오 : ");
-            
-            while(1)
+            if (d_check == 1)
             {
-                scan = scanf("%d", &cnum);
-                if(scan != 1 || cnum < 1 || cnum > 2)
+                continue;
+            }
+
+            if (map[*p_loc][y][x] >= -14 && map[*p_loc][y][x] <= -10)
+            {              
+                mon = map[*p_loc][y][x];
+                left_m_chk = 0;
+                right_m_chk = 0;
+                up_m_chk = 0;
+                down_m_chk = 0;
+                move_ran = 0;
+                srand(time(NULL));
+                
+                y_min = ((y-3) < 0)? 0 : y-3;
+                x_min = ((x-3) < 0)? 0 : x-3;
+                y_max = ((y+3) > 49)? 49 : y+3;
+                x_max = ((x+3) > 49)? 49 : x+3;
+
+                int find = 0;
+                for (yy = y_min; yy <= y_max; yy++)
                 {
-                    printf("다시 입력하세요.\n");
-                    getchar();
+                    for (xx = x_min; xx <= x_max; xx++)
+                    {
+                        if (yy == *p_y && xx == *p_x)
+                        {                            
+                            find = 1;                            
+                            break;
+                        }
+                    }
+                    if (find == 1)
+                        break;
+                }            
+                if (find == 0)
+                {
+                    
                     continue;
                 }
-
-                if(cnum == 1)
+                                  
+                if ((*p_y - y) < 0 && *p_x == x) // 상
                 {
-                    *p_loc += 1;
-                    map[*p_loc][0][0] = 2;
-                    break;
+                    up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        continue;
                 }
-                else
-                    break;
+                else if ((*p_y - y) < 0 && (*p_x - x) > 0) // 우상
+                {
+                    if ((*p_y - y) + (*p_x - x) < 0) // 우상좌
+                    {
+                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                            continue;                        
+                    }
+                    else if ((*p_y - y) + (*p_x - x) == 0) // 우상중
+                    {                      
+                        while (1)
+                        {
+                            move_ran = rand() % 2;
+                            if (move_ran == 0)
+                            {
+                                move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                up_m_chk = 1;
+                            }
+                            else
+                            {
+                                move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                right_m_chk = 1;
+                            }
+                            if (up_m_chk == 1 && right_m_chk == 1)
+                                break;
+                        }
+                        continue;
+                    }
+                    else // 우상우
+                    {
+                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                            continue;
+                    }
+
+                }
+                else if (*p_y == y && (*p_x - x) > 0)  // 우
+                {
+                    right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        continue;
+                }
+                else if ((*p_y - y) > 0 && (*p_x - x) > 0) // 우하
+                {
+                    if ((*p_y - y) - (*p_x - x) > 0) //우하우
+                    {
+                        move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                            continue;
+                    }
+                    else if ((*p_y - y) - (*p_x - x) == 0) // 우하중
+                    {
+                        while (1)
+                        {
+                            move_ran = rand() % 2;
+                            if (move_ran == 0)
+                            {
+                                move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                right_m_chk = 1;
+                            }
+                            else
+                            {
+                                move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                down_m_chk = 1;
+                            }
+                            if (right_m_chk == 1 && down_m_chk == 1)
+                                break;
+                        }
+                        continue;
+                    }
+                    else // 우하좌
+                    {
+                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                            continue;
+                    }
+                    
+                }
+                else if ((*p_y - y) > 0 && *p_x == x) // 하
+                {
+                    down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        continue;
+                }
+                else if ((*p_y - y) > 0 && (*p_x - x) < 0) // 좌하
+                {
+                    if ((*p_y - y) + (*p_x - x) > 0) // 좌하우
+                    {
+                        move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                            continue;
+                    }
+                    else if ((*p_y - y) + (*p_x - x) == 0) // 좌하중
+                    {
+                        while (1)
+                        {
+                            move_ran = rand() % 2;
+                            if (move_ran == 0)
+                            {
+                                move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                down_m_chk = 1;
+                            }
+                            else
+                            {
+                                move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                left_m_chk = 1;
+                            }
+                            if (down_m_chk == 1 && left_m_chk == 1)
+                                break;
+                        }
+                        continue;
+                    }
+                    else // 좌하좌
+                    {
+                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
+                            continue;
+                    }
+                }
+                else if (*p_y == y && (*p_x - x) < 0) // 좌
+                {
+                    left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        continue;
+                }
+                else if ((*p_y - y) < 0 && (*p_x - x) < 0) // 좌상
+                {
+                    if ((*p_y - y) - (*p_x - x) > 0) // 좌상좌
+                    {
+                        move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                            continue;
+                    }
+                    else if ((*p_y - y) - (*p_x - x) == 0) // 좌상중
+                    {
+                        while (1)
+                        {
+                            move_ran = rand() % 2;
+                            if (move_ran == 0)
+                            {
+                                move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                left_m_chk = 1;
+                            }
+                            else
+                            {
+                                move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                                if (move == 1) 
+                                    break;
+                                up_m_chk = 1;
+                            }
+                            if (left_m_chk == 1 && up_m_chk == 1)
+                                break;
+                        }
+                        continue;
+                    }
+                    else // 좌상우
+                    {
+                        move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                        if (move == 1) 
+                            continue;
+                        left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
+                            continue;
+                    }                
+                }
             }
-            return 0;
         }
     }
-    if(*p_loc > 0)
-    {
-        if (map[*p_loc][0][0] == 2)
-        {
-            if (*p_loc == 1)
-                printf("마을로 이동 하시겠습니까?\n");
-            else
-                printf("던전 %d층 으로 이동 하시겠습니까?\n", *p_loc-1);
-            
-            printf("1.예  2.아니오 : ");
-
-            while(1)
-            {
-                scan = scanf("%d", &cnum);
-                if(scan != 1 || cnum < 1 || cnum > 2)
-                {
-                    printf("다시 입력하세요.\n");
-                    getchar();
-                    continue;
-                }
-
-                if(cnum == 1)
-                {
-                    *p_loc--;
-                    map[*p_loc][ylen-1][xlen-1] = 2;
-                    break;
-                }    
-                else
-                    break;
-            }
-            return 0;
-        }
-    }   
-}
-
-int getch()
-{
-    int c;
-    struct termios oldattr, newattr;
-
-    tcgetattr(STDIN_FILENO, &oldattr); // 현재 터미널 설정 읽음
-    newattr = oldattr;
-    newattr.c_lflag &= ~(ICANON | ECHO);        // CANONICAL과 ECHO 끔
-    newattr.c_cc[VMIN] = 1;                     // 최소 입력 문자 수를 1로 설정
-    newattr.c_cc[VTIME] = 0;                    // 최소 읽기 대기 시간을 0으로 설정
-    tcsetattr(STDIN_FILENO, TCSANOW, &newattr); // 터미널에 설정 입력
-    c = getchar();                              // 키보드 입력 읽음
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr); // 원래의 설정으로 복구
-    return c;
-}
