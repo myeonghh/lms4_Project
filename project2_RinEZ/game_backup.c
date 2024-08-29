@@ -53,7 +53,6 @@ struct player
     int max_xp;
     int xp;
     int gold;
-    int t_portal;
     double e_dmg;
     struct p_skill skill_list[6];
 };
@@ -251,9 +250,9 @@ int main(void)
     {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	21,	19,	19,	19,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	8,	6,	6,	6,	6,	6},
     {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	26,	21,	21,	19,	19,	6,	6,	6,	6,	6,	6,	8,	6,	6,	6,	6,	6,	6,	6,	6},
     {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	21,	19,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6},
-    {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	7,	7,	7,	7,	7,	7,	7,	7,	7,	7,	6,	6,	6,	6},
-    {-15,	0,	0,	0,	0,	0,	-5,	0,	0,	0,	0,	13,	0,	0,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	21,	7,	7,	7,	7,	7,	7,	7,	7,	6,	6,	6,	6},
-    {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	19,	19,	6,	6,	6,	6,	6,	6,	6,	6,	6},
+    {0,	0,	0,	0,	0,	0,	1,	1,	1,	0,	0,	0,	0,	0,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	7,	7,	7,	7,	7,	7,	7,	7,	7,	7,	6,	6,	6,	6},
+    {-15,	0,	0,	0,	0,	1,	-5,	1,	0,	0,	0,	13,	0,	0,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	21,	7,	7,	7,	7,	7,	7,	7,	7,	6,	6,	6,	6},
+    {0,	0,	0,	0,	0,	0,	1,	1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	21,	21,	19,	19,	6,	6,	6,	6,	6,	6,	6,	6,	6},
     {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	13,	0,	0,	0,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	21,	21,	21,	19,	6,	6,	8,	6,	6,	6,	6,	6},
     {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	21,	21,	19,	6,	6,	6,	6,	6,	6,	6,	6},
     {0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	13,	0,	0,	0,	0,	0,	0,	0,	17,	17,	17,	10,	10,	10,	10,	10,	0,	0,	0,	0,	0,	0,	0,	26,	19,	6,	6,	6,	6,	6,	6,	6,	6},
@@ -692,7 +691,7 @@ int main(void)
     
     Item item ={2,0,0,0,0,0,0,0,4,0,2,3,100};
     
-    Player player = {"복이", 10, 1000, 1000, 100, 100, 500, 0, 100, 0, 5000, 0, 10, *p_skill_list};
+    Player player = {"복이", 10, 1000, 1000, 100, 100, 500, 0, 100, 0, 5000, 10, *p_skill_list};
 
     W_inf w_inf[4] = {
         {"기본검", 2},
@@ -1239,34 +1238,46 @@ void monster_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int
                     {
                         move = left_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
                         if (move == 1)
+                        {
+                            move_chk = 1;
                             break;
+                        }                        
                         left_m_chk = 1;               
                     }
                     else if (ran_move == 2) // 우
                     {
                         move = right_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
                         if (move == 1)
+                        {
+                            move_chk = 1;
                             break;
+                        }                        
                         right_m_chk = 1;                       
                     }
                     else if (ran_move == 3) // 상
                     {
                         move = up_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &q_cnt);
                         if (move == 1)
+                        {
+                            move_chk = 1;
                             break;
+                        }                        
                         up_m_chk = 1;                     
                     }
                     else // 하
                     {
                         move = down_move(map, xlen, ylen, zlen, p_x, p_y, p_loc, qmyx, &x, &y,  &mon, &move_chk, &cnt, skip_chk_arr, &q_cnt);
                         if (move == 1)
+                        {
+                            move_chk = 1;
                             break;
+                        }                        
                         down_m_chk = 1;                      
                     }
                     if (move_chk == 1)
                         break;
-                    if (left_m_chk == 1 && right_m_chk == 1 && up_m_chk == 1 && down_m_chk == 1)
-                        break;
+                    // if (left_m_chk == 1 && right_m_chk == 1 && up_m_chk == 1 && down_m_chk == 1)
+                    //     break;
                 }
             }
         }
@@ -1650,11 +1661,10 @@ int right_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p
                 qmyx[*q_cnt][0] = *y-1;
                 qmyx[*q_cnt][1] = *x+1;
                 (*q_cnt)++;
-            }     
+            }
             map[*p_loc][*y][*x] = 0;
             map[*p_loc][*y][*x+1] = *mon;
             (*x)++;
-            *move_chk = 1;
             return 1;
         }  
     }
@@ -1676,7 +1686,6 @@ int left_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_
                 }     
                 map[*p_loc][*y][*x] = 0;
                 map[*p_loc][*y][*x-1] = *mon;
-                *move_chk = 1;
                 return 1;
             }
         }
@@ -1698,7 +1707,6 @@ int up_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_y,
             }     
             map[*p_loc][*y][*x] = 0;
             map[*p_loc][*y-1][*x] = *mon;
-            *move_chk = 1;
             return 1;
         }
     }
@@ -1713,7 +1721,7 @@ int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_
         if (!(map[*p_loc][*y+1][*x] >= -17 && map[*p_loc][*y+1][*x] <= -5))
         {            
             if (map[*p_loc][*y][*x] >= -14 && map[*p_loc][*y][*x] <= -10)
-            {
+            { 
                 qmyx[*q_cnt][0] = *y;
                 qmyx[*q_cnt][1] = *x;
                 (*q_cnt)++;
@@ -1724,7 +1732,6 @@ int down_move(int map[][50][50], int xlen, int ylen, int zlen, int *p_x, int *p_
             skip_chk_arr[*cnt][0] = *y+1;
             skip_chk_arr[*cnt][1] = *x;
             (*cnt)++;
-            *move_chk = 1;
             return 1;
         }     
     }
