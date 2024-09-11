@@ -6,14 +6,12 @@
 #include <sys/socket.h>
 #include <pthread.h>
 	
-#define BUF_SIZE 100
-#define NAME_SIZE 20
+#define BUF_SIZE 200
 	
 void * send_msg(void * arg);
 void * recv_msg(void * arg);
 void error_handling(char * msg);
 	
-char name[NAME_SIZE]="[DEFAULT]";
 char msg[BUF_SIZE];
 	
 int main(int argc, char *argv[])
@@ -22,12 +20,11 @@ int main(int argc, char *argv[])
 	struct sockaddr_in serv_addr;
 	pthread_t snd_thread, rcv_thread;
 	void * thread_return;
-	if(argc!=4) {
-		printf("Usage : %s <IP> <port> <name>\n", argv[0]);
+	if(argc!=3) {
+		printf("Usage : %s <IP> <port>\n", argv[0]);
 		exit(1);
 	 }
 	
-	sprintf(name, "[%s]", argv[3]);
 	sock=socket(PF_INET, SOCK_STREAM, 0);
 	
 	memset(&serv_addr, 0, sizeof(serv_addr));
@@ -49,7 +46,7 @@ int main(int argc, char *argv[])
 void * send_msg(void * arg)   // send thread main
 {
 	int sock=*((int*)arg);
-	char name_msg[NAME_SIZE+BUF_SIZE];
+	char msg[BUF_SIZE];
 	while(1) 
 	{
 		fgets(msg, BUF_SIZE, stdin);
@@ -58,8 +55,7 @@ void * send_msg(void * arg)   // send thread main
 			close(sock);
 			exit(0);
 		}
-		sprintf(name_msg,"%s %s", name, msg);
-		write(sock, name_msg, strlen(name_msg));
+		write(sock, msg, strlen(msg));
 	}
 	return NULL;
 }
@@ -67,15 +63,15 @@ void * send_msg(void * arg)   // send thread main
 void * recv_msg(void * arg)   // read thread main
 {
 	int sock=*((int*)arg);
-	char name_msg[NAME_SIZE+BUF_SIZE];
+	char msg[BUF_SIZE];
 	int str_len;
 	while(1)
 	{
-		str_len=read(sock, name_msg, NAME_SIZE+BUF_SIZE-1);
+		str_len = read(sock, msg, BUF_SIZE-1);
 		if(str_len==-1) 
 			return (void*)-1;
-		name_msg[str_len]=0;
-		fputs(name_msg, stdout);
+		msg[str_len]=0;
+		fputs(msg, stdout);
 	}
 	return NULL;
 }
