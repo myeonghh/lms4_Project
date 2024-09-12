@@ -40,13 +40,13 @@ typedef struct user
 }USER;
 
 USER reg_user_list[MAX_REG_USER] = 
-{{1, "qwer", "1111", "cookie", "01055555555", "ppp@naver.com", "안녕", "하세요", 0, 2, 0},
- {2, "ssss1234", "1234", "뚜비", "01044444444", "aoui@naver.com", "반갑", "습니다", 0, 2, 0}};
+{{1, "qwer", "1111", "cookie", "01055555555", "ppp@naver.com", "안녕", "하세요", 0, 2, 0, 0},
+ {2, "ssss1234", "1234", "뚜비", "01044444444", "aoui@naver.com", "반갑", "습니다", 0, 2, 0, 0}};
 
 
 
 void * handle_clnt(void * arg);
-void send_msg(char * msg, int len);
+void send_msg(char * msg, int len, USER *p_user);
 void error_handling(char * msg);
 
 int reg_user_cnt = 2;
@@ -97,15 +97,8 @@ int main(int argc, char *argv[])
 	
 void * handle_clnt(void * arg)
 {
-	USER p_user = {0,};
-	// int user_num;
-	// char id[MAX_ID_LEN];
-	// char pw[MAX_PW_LEN];
-	// char nck_name[MAX_NK_lEN];
-	// int phone_num;
-	// char e_mail[30];
-	// char f_question[100];
-	// char f_answer[20];
+
+	USER p_user = {0,}; 
 	int clnt_sock=*((int*)arg);
 	int str_len = 0; 
 	int i, choice_num, dup_chk, login_chk, back_chk, pnum_chk;
@@ -169,9 +162,12 @@ void * handle_clnt(void * arg)
 				{
 					if (strcmp(id_str, reg_user_list[i].id) == 0 && strcmp(pw_str, reg_user_list[i].pw) == 0)
 					{
-						p_user = reg_user_list[i]; // 로그인 정보와 일치한 회원을 현재 회원 구조체(p_user)에 복사
-						p_user.socket_num = clnt_sock; // 로그인 성공시 소켓 번호 저장
-						p_user.state = 1; // 상태 로그인(1)으로 변경
+						pthread_mutex_lock(&mutx);
+						reg_user_list[i].socket_num = clnt_sock; // 로그인 성공시 자신의 소켓 번호 저장
+						reg_user_list[i].state = 1; // 상태 로그인(1)으로 변경
+						reg_user_list[i].room_num = 1; // 현재 들어있는 방을 1로 바꿈(로비 채팅방)
+						p_user = reg_user_list[i];
+						pthread_mutex_unlock(&mutx);
 						login_chk = 1;
 						break;
 					}
@@ -179,7 +175,6 @@ void * handle_clnt(void * arg)
 
 				if (login_chk == 1)
 				{
-					write(clnt_sock, "로그인 성공\n", strlen("로그인 성공\n"));
 					break;
 				}
 				else
@@ -429,6 +424,7 @@ void * handle_clnt(void * arg)
 			strcpy(reg_user_list[reg_user_cnt].f_answer, f_answer_str);
 			reg_user_cnt++;
 			pthread_mutex_unlock(&mutx);
+		
 
 			write(clnt_sock, "회원 가입이 완료 되었습니다! 로그인 하세요.\n\n", strlen("회원 가입이 완료 되었습니다! 로그인 하세요.\n\n"));
 			continue;
@@ -438,6 +434,7 @@ void * handle_clnt(void * arg)
 			printf("3번 입력\n");
 			while (1)
 			{
+				int index_num;
 				back_chk = 0;
 				write(clnt_sock, "[ 휴대폰 번호를 입력하세요. (메뉴로 돌아가려면 'b') ]\n", strlen("[ 휴대폰 번호를 입력하세요. (메뉴로 돌아가려면 'b') ]\n"));
 				memset(phone_num_str, 0, sizeof(phone_num_str));
@@ -456,6 +453,7 @@ void * handle_clnt(void * arg)
 				{
 					if (strcmp(phone_num_str, reg_user_list[i].phone_num) == 0)
 					{	
+						index_num = i;
 						pnum_chk = 1;
 						break;
 					}
@@ -465,7 +463,7 @@ void * handle_clnt(void * arg)
 				if (pnum_chk == 1)
 				{
 					memset(msg, 0, sizeof(msg));
-					sprintf(msg, "회원님의 ID는 '%s' 입니다. \n", reg_user_list[i].id);
+					sprintf(msg, "회원님의 ID는 '%s' 입니다. \n", reg_user_list[index_num].id);
 					write(clnt_sock, msg, strlen(msg));
 					break;
 				}
@@ -556,18 +554,25 @@ void * handle_clnt(void * arg)
 
 	}
 	
-	for (i = 0; i < reg_user_cnt; i++)
-	{
-		printf("%s, %s, %s, %s, %s, %s\n", reg_user_list[i].id, reg_user_list[i].pw, reg_user_list[i].nick_name, reg_user_list[i].phone_num, reg_user_list[i].e_mail, reg_user_list[i].f_question);
-	}
-	
-	while((str_len = read(clnt_sock, msg, sizeof(msg))) != 0)
-	{
+	// for (i = 0; i < reg_user_cnt; i++)
+	// {
+	// 	printf("%s, %s, %s, %s, %s, %s\n", reg_user_list[i].id, reg_user_list[i].pw, reg_user_list[i].nick_name, reg_user_list[i].phone_num, reg_user_list[i].e_mail, reg_user_list[i].f_question);
+	// }
+	// system("clear");
+	write(clnt_sock, "로그인 성공\n", strlen("로그인 성공\n"));
+	write(clnt_sock, "로비 채팅창에 오신걸 환영합니다.\n", strlen("로비 채팅창에 오신걸 환영합니다.\n"));
 
-		
-		// memset(msg, 0, sizeof(msg));
+	
+	while (1)
+	{
+		memset(msg, 0, sizeof(msg));
+		str_len = read(clnt_sock, msg, sizeof(msg));
+
+		if (str_len == 0)
+			break;
+
 		printf("%s", msg);
-		send_msg(msg, str_len);
+		send_msg(msg, str_len, &p_user);
 	}
 	pthread_mutex_lock(&mutx);
 	for(i=0; i<clnt_cnt; i++)   // remove disconnected client
@@ -584,12 +589,21 @@ void * handle_clnt(void * arg)
 	close(clnt_sock);
 	return NULL;
 }
-void send_msg(char * msg, int len)   // send to all
+void send_msg(char * msg, int len, USER *p_user)   // send to all
 {
 	int i;
+	char f_msg[BUF_SIZE];
+	memset(f_msg, 0, sizeof(f_msg));
+	sprintf(f_msg, "[%s] %s", p_user->nick_name, msg);
+	
 	pthread_mutex_lock(&mutx);
-	for(i=0; i<clnt_cnt; i++)
-		write(clnt_socks[i], msg, len);
+	for(i = 0; i < reg_user_cnt; i++)
+	{
+		if (p_user->room_num == reg_user_list[i].room_num && p_user->socket_num != reg_user_list[i].socket_num)
+		{
+			write(reg_user_list[i].socket_num, f_msg, strlen(f_msg));
+		}
+	}
 	pthread_mutex_unlock(&mutx);
 }
 void error_handling(char * msg)
