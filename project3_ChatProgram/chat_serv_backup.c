@@ -13,6 +13,8 @@
 #define MAX_PW_LEN 30
 #define MAX_NK_lEN 30
 #define MAX_REG_USER 50
+#define yellow "\033[38;2;255;255;0m"
+#define end "\033[0m"
 
 typedef struct letter
 {
@@ -46,7 +48,8 @@ USER reg_user_list[MAX_REG_USER] =
 
 
 void * handle_clnt(void * arg);
-void send_msg(char * msg, int len, USER *p_user);
+void send_whisper(char * msg, USER *p_user);
+void send_msg(char * msg, USER *p_user);
 void error_handling(char * msg);
 
 int reg_user_cnt = 2;
@@ -561,7 +564,6 @@ void * handle_clnt(void * arg)
 	// system("clear");
 	write(clnt_sock, "로그인 성공\n", strlen("로그인 성공\n"));
 	write(clnt_sock, "로비 채팅창에 오신걸 환영합니다.\n", strlen("로비 채팅창에 오신걸 환영합니다.\n"));
-
 	
 	while (1)
 	{
@@ -571,8 +573,25 @@ void * handle_clnt(void * arg)
 		if (str_len == 0)
 			break;
 
-		printf("%s", msg);
-		send_msg(msg, str_len, &p_user);
+		// printf("%s", msg);
+
+		if (strncmp(msg, "/w", 2) == 0) // 귓속말
+		{
+			send_whisper(msg, &p_user);
+		}
+		else if (strncmp(msg, "/s", 2) == 0) // 회원 찾기
+		{
+			
+		}
+		else if (strncmp(msg, "/l", 2) == 0) // 현재 방에 있는 유저 목록 보기
+		{
+			
+		}
+		else // 그냥 메시지
+		{
+			send_msg(msg, &p_user);
+		}
+		
 	}
 	pthread_mutex_lock(&mutx);
 	for(i=0; i<clnt_cnt; i++)   // remove disconnected client
@@ -589,7 +608,49 @@ void * handle_clnt(void * arg)
 	close(clnt_sock);
 	return NULL;
 }
-void send_msg(char * msg, int len, USER *p_user)   // send to all
+
+void send_whisper(char * msg, USER *p_user)
+{
+	char f_msg[BUF_SIZE];
+	char *nick;
+	char *w_msg;
+	int i, index_num, w_chk;
+
+	strtok(msg, " ");
+	nick = strtok(NULL, " ");
+	w_msg = strtok(NULL, "\n");
+
+	w_chk = 0;
+
+	pthread_mutex_lock(&mutx);
+	for (i = 0; i < reg_user_cnt; i++)
+	{
+		if (strcmp(nick, reg_user_list[i].nick_name) == 0 && reg_user_list[i].state == 1)
+		{
+			w_chk = 1;
+			index_num = i;
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+
+	if (w_chk == 1)
+	{
+		memset(f_msg, 0, sizeof(f_msg));
+		sprintf(f_msg, "%s귓속말 [%s] %s%s\n", yellow, p_user->nick_name, w_msg, end);
+
+		pthread_mutex_lock(&mutx);
+		write(reg_user_list[index_num].socket_num, f_msg, strlen(f_msg));
+		pthread_mutex_unlock(&mutx);
+	}
+	else
+	{
+		write(p_user->socket_num, "접속중인 해당 ID를 찾을 수 없습니다.\n", strlen("접속중인 해당 ID를 찾을 수 없습니다.\n"));
+	}
+
+}
+
+void send_msg(char * msg, USER *p_user)   // send to all
 {
 	int i;
 	char f_msg[BUF_SIZE];
