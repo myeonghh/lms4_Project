@@ -43,6 +43,7 @@ typedef struct user
 	int state; // 1: 회원가입, 2: 회원탈퇴, 3: 수신거부
 	int room_num; // 현재 유저의 채팅방 번호 => 로비 채팅방 1번
 	int letter_cnt;
+    int letter_snum;
 	LETTER letter_box[10];
 
 }USER;
@@ -706,8 +707,7 @@ void show_user(USER *p_user) // 유저 목록 보기 함수
 
 void show_letter(USER *p_user, int clnt_sock)
 {
-	int str_len, i, j, check, index_num, l_cnt, l_num, chk;
-	int letter_num = 1;
+	int str_len, i, j, k, check, index_num, l_cnt, l_num, chk;
 	char msg[BUF_SIZE];
 	char preview[16];
 	char *nick;
@@ -729,7 +729,7 @@ void show_letter(USER *p_user, int clnt_sock)
 	{
 		if (strcmp(p_user->id, reg_user_list[i].id) == 0)
 		{
-			for (j = 0; j < 10; j++)
+			for (j = 0; j < reg_user_list[i].letter_cnt; j++)
 			{
 				strncpy(preview, reg_user_list[i].letter_box[j].text, 15);
 				preview[15] = '\0';
@@ -856,8 +856,9 @@ void show_letter(USER *p_user, int clnt_sock)
 						i++; 
 					}
 				}
+                reg_user_list[index_num].letter_snum += 1;
 				l_cnt = reg_user_list[index_num].letter_cnt;
-				reg_user_list[index_num].letter_box[l_cnt-1].letter_num = letter_num++; // 쪽지 번호 저장
+				reg_user_list[index_num].letter_box[l_cnt-1].letter_num = reg_user_list[index_num].letter_snum; // 쪽지 번호 저장
 				strcpy(reg_user_list[index_num].letter_box[l_cnt-1].time, time_str); // 쪽지 발송 시간 저장
 				strcpy(reg_user_list[index_num].letter_box[l_cnt-1].sender_nck, p_user->nick_name); // 쪽지 발신자 저장
 				strcpy(reg_user_list[index_num].letter_box[l_cnt-1].text, l_text); // 쪽지 내용 저장
@@ -874,19 +875,46 @@ void show_letter(USER *p_user, int clnt_sock)
 		}
 		else if (strncmp(msg, "/delete", 7) == 0) // 쪽지 삭제
 		{
-			for(i = 0; i < l_cnt; i++)   // 로그인 유저 리스트에서 해당 유저 삭제하고 하나씩 땡김
+            // char num_str[10];
+            // int l_num;
+			strtok(msg, " ");
+			nick = strtok(NULL, "\n");
+			l_num = atoi(nick);
+            printf("%d\n", l_num);
+            // write(clnt_sock, "해당 쪽지를 삭제하였습니다.\n", strlen("해당 쪽지를 삭제하였습니다.\n"));
+			check = 0;
+			chk = 0;
+			pthread_mutex_lock(&mutx);
+			for (i = 0; i < reg_user_cnt; i++)
 			{
-				if(clnt_sock == login_user_list[i].socket_num)
+				if (strcmp(p_user->id, reg_user_list[i].id) == 0)
 				{
-					while(i < login_user_cnt)
+					for (j = 0; j < reg_user_list[i].letter_cnt; j++)
 					{
-						login_user_list[i] = login_user_list[i+1];
-						i++;
+						if (l_num == reg_user_list[i].letter_box[j].letter_num)
+						{
+                            for (k = j; k < reg_user_list[i].letter_cnt; k++)
+							{
+								reg_user_list[i].letter_box[k] = reg_user_list[i].letter_box[k+1]; // 해당 쪽지 삭제 후 쪽지 한칸씩 땡김
+							}
+							reg_user_list[i].letter_cnt -= 1;
+							check = 1;
+							write(clnt_sock, "해당 쪽지를 삭제하였습니다.\n", strlen("해당 쪽지를 삭제하였습니다.\n"));
+							break;
+						}
+                    if (check == 1)
+                        break;
 					}
-					break;
+					chk = 1;
 				}
+				if (chk == 1)
+					break;
 			}
-			login_user_cnt--;
+			pthread_mutex_unlock(&mutx);
+			if (check == 0)
+			{
+				write(clnt_sock, "해당 쪽지번호가 존재하지 않습니다.\n", strlen("해당 쪽지번호가 존재하지 않습니다.\n"));
+			}
 		}
 		else
 		{

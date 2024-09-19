@@ -15,6 +15,7 @@
 #define MAX_NK_lEN 30
 #define MAX_REG_USER 100
 #define MAX_LOGIN_USER 100
+#define MAX_ROOM 10
 #define yellow "\033[38;2;255;255;0m"
 #define blue "\033[38;2;79;117;255m"
 #define green "\033[38;2;110;194;7m"
@@ -43,9 +44,21 @@ typedef struct user
 	int state; // 1: 회원가입, 2: 회원탈퇴, 3: 수신거부
 	int room_num; // 현재 유저의 채팅방 번호 => 로비 채팅방 1번
 	int letter_cnt;
+    int letter_snum;
 	LETTER letter_box[10];
 
 }USER;
+
+typedef struct room
+{
+	int room_num;
+	char title[100];
+	int max_user;
+	int user_cnt;
+	int pw;
+
+}ROOM;
+
 
 USER reg_user_list[MAX_REG_USER] = 
 {{1, "qwer", "1111", "cookie", "01055555555", "ppp@naver.com", "안녕", "하세요", 0, 0, 0, 0, 0},
@@ -53,6 +66,7 @@ USER reg_user_list[MAX_REG_USER] =
 
 USER login_user_list[MAX_LOGIN_USER] = {0,};
 
+ROOM room_list[MAX_ROOM] = {{1, "로비", MAX_LOGIN_USER, 0, 0}};
 
 
 void * handle_clnt(void * arg);
@@ -61,9 +75,9 @@ void send_msg(char * msg, USER *p_user);
 int withdraw(int clnt_sock);
 void search_user(char * msg, int clnt_sock);
 void show_user(USER *p_user);
-void show_letter(USER *p_user, int clnt_sock);
+void operate_letter(USER *p_user, int clnt_sock);
+void show_letter_list(USER *p_user, int clnt_sock);
 void error_handling(char * msg);
-char* str_slicing(char* s, int start, int end);
 
 int reg_user_cnt = 2;
 int login_user_cnt = 0;
@@ -624,11 +638,6 @@ void * handle_clnt(void * arg)
 
 	}
 	
-	// for (i = 0; i < reg_user_cnt; i++)
-	// {
-	// 	printf("%s, %s, %s, %s, %s, %s\n", reg_user_list[i].id, reg_user_list[i].pw, reg_user_list[i].nick_name, reg_user_list[i].phone_num, reg_user_list[i].e_mail, reg_user_list[i].f_question);
-	// }
-	// system("clear");
 	write(clnt_sock, "로그인 성공\n", strlen("로그인 성공\n"));
 	write(clnt_sock, "로비 채팅창에 오신걸 환영합니다.\n", strlen("로비 채팅창에 오신걸 환영합니다.\n"));
 	
@@ -662,17 +671,41 @@ void * handle_clnt(void * arg)
 		{
 			send_whisper(msg, &p_user);
 		}
+		else if (strcmp(msg, "/b\n") == 0) // 채팅 수신 차단
+		{
+
+		}
+		else if (strcmp(msg, "/p\n") == 0) // 채팅 수신 가능
+		{
+
+		}
 		else if (strncmp(msg, "/s", 2) == 0) // 회원 찾기
 		{
 			search_user(msg, clnt_sock);
 		}
-		else if (strncmp(msg, "/u", 2) == 0) // 현재 방에 있는 유저 목록 보기
+		else if (strcmp(msg, "/u\n") == 0) // 현재 방에 있는 유저 목록 보기
 		{
 			show_user(&p_user);
 		}
 		else if (strcmp(msg, "/l\n") == 0) // 쪽지창으로 넘어가기
 		{
-			show_letter(&p_user, clnt_sock);
+			operate_letter(&p_user, clnt_sock);
+		}
+		else if (strcmp(msg, "/rooms\n") == 0) // 방 목록 보기
+		{
+
+		}
+		else if (strncmp(msg, "/create", 7) == 0) // 방 만들기
+		{
+
+		}
+		else if (strncmp(msg, "/join", 5) == 0) // 방 들어가기
+		{
+
+		}
+		else if (strncmp(msg, "/invite", 7) == 0) // 초대하기
+		{
+
 		}
 		else // 일반 채팅 메시지 보내기
 		{
@@ -681,6 +714,17 @@ void * handle_clnt(void * arg)
 		
 	}
 }
+
+void show_room()
+{
+
+}
+
+void create_room(USER *p_user, int clnt_sock)
+{
+	
+}
+
 
 void show_user(USER *p_user) // 유저 목록 보기 함수
 {
@@ -704,32 +748,21 @@ void show_user(USER *p_user) // 유저 목록 보기 함수
 	free(f_msg);
 }
 
-void show_letter(USER *p_user, int clnt_sock)
+void show_letter_list(USER *p_user, int clnt_sock) // 쪽지함 출력함수
 {
-	int str_len, i, j, check, index_num, l_cnt, l_num, chk;
-	int letter_num = 1;
-	char msg[BUF_SIZE];
+	int i, j;
 	char preview[16];
-	char *nick;
-	char *l_text;
-	char time_str[500];
 	char f_msg[5000];
-	
-	pthread_mutex_lock(&mutx);
-	for (i = 0; i < login_user_cnt; i++)
-	{
-		if (login_user_list[i].socket_num == p_user->socket_num)
-		{
-			login_user_list[i].state = 3; // 수신거부 상태
-			break;
-		}
-	}
 
+	write(clnt_sock, "\t\t\t   < 내 쪽지함 >\n\n", strlen("\t\t\t   < 내 쪽지함 >\n\n"));
+	write(clnt_sock, "[번호]       [보낸시간]           [보낸사람]         [쪽지내용]\n", strlen("[번호]       [보낸시간]           [보낸사람]         [쪽지내용]\n"));
+	write(clnt_sock, "----------------------------------------------------------------------------------\n", strlen("----------------------------------------------------------------------------------\n"));
+	pthread_mutex_lock(&mutx);
 	for (i = 0; i < reg_user_cnt; i++)
 	{
 		if (strcmp(p_user->id, reg_user_list[i].id) == 0)
 		{
-			for (j = 0; j < 10; j++)
+			for (j = 0; j < reg_user_list[i].letter_cnt; j++)
 			{
 				strncpy(preview, reg_user_list[i].letter_box[j].text, 15);
 				preview[15] = '\0';
@@ -751,6 +784,31 @@ void show_letter(USER *p_user, int clnt_sock)
 	write(clnt_sock, "----------------------------------------------------------------------------------\n", strlen("----------------------------------------------------------------------------------\n"));
 	write(clnt_sock, "\033[38;2;110;194;7m[ 쪽지 읽기: /read 쪽지번호,  쪽지 보내기: /send 닉네임 쪽지내용,  쪽지 지우기: /delete 쪽지번호 ]\033[0m\n", strlen("\033[38;2;110;194;7m[ 쪽지 읽기: /read 쪽지번호,  쪽지 보내기: /send 닉네임 쪽지내용,  쪽지 지우기: /delete 쪽지번호 ]\033[0m\n"));
 	write(clnt_sock, "(채팅방으로 돌아가려면 'b'를 입력하세요)\n", strlen("(채팅방으로 돌아가려면 'b'를 입력하세요)\n"));
+}
+
+void operate_letter(USER *p_user, int clnt_sock) // 쪽지 함수
+{
+	int str_len, i, j, k, check, index_num, l_cnt, l_num, chk;
+	char msg[BUF_SIZE];
+	char preview[16];
+	char *nick;
+	char *l_text;
+	char time_str[500];
+	char f_msg[5000];
+	
+	pthread_mutex_lock(&mutx);
+	for (i = 0; i < login_user_cnt; i++)
+	{
+		if (login_user_list[i].socket_num == p_user->socket_num)
+		{
+			login_user_list[i].state = 3; // 수신거부 상태
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+
+	show_letter_list(p_user, clnt_sock); // 쪽지함 출력 함수 호출
+	
 	while (1)
 	{
 		memset(msg, 0, sizeof(msg));
@@ -800,9 +858,8 @@ void show_letter(USER *p_user, int clnt_sock)
 			}
 			if (check == 1)
 			{
-
 				memset(f_msg, 0, sizeof(f_msg));
-				sprintf(f_msg, "\n번호: %-4d // 발신시간: %-21s   // 닉네임: %-15s\n", reg_user_list[i].letter_box[j].letter_num, reg_user_list[i].letter_box[j].time, reg_user_list[i].letter_box[j].sender_nck);
+				sprintf(f_msg, "\n번호: %-4d // 보낸시간: %-21s   // 보낸사람: %-15s\n", reg_user_list[i].letter_box[j].letter_num, reg_user_list[i].letter_box[j].time, reg_user_list[i].letter_box[j].sender_nck);
 				write(clnt_sock, f_msg, strlen(f_msg));
 				write(clnt_sock, "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n", strlen("――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"));
 				memset(f_msg, 0, sizeof(f_msg));
@@ -856,8 +913,9 @@ void show_letter(USER *p_user, int clnt_sock)
 						i++; 
 					}
 				}
+                reg_user_list[index_num].letter_snum += 1;
 				l_cnt = reg_user_list[index_num].letter_cnt;
-				reg_user_list[index_num].letter_box[l_cnt-1].letter_num = letter_num++; // 쪽지 번호 저장
+				reg_user_list[index_num].letter_box[l_cnt-1].letter_num = reg_user_list[index_num].letter_snum; // 쪽지 번호 저장
 				strcpy(reg_user_list[index_num].letter_box[l_cnt-1].time, time_str); // 쪽지 발송 시간 저장
 				strcpy(reg_user_list[index_num].letter_box[l_cnt-1].sender_nck, p_user->nick_name); // 쪽지 발신자 저장
 				strcpy(reg_user_list[index_num].letter_box[l_cnt-1].text, l_text); // 쪽지 내용 저장
@@ -874,19 +932,42 @@ void show_letter(USER *p_user, int clnt_sock)
 		}
 		else if (strncmp(msg, "/delete", 7) == 0) // 쪽지 삭제
 		{
-			for(i = 0; i < l_cnt; i++)   // 로그인 유저 리스트에서 해당 유저 삭제하고 하나씩 땡김
+			strtok(msg, " ");
+			nick = strtok(NULL, "\n");
+			l_num = atoi(nick);
+			check = 0;
+			chk = 0;
+			pthread_mutex_lock(&mutx);
+			for (i = 0; i < reg_user_cnt; i++)
 			{
-				if(clnt_sock == login_user_list[i].socket_num)
+				if (strcmp(p_user->id, reg_user_list[i].id) == 0)
 				{
-					while(i < login_user_cnt)
+					for (j = 0; j < reg_user_list[i].letter_cnt; j++)
 					{
-						login_user_list[i] = login_user_list[i+1];
-						i++;
+						if (l_num == reg_user_list[i].letter_box[j].letter_num)
+						{
+                            for (k = j; k < reg_user_list[i].letter_cnt; k++)
+							{
+								reg_user_list[i].letter_box[k] = reg_user_list[i].letter_box[k+1]; // 해당 쪽지 삭제 후 쪽지 한칸씩 땡김
+							}
+							reg_user_list[i].letter_cnt -= 1;
+							check = 1;
+							write(clnt_sock, "해당 쪽지를 삭제하였습니다.\n", strlen("해당 쪽지를 삭제하였습니다.\n"));
+							break;
+						}
+						if (check == 1)
+							break;
 					}
-					break;
+					chk = 1;
 				}
+				if (chk == 1)
+					break;
 			}
-			login_user_cnt--;
+			pthread_mutex_unlock(&mutx);
+			if (check == 0)
+			{
+				write(clnt_sock, "해당 쪽지번호가 존재하지 않습니다.\n", strlen("해당 쪽지번호가 존재하지 않습니다.\n"));
+			}
 		}
 		else
 		{
@@ -1099,18 +1180,4 @@ void error_handling(char * msg)
 	fputs(msg, stderr);
 	fputc('\n', stderr);
 	exit(1);
-}
-
-char* str_slicing(char* s, int start, int end)
-{
-
-	int str_size = end - start; // 슬라이싱된 문자열 크기 선언
-	char* slice_str;
-
-	// 슬라이싱 결과 문자열에 값 대입
-	for(int i = 0; i < str_size; i++)
-	{
-		slice_str[i] = s[start + i];
-	}
-	return slice_str;
 }

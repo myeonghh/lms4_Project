@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <pthread.h>
 	
-#define BUF_SIZE 200
+#define BUF_SIZE 1000
 	
 void * send_msg(void * arg);
 void * recv_msg(void * arg);
@@ -50,11 +50,18 @@ void * send_msg(void * arg)   // send thread main
 	while(1) 
 	{
 		fgets(msg, BUF_SIZE, stdin);
-		if(!strcmp(msg,"q\n")||!strcmp(msg,"Q\n")) 
+		if (!strcmp(msg,"/q\n")||!strcmp(msg,"/Q\n")) 
 		{
 			close(sock);
 			exit(0);
 		}
+		else if (strcmp(msg, "/l\n") == 0)
+		{
+			system("clear");
+			// printf("\t\t\t   < 내 쪽지함 >\n\n");
+			// printf("[번호]       [보낸시간]           [보낸사람]         [쪽지내용]\n");
+			// printf("----------------------------------------------------------------------------------\n");
+		}	
 		write(sock, msg, strlen(msg));
 	}
 	return NULL;
@@ -67,11 +74,21 @@ void * recv_msg(void * arg)   // read thread main
 	int str_len;
 	while(1)
 	{
+		memset(msg, 0, sizeof(msg));
 		str_len = read(sock, msg, BUF_SIZE-1);
 		if(str_len==-1) 
 			return (void*)-1;
-		msg[str_len]=0;
-		fputs(msg, stdout);
+		//msg[str_len]=0;
+		if (strcmp(msg, "&^clear^&\n") == 0)
+		{
+			system("clear"); // 서버에게 위의 문장 수신하면 클라이언트 화면 초기화
+		}
+		else
+		{
+			fputs(msg, stdout);
+		}
+		//fputs(msg, stdout);
+		
 	}
 	return NULL;
 }
