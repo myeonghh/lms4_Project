@@ -91,6 +91,7 @@ void show_room(int clnt_sock);
 void block_chat(USER *p_user, int clnt_sock);
 void unblock_chat(USER *p_user, int clnt_sock);
 void enter_room(char *msg, USER *p_user, int clnt_sock);
+void delete_room();
 void error_handling(char * msg);
 
 int r_num = 2;
@@ -652,10 +653,20 @@ void * handle_clnt(void * arg)
 
 	}
 	
-	write(clnt_sock, "로그인 성공\n", strlen("로그인 성공\n"));
+	write(clnt_sock, "\n\033[38;2;255;255;0m<로그인 성공>\033[0m\n", strlen("\n\033[38;2;255;255;0m<로그인 성공>\033[0m\n"));
 	write(clnt_sock, "\n\033[38;2;110;194;7m――― 'Lobby' 채팅방에 입장하였습니다. ―――\033[0m\n\n", strlen("\n\033[38;2;110;194;7m――― 'Lobby' 채팅방에 입장하였습니다. ―――\033[0m\n\n"));
 	pthread_mutex_lock(&mutx);
 	send_enter_msg(&p_user); // 입장 메시지 전송
+	for (i = 0; i < reg_user_cnt; i++)
+	{
+		if (strcmp(p_user.id, reg_user_list[i].id) == 0)
+		{
+			memset(msg, 0, sizeof(msg));
+			sprintf(msg, "쪽지함에 쪽지가 '%d'개 있습니다.\n", reg_user_list[i].letter_cnt); // 로그인시 쪽지 개수 알림
+			write(clnt_sock, msg, strlen(msg));
+			break;
+		}
+	}
 	pthread_mutex_unlock(&mutx);
 
 	while (1)
@@ -666,6 +677,20 @@ void * handle_clnt(void * arg)
 		if (str_len == 0) // 해당 클라이언트가 종료 했을때
 		{
 			pthread_mutex_lock(&mutx);
+			send_exit_msg(&p_user); // 퇴장 메시지
+			room_ucnt_minus(&p_user); // 방 유저수 감소
+			for (i = 1; i < room_cnt; i++)
+			{
+				if (room_list[i].user_cnt == 0) //  방 인원 0명이면 방 삭제
+				{
+					for (j = i; j < room_cnt; j++)
+					{
+						room_list[j] = room_list[j+1];
+					}
+					room_cnt--;
+					break;
+				}
+			}
 			for(i = 0; i < login_user_cnt; i++)   // 로그인 유저 리스트에서 해당 유저 삭제하고 하나씩 땡김
 			{
 				if(clnt_sock == login_user_list[i].socket_num)
@@ -715,20 +740,23 @@ void * handle_clnt(void * arg)
 		else if (strncmp(msg, "/create", 7) == 0) // 방 만들기
 		{
 			create_room(msg, &p_user, clnt_sock);
+			delete_room(); // 방 인원이 0명이면 방 삭제 (로비방 제외)
 		}
 		else if (strncmp(msg, "/enter", 6) == 0) // 방 들어가기
 		{
 			msg[str_len - 1] = '\0';
 			enter_room(msg, &p_user, clnt_sock);
+			delete_room(); // 방 인원이 0명이면 방 삭제 (로비방 제외)
 		}
 		else if (strncmp(msg, "/invite", 7) == 0) // 초대하기
 		{
-
+			
 		}
 		else // 일반 채팅 메시지 보내기
 		{
 			send_msg(msg, &p_user);
 		}
+
 		
 	}
 }
@@ -968,6 +996,93 @@ void create_room(char *msg, USER *p_user, int clnt_sock)
 	write(clnt_sock, enter_str, strlen(enter_str));
 }
 
+void delete_room()
+{
+	int i, j;
+	pthread_mutex_lock(&mutx);
+	for (i = 1; i < room_cnt; i++)
+	{
+		if (room_list[i].user_cnt == 0)
+		{
+			for (j = i; j < room_cnt; j++)
+			{
+				room_list[j] = room_list[j+1];
+			}
+			room_cnt--;
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+}
+
+void invite_user(char *msg, USER *p_user, int clnt_sock)
+{
+	char f_msg[BUF_SIZE];
+	char *nick;
+	int i, index, check, r_index, str_len;
+
+	strtok(msg, " ");
+	nick = strtok(NULL, "\n");
+
+	check = 0;
+	pthread_mutex_lock(&mutx);
+	for (i = 0; i < room_cnt; i++)
+	{
+		if (p_user->room_num == room_list[i].room_num)
+		{	
+			r_index = i;
+			if (room_list[i].user_cnt == room_list[i].max_user)
+			{
+				write(clnt_sock, "방 인원이 꽉 차서 초대할 수 없습니다.\n", strlen("방 인원이 꽉 차서 초대할 수 없습니다.\n"));
+				check = 1;
+				break;
+			}
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+	if (check == 1)
+		return;
+
+	check = 0;
+	for (i = 0; i < login_user_cnt; i++)
+	{
+		
+		if (strcmp(nick, login_user_list[i].nick_name) == 0)
+		{
+			index = i;
+			check = 1;
+			break;
+		}
+	}
+	if (check == 1)
+	{
+		memset(f_msg, 0, sizeof(f_msg));
+		sprintf(f_msg, "'%s'님이 '%s'방으로 초대했습니다.\n(수락 하려면 y / 거절 하려면 아무키나 입력하세요)\n", p_user->nick_name, room_list[r_index].title);
+		write(login_user_list[index].socket_num, f_msg, strlen(f_msg));
+		memset(f_msg, 0, sizeof(f_msg));
+		str_len = read(clnt_sock, f_msg, sizeof(f_msg));
+		f_msg[str_len-1] = '\0';
+
+		if (strcmp(f_msg, "y") == 0)
+		{
+			// 수락시 방이 꽉찼을 때 방이 꽉차서 입장 불가 전송
+			// 수락시 방이 터졌을 때 방이 사라져서 입장 불가 전송
+			// 둘다 아닐 시 방 이동
+		}
+		else
+		{
+			memset(f_msg, 0, sizeof(f_msg));
+			sprintf(f_msg, "'%s'님이 초대를 거절했습니다.\n", login_user_list[index].nick_name);
+			write(clnt_sock, f_msg, strlen(f_msg));
+		}
+	}
+	else
+	{
+		write(clnt_sock, "해당 아이디는 접속 중이 아닙니다.\n", strlen("해당 아이디는 접속 중이 아닙니다.\n"));
+	}
+
+	
+}
 
 void show_user(USER *p_user) // 유저 목록 보기 함수
 {
@@ -1433,7 +1548,7 @@ void send_enter_msg(USER *p_user) // 방 입장 메시지 전달 함수
 	int i;
 	char f_msg[BUF_SIZE];
 	memset(f_msg, 0, sizeof(f_msg));
-	sprintf(f_msg, "%s<'%s' 님이 채팅방에 입장했습니다.>%s\n", skin, p_user->nick_name, color_end);
+	sprintf(f_msg, "%s<'%s' 님이 채팅방에 입장했습니다>%s\n", skin, p_user->nick_name, color_end);
 
 	for(i = 0; i < login_user_cnt; i++)
 	{
@@ -1449,7 +1564,7 @@ void send_exit_msg(USER *p_user) // 방 퇴장 메시지 전달 함수
 	int i;
 	char f_msg[BUF_SIZE];
 	memset(f_msg, 0, sizeof(f_msg));
-	sprintf(f_msg, "%s<'%s' 님이 채팅방을 떠났습니다.>%s\n", skin, p_user->nick_name, color_end);
+	sprintf(f_msg, "%s<'%s' 님이 채팅방을 떠났습니다>%s\n", skin, p_user->nick_name, color_end);
 
 	for(i = 0; i < login_user_cnt; i++)
 	{
@@ -1477,6 +1592,7 @@ void send_msg(char * msg, USER *p_user)   // 일반 채팅 메시지 전달 함�
 	}
 	pthread_mutex_unlock(&mutx);
 }
+
 void error_handling(char * msg)
 {
 	fputs(msg, stderr);

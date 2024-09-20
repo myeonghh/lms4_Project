@@ -55,6 +55,10 @@ void * send_msg(void * arg)   // send thread main
 			close(sock);
 			exit(0);
 		}
+		else if (strcmp(msg, "/clear\n") == 0)
+		{
+			system("clear");
+		}
 		else if (strcmp(msg, "/l\n") == 0)
 		{
 			system("clear");
