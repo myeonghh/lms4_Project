@@ -78,18 +78,19 @@ void * recv_msg(void * arg)   // read thread main
 		str_len = read(sock, msg, BUF_SIZE-1);
 		if(str_len==-1) 
 			return (void*)-1;
-		//msg[str_len]=0;
-		if (strcmp(msg, "&^clear^&\n") == 0)
-		{
-			system("clear"); // 서버에게 위의 문장 수신하면 클라이언트 화면 초기화
-		}
-		else
-		{
-			fputs(msg, stdout);
-		}
-		//fputs(msg, stdout);
+		msg[str_len]=0;
+		// if (strcmp(msg, "&^clear^&\n") == 0)
+		// {
+		// 	system("clear"); // 서버에게 위의 문장 수신하면 클라이언트 화면 초기화
+		// }
+		// else
+		// {
+		// 	fputs(msg, stdout);
+		// }
+		fputs(msg, stdout);
 		
 	}
+
 	return NULL;
 }
 	

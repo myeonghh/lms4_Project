@@ -19,7 +19,11 @@
 #define yellow "\033[38;2;255;255;0m"
 #define blue "\033[38;2;79;117;255m"
 #define green "\033[38;2;110;194;7m"
+#define red "\033[38;2;231;41;41m"
+#define skin "\033[38;2;255;215;196m"
+#define lightgray "\033[38;2;240;245;249m"
 #define color_end "\033[0m"
+
 
 typedef struct letter
 {
@@ -55,8 +59,8 @@ typedef struct room
 	int max_user;
 	int user_cnt;
 	char pw[20];
-	char title[30];
-	char private_chk[10];
+	char title[40];
+	char private_chk[40];
 
 }ROOM;
 
@@ -67,12 +71,16 @@ USER reg_user_list[MAX_REG_USER] =
 
 USER login_user_list[MAX_LOGIN_USER] = {0,};
 
-ROOM room_list[MAX_ROOM] = {{1, MAX_LOGIN_USER, 0, "0", "로비", "공개방"}};
+ROOM room_list[MAX_ROOM] = {{1, MAX_LOGIN_USER, 0, "0", "Lobby", "\033[38;2;110;194;7m공개방\033[0m"}};
 
 
 void * handle_clnt(void * arg);
 void send_whisper(char * msg, USER *p_user);
 void send_msg(char * msg, USER *p_user);
+void send_enter_msg(USER *p_user);
+void send_exit_msg(USER *p_user);
+void room_ucnt_minus(USER *p_user);
+void room_ucnt_plus(USER *p_user);
 int withdraw(int clnt_sock);
 void search_user(char * msg, int clnt_sock);
 void show_user(USER *p_user);
@@ -80,6 +88,9 @@ void operate_letter(USER *p_user, int clnt_sock);
 void show_letter_list(USER *p_user, int clnt_sock);
 void create_room(char *msg, USER *p_user, int clnt_sock);
 void show_room(int clnt_sock);
+void block_chat(USER *p_user, int clnt_sock);
+void unblock_chat(USER *p_user, int clnt_sock);
+void enter_room(char *msg, USER *p_user, int clnt_sock);
 void error_handling(char * msg);
 
 int r_num = 2;
@@ -542,9 +553,7 @@ void * handle_clnt(void * arg)
 						pnum_chk = 1;
 						break;
 					}
-					
 				}
-
 				if (pnum_chk == 1)
 				{
 					memset(msg, 0, sizeof(msg));
@@ -644,8 +653,11 @@ void * handle_clnt(void * arg)
 	}
 	
 	write(clnt_sock, "로그인 성공\n", strlen("로그인 성공\n"));
-	write(clnt_sock, "\033[38;2;110;194;7m\n'로비' 채팅방에 입장 하였습니다.\033[0m\n\n", strlen("\033[38;2;110;194;7m\n'로비' 채팅방에 입장 하였습니다.\033[0m\n\n"));
-	
+	write(clnt_sock, "\n\033[38;2;110;194;7m――― 'Lobby' 채팅방에 입장하였습니다. ―――\033[0m\n\n", strlen("\n\033[38;2;110;194;7m――― 'Lobby' 채팅방에 입장하였습니다. ―――\033[0m\n\n"));
+	pthread_mutex_lock(&mutx);
+	send_enter_msg(&p_user); // 입장 메시지 전송
+	pthread_mutex_unlock(&mutx);
+
 	while (1)
 	{
 		memset(msg, 0, sizeof(msg));
@@ -678,25 +690,25 @@ void * handle_clnt(void * arg)
 		}
 		else if (strcmp(msg, "/b\n") == 0) // 채팅 수신 차단
 		{
-
+			block_chat(&p_user, clnt_sock);
 		}
-		else if (strcmp(msg, "/p\n") == 0) // 채팅 수신 가능
+		else if (strcmp(msg, "/ub\n") == 0) // 채팅 수신 가능
 		{
-
+			unblock_chat(&p_user, clnt_sock);
 		}
 		else if (strncmp(msg, "/s", 2) == 0) // 회원 찾기
 		{
 			search_user(msg, clnt_sock);
 		}
-		else if (strcmp(msg, "/u\n") == 0) // 현재 방에 있는 유저 목록 보기
+		else if (strcmp(msg, "/users\n") == 0) // 현재 방에 있는 유저 목록 보기
 		{
 			show_user(&p_user);
 		}
-		else if (strcmp(msg, "/l\n") == 0) // 쪽지창으로 넘어가기
+		else if (strcmp(msg, "/letter\n") == 0) // 쪽지창으로 넘어가기
 		{
 			operate_letter(&p_user, clnt_sock);
 		}
-		else if (strcmp(msg, "/r\n") == 0) // 방 목록 보기
+		else if (strcmp(msg, "/rooms\n") == 0) // 방 목록 보기
 		{
 			show_room(clnt_sock);
 		}
@@ -704,9 +716,10 @@ void * handle_clnt(void * arg)
 		{
 			create_room(msg, &p_user, clnt_sock);
 		}
-		else if (strncmp(msg, "/join", 5) == 0) // 방 들어가기
+		else if (strncmp(msg, "/enter", 6) == 0) // 방 들어가기
 		{
-
+			msg[str_len - 1] = '\0';
+			enter_room(msg, &p_user, clnt_sock);
 		}
 		else if (strncmp(msg, "/invite", 7) == 0) // 초대하기
 		{
@@ -720,30 +733,169 @@ void * handle_clnt(void * arg)
 	}
 }
 
-void show_room(int clnt_sock)
+void block_chat(USER *p_user, int clnt_sock) // 채팅 수신 차단 (귓속말 포함)
 {
 	int i;
-	char *f_msg;
-	f_msg = (char *)malloc(sizeof(char) * 2000);
+	p_user->state = 3;
+	pthread_mutex_lock(&mutx);
+	for (i = 0; i < login_user_cnt; i++)
+	{
+		if (strcmp(p_user->id, login_user_list[i].id) == 0)
+		{
+			login_user_list[i].state = 3;
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+	write(clnt_sock, "채팅수신이 차단되었습니다.\n", strlen("채팅수신이 차단되었습니다.\n"));
+}
 
-	write(clnt_sock, "---------------------------------------------------------------------\n", strlen("---------------------------------------------------------------------\n"));
-	write(clnt_sock, " 방 번호 //  방 인원   // 공개 여부 // 방 제목\t\t\n", strlen(" 방 번호 //  방 인원   // 공개 여부 // 방 제목\t\t\n"));
-	write(clnt_sock, "---------------------------------------------------------------------\n", strlen("\n---------------------------------------------------------------------\n"));
+void unblock_chat(USER *p_user, int clnt_sock) // 채팅 수신 허용
+{
+	int i;
+	p_user->state = 1;
+	pthread_mutex_lock(&mutx);
+	for (i = 0; i < login_user_cnt; i++)
+	{
+		if (strcmp(p_user->id, login_user_list[i].id) == 0)
+		{
+			login_user_list[i].state = 1;
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutx);
+	write(clnt_sock, "채팅수신 차단이 해제되었습니다.\n", strlen("채팅수신 차단이 해제되었습니다.\n"));
+}
+
+void enter_room(char *msg, USER *p_user, int clnt_sock)
+{
+	char *rnum_str, *pw_str = "";
+	char enter_str[300];
+	char r_title_str[50];
+	char *ptr = strstr(msg, " ");
+	int cnt = 0;
+	int rnum, i, check, max_ucnt, in_ucnt;
+
+	while (ptr != NULL)
+	{
+		ptr = strstr(ptr + 1, " "); // 다음 등장 위치 탐색
+		cnt++;
+	}
+	printf("공백은 %d번 등장함\n", cnt);
+
+	strtok(msg, " ");
+	rnum_str = strtok(NULL, " ");
+	rnum = atoi(rnum_str);
+	if (cnt > 1)
+	{
+		pw_str = strtok(NULL, " ");
+	}
+	printf("rnum_str : %s\n", rnum_str);
+	printf("rnum : %d\n", rnum);
+	printf("pw_str : %s\n", pw_str);
+	
+	check = 0;
 	pthread_mutex_lock(&mutx);
 	for (i = 0; i < room_cnt; i++)
 	{
-		sprintf(f_msg, "%3d // %3d명/%3d명 // %s // %-30s\n", room_list[i].room_num, room_list[i].user_cnt, room_list[i].max_user, room_list[i].private_chk, room_list[i].title);
+		if (rnum == room_list[i].room_num) // 입력한 방 번호가 존재할때
+		{
+			max_ucnt = room_list[i].max_user;
+			in_ucnt = room_list[i].user_cnt;
+			memset(r_title_str, 0, sizeof(r_title_str));
+			strcpy(r_title_str, room_list[i].title);
+
+			if (p_user->room_num == room_list[i].room_num)
+			{
+				check = 4;
+				break;
+			}
+			
+			if (strcmp(room_list[i].pw, "0") == 0) // 해당 방이 공개방일 경우
+			{
+				check = 1;
+				break;
+			}
+			else
+			{
+				if (strcmp(room_list[i].pw, pw_str) == 0) 
+				{
+					check = 2;
+				}
+				else
+				{
+					check = 3;
+				}
+				break;
+			}
+		}
+	}
+	if (check == 1 || check == 2) // 해당 방이 공개방일 경우 or 해당 방이 비밀방이고 비밀번호가 맞는 경우
+	{
+		if (in_ucnt == max_ucnt)
+		{
+			write(clnt_sock, "방 인원이 꽉 차서 들어갈 수 없습니다.\n", strlen("방 인원이 꽉 차서 들어갈 수 없습니다.\n"));
+		}
+		else
+		{
+			room_ucnt_minus(p_user); // 이전 방 유저숫자 감소 함수
+			send_exit_msg(p_user); // 이전 방 유저들에게 퇴장 메시지 전송 함수
+			p_user->room_num = rnum; // 현재 유저 방 번호를 입장한 방 번호로 바꿈 
+			for (i = 0; i < login_user_cnt; i++)
+			{
+				if (strcmp(p_user->id, login_user_list[i].id) == 0)
+				{
+					login_user_list[i].room_num = rnum; // 로그인 유저리스트에서 본인 방 번호를 입장한 방 번호로 바꿈
+					break;
+				}
+			}
+			room_ucnt_plus(p_user); // 입장한 방 유저숫자 증가 함수
+			memset(enter_str, 0, sizeof(enter_str));
+			sprintf(enter_str, "\n%s――― '%s' 채팅방에 입장하였습니다. ―――%s\n\n", green, r_title_str, color_end);
+			write(clnt_sock, enter_str, strlen(enter_str));
+			send_enter_msg(p_user); // 입장한 방 유저들에게 입장 메시지 전송 함수
+		}
+	}
+	else if (check == 3) // 해당 방이 비밀방이고 입력한 비밀번호가 틀린 경우
+	{
+		write(clnt_sock, "비밀번호가 맞지 않습니다.\n", strlen("비밀번호가 맞지 않습니다.\n"));
+	}
+	else if (check == 4)
+	{
+		write(clnt_sock, "이미 해당 방에 들어와 있습니다.\n", strlen("이미 해당 방에 들어와 있습니다.\n"));
+	}
+	else // 입력한 번호의 방이 존재하지 않는 경우
+	{
+		write(clnt_sock, "존재하지 않는 방 번호 입니다.\n", strlen("존재하지 않는 방 번호 입니다.\n"));
+	}
+	pthread_mutex_unlock(&mutx);
+}
+
+void show_room(int clnt_sock)
+{
+	int i;
+	char *text = " 방 번호 //   방 인원    // 공개 여부 //  방 제목\n";
+	char *f_msg;
+	f_msg = (char *)malloc(sizeof(char) * 2000);
+
+	write(clnt_sock, "---------------------------------------------------------------------------\n", strlen("---------------------------------------------------------------------------\n"));
+	write(clnt_sock, text, strlen(text));
+	write(clnt_sock, "---------------------------------------------------------------------------\n", strlen("---------------------------------------------------------------------------\n"));
+	pthread_mutex_lock(&mutx);
+	for (i = 0; i < room_cnt; i++)
+	{
+		sprintf(f_msg, " %4d    // %3d명/%3d명  //   %s  //  %-30s\n", room_list[i].room_num, room_list[i].user_cnt, room_list[i].max_user, room_list[i].private_chk, room_list[i].title);
 		write(clnt_sock, f_msg, strlen(f_msg));
 	}
 	pthread_mutex_unlock(&mutx);
-	write(clnt_sock, "\n---------------------------------------------------------------------\n\n", strlen("\n---------------------------------------------------------------------\n\n"));
+	write(clnt_sock, "---------------------------------------------------------------------------\n\n", strlen("---------------------------------------------------------------------------\n\n"));
 	free(f_msg);
 }
 
 void create_room(char *msg, USER *p_user, int clnt_sock)
 {
 	char *title_str, *pw_str, *max_str;
-	char private_str[10];
+	char private_str[40];
 	char enter_str[300];
 	int room_pw, max_cnt, i;
 	ROOM room;
@@ -765,10 +917,18 @@ void create_room(char *msg, USER *p_user, int clnt_sock)
 		write(clnt_sock, "방 비밀번호가 길이를 초과했습니다.\n", strlen("방 비밀번호가 길이를 초과했습니다.\n"));
 		return;
 	}
-	if (strlen(title_str) >= 30)
+	if (strlen(title_str) >= 40)
 	{
 		write(clnt_sock, "방 제목이 길이를 초과했습니다.\n", strlen("방 제목이 길이를 초과했습니다.\n"));
 		return;
+	}
+	for (i = 0; i < room_cnt; i++)
+	{
+		if (strcmp(title_str, room_list[i].title) == 0)
+		{
+			write(clnt_sock, "입력한 방 제목이 이미 존재합니다.\n", strlen("입력한 방 제목이 이미 존재합니다.\n"));
+			return;
+		}
 	}
 	
 	room.max_user = max_cnt; // 방 최대 인원 저장
@@ -777,14 +937,17 @@ void create_room(char *msg, USER *p_user, int clnt_sock)
 	strcpy(room.title, title_str); // 방 제목 저장
 	if (strcmp(pw_str, "0") == 0) // 방 공개여부 저장
 	{
-		strcpy(room.private_chk, "공개방");
+		strcpy(room.private_chk, "\033[38;2;110;194;7m공개방\033[0m");
 	}
 	else
 	{
-		strcpy(room.private_chk, "비밀방");
+		strcpy(room.private_chk, "\033[38;2;231;41;41m비밀방\033[0m");
 	}
 
 	pthread_mutex_lock(&mutx);
+	room_ucnt_minus(p_user); // 전에 있던 방 유저 수 한명 감소
+	send_exit_msg(p_user); // 전에 있던 유저들에게 퇴장 메시지 전송
+
 	room.room_num = r_num; // 방 숫자 저장
 	room_list[room_cnt] = room; // 방 구조체 배열에 생성한 방 추가
 	p_user->room_num = room.room_num; // 현재 유저 방 번호 생성한 방 번호로 변경
@@ -799,9 +962,9 @@ void create_room(char *msg, USER *p_user, int clnt_sock)
 	room_cnt++;
 	r_num++;
 	pthread_mutex_unlock(&mutx);
-
+	
 	memset(enter_str, 0, sizeof(enter_str));
-	sprintf(enter_str, "\n%s'%s' 채팅방에 입장 하였습니다.%s\n\n", green, room.title, color_end);
+	sprintf(enter_str, "\n%s――― '%s' 채팅방에 입장하였습니다. ―――%s\n\n", green, room.title, color_end);
 	write(clnt_sock, enter_str, strlen(enter_str));
 }
 
@@ -812,18 +975,19 @@ void show_user(USER *p_user) // 유저 목록 보기 함수
 	char *f_msg;
 	f_msg = (char *)malloc(sizeof(char) * BUF_SIZE);
 
-	write(p_user->socket_num, "\033[38;2;110;194;7m[ID]              [NICK_NAME]         [E_MAIL]\033[0m\n", strlen("\033[38;2;110;194;7m[ID]              [NICK_NAME]         [E_MAIL]\033[0m\n"));
-	write(p_user->socket_num, "\033[38;2;110;194;7m―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\033[0m\n", strlen("\033[38;2;110;194;7m―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\033[0m\n"));
+	write(p_user->socket_num, "\n\033[38;2;240;245;249m[ID]              [NICK_NAME]         [E_MAIL]\033[0m\n", strlen("\n\033[38;2;240;245;249m[ID]              [NICK_NAME]         [E_MAIL]\033[0m\n"));
+	write(p_user->socket_num, "\033[38;2;240;245;249m―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\033[0m\n", strlen("\033[38;2;240;245;249m―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\033[0m\n"));
 	pthread_mutex_lock(&mutx);
 	for (i = 0; i < login_user_cnt; i++)
 	{
 		if (p_user->room_num == login_user_list[i].room_num)
 		{
 			memset(f_msg, 0, sizeof(f_msg));
-			sprintf(f_msg, "%s%-15s // %-15s // %-20s%s\n", green, login_user_list[i].id, login_user_list[i].nick_name, login_user_list[i].e_mail, color_end);
+			sprintf(f_msg, "%s%-15s // %-15s // %-20s%s\n", lightgray, login_user_list[i].id, login_user_list[i].nick_name, login_user_list[i].e_mail, color_end);
 			write(p_user->socket_num, f_msg, strlen(f_msg));
 		}
 	}
+	write(p_user->socket_num, "\033[38;2;240;245;249m―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\033[0m\n\n", strlen("\033[38;2;240;245;249m―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\033[0m\n\n"));
 	pthread_mutex_unlock(&mutx);
 	free(f_msg);
 }
@@ -1238,7 +1402,65 @@ void send_whisper(char * msg, USER *p_user) // 귓속말 함수
 	}
 }
 
-void send_msg(char * msg, USER *p_user)   // send to all
+void room_ucnt_minus(USER *p_user) // 방 유저 숫자 감소 함수
+{
+	int i = 0;
+	for (i = 0; i < room_cnt; i++)
+	{
+		if (room_list[i].room_num == p_user->room_num)
+		{
+			room_list[i].user_cnt -= 1;
+			break;;
+		}
+	}
+}
+
+void room_ucnt_plus(USER *p_user) // 방 유저 숫자 증가 함수
+{
+	int i = 0;
+	for (i = 0; i < room_cnt; i++)
+	{
+		if (room_list[i].room_num == p_user->room_num)
+		{
+			room_list[i].user_cnt += 1;
+			break;;
+		}
+	}
+}
+
+void send_enter_msg(USER *p_user) // 방 입장 메시지 전달 함수
+{
+	int i;
+	char f_msg[BUF_SIZE];
+	memset(f_msg, 0, sizeof(f_msg));
+	sprintf(f_msg, "%s<'%s' 님이 채팅방에 입장했습니다.>%s\n", skin, p_user->nick_name, color_end);
+
+	for(i = 0; i < login_user_cnt; i++)
+	{
+		if (p_user->room_num == login_user_list[i].room_num && p_user->socket_num != login_user_list[i].socket_num && login_user_list[i].state == 1)
+		{
+			write(login_user_list[i].socket_num, f_msg, strlen(f_msg));
+		}
+	}
+}
+
+void send_exit_msg(USER *p_user) // 방 퇴장 메시지 전달 함수
+{
+	int i;
+	char f_msg[BUF_SIZE];
+	memset(f_msg, 0, sizeof(f_msg));
+	sprintf(f_msg, "%s<'%s' 님이 채팅방을 떠났습니다.>%s\n", skin, p_user->nick_name, color_end);
+
+	for(i = 0; i < login_user_cnt; i++)
+	{
+		if (p_user->room_num == login_user_list[i].room_num && p_user->socket_num != login_user_list[i].socket_num && login_user_list[i].state == 1)
+		{
+			write(login_user_list[i].socket_num, f_msg, strlen(f_msg));
+		}
+	}
+}
+
+void send_msg(char * msg, USER *p_user)   // 일반 채팅 메시지 전달 함수
 {
 	int i;
 	char f_msg[BUF_SIZE];
