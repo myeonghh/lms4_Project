@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <pthread.h>
+#include <time.h>
 	
 #define BUF_SIZE 1000
 	
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
 	  
 	if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
 		error_handling("connect() error");
-	
+
 	pthread_create(&snd_thread, NULL, send_msg, (void*)&sock);
 	pthread_create(&rcv_thread, NULL, recv_msg, (void*)&sock);
 	pthread_join(snd_thread, &thread_return);
@@ -54,19 +55,26 @@ void * send_msg(void * arg)   // send thread main
 		{
 			close(sock);
 			exit(0);
+			write(sock, msg, strlen(msg));
 		}
 		else if (strcmp(msg, "/clear\n") == 0)
 		{
 			system("clear");
 		}
-		else if (strcmp(msg, "/l\n") == 0)
+		else if (strcmp(msg, "/help\n") == 0)
 		{
-			system("clear");
-			// printf("\t\t\t   < 내 쪽지함 >\n\n");
-			// printf("[번호]       [보낸시간]           [보낸사람]         [쪽지내용]\n");
-			// printf("----------------------------------------------------------------------------------\n");
-		}	
-		write(sock, msg, strlen(msg));
+			printf("\n―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n\n");
+			printf(" 로그아웃: /q,  화면초기화: /clear,  채팅수신차단: /b,  채팅수신허용: /p\n\n");
+			printf(" 쪽지함 모드: /letter,  현재방 유저목록보기: /users,  유저검색: /s 닉네임\n\n");
+			printf(" 귓속말 전송: /w 닉네임 귓속말내용,  생성된 방 목록보기: /rooms\n\n");
+			printf(" 방입장: /enter 방번호 비밀번호(비밀방일시),  초대하기: /invite 닉네임\n\n");
+			printf(" 방만들기: /create 방최대인원 비밀번호(공개방일시 '0'입력) 방제목\n");
+			printf("\n―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n\n");
+		}
+		else
+		{
+			write(sock, msg, strlen(msg));
+		}
 	}
 	return NULL;
 }
@@ -75,6 +83,7 @@ void * recv_msg(void * arg)   // read thread main
 {
 	int sock=*((int*)arg);
 	char msg[BUF_SIZE];
+	char *l_msg;
 	int str_len;
 	while(1)
 	{
@@ -83,16 +92,8 @@ void * recv_msg(void * arg)   // read thread main
 		if(str_len==-1) 
 			return (void*)-1;
 		msg[str_len]=0;
-		// if (strcmp(msg, "&^clear^&\n") == 0)
-		// {
-		// 	system("clear"); // 서버에게 위의 문장 수신하면 클라이언트 화면 초기화
-		// }
-		// else
-		// {
-		// 	fputs(msg, stdout);
-		// }
+
 		fputs(msg, stdout);
-		
 	}
 
 	return NULL;
