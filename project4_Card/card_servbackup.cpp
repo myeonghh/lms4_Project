@@ -10,7 +10,6 @@
 #include <vector>
 #include <string>
 #include <mariadb/conncpp.hpp>
-#include <format>
 
 
 #define BUF_SIZE 1000
@@ -153,7 +152,7 @@ public:
 
 class Card
 {
-protected:
+private:
     int card_num; // 카드 일련번호
     std::string card_name; // 카드 이름
     int anufee; // 카드 연회비
@@ -165,11 +164,9 @@ protected:
     int food;
     int hospital;
     int trip;
-    int clnt_sock;
-
 public:
-    Card(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock) 
-    : card_num(c_id), card_name(c_name), anufee(anufee), check_or_credit(credit_chk), brand_name(b_name), brand_int(b_int), traffic(traffic), oil(oil), food(food), hospital(hospital), trip(trip), clnt_sock(clnt_sock)
+    Card(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip) 
+    : card_num(c_id), card_name(c_name), anufee(anufee), check_or_credit(credit_chk), brand_name(b_name), brand_int(b_int), traffic(traffic), oil(oil), food(food), hospital(hospital), trip(trip)
     {}
     int get_cnum() const {return card_num;}
     std::string get_cname() const {return card_name;}
@@ -183,138 +180,73 @@ public:
     int get_hospital() const {return hospital;}
     int get_trip() const {return trip;}
     
-    virtual void show_card () const = 0;
-
-};
-
-class SinhanCard : public Card
-{
-private:
-public:
-    SinhanCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock)
-        : Card(c_id, c_name, anufee, credit_chk, b_name, b_int, traffic, oil, food, hospital, trip, clnt_sock)
-    {}
-
-    virtual void show_card() const
+    virtual void show_card () const
     {
-        std::string res;
-        std::string res = std::format("카드번호 : {} ", card_num);
-        std::string num = card_num;
-        res = "카드번호 : " + num;
-
-
-
-
-
-        write(clnt_sock, res.c_str(), strlen(res.c_str()));
-        std::cout << "CARDNUM = " << card.get_cnum() << "\n";
-        std::cout << "CARDNAME = " << card.get_cname() << "\n";
-        std::cout << "ANUFEE = " << card.get_anufee() << "\n";
-        std::cout << "CHECK/CREDIT = " << card.get_cchk() << "\n";
-        std::cout << "CARDBRAND = " << card.get_bname() << "\n";
-        std::cout << "CARDBRANDINT = " << card.get_bint() << "\n";
-        std::cout << "TRAFFIC = " << card.get_traffic() << "\n";
-        std::cout << "OIL = " << card.get_oil() << "\n";
-        std::cout << "FOOD = " << card.get_food() << "\n";
-        std::cout << "HOSPITAL = " << card.get_hospital() << "\n";
-        std::cout << "TRIP = " << card.get_trip() << "\n";
-        std::cout << "---------------------------" << std::endl;
+        
     }
 
 };
 
-class KBCard : public Card
-{
-private:
-public:
-    KBCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock)
-        : Card(c_id, c_name, anufee, credit_chk, b_name, b_int, traffic, oil, food, hospital, trip, clnt_sock)
-    {}
+// class SinhanCard : Card
+// {
+// private:
 
-    virtual void show_card() const
-    {
-
-    }
-
-};
-
-class NHCard : public Card
-{
-private:
-public:
-    NHCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock)
-        : Card(c_id, c_name, anufee, credit_chk, b_name, b_int, traffic, oil, food, hospital, trip, clnt_sock)
-    {}
-
-    virtual void show_card() const
-    {
-
-    }
-};
-
-class SamsungCard : public Card
-{
-private:
-public:
-    SamsungCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock)
-        : Card(c_id, c_name, anufee, credit_chk, b_name, b_int, traffic, oil, food, hospital, trip, clnt_sock)
-    {}
-
-    virtual void show_card() const
-    {
-
-    }
-
-};
-
-class WooriCard : public Card
-{
-private:
-public:
-    WooriCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock)
-        : Card(c_id, c_name, anufee, credit_chk, b_name, b_int, traffic, oil, food, hospital, trip, clnt_sock)
-    {}
-
-    virtual void show_card() const
-    {
-
-    }
-
-};
-
-class HanaCard : public Card
-{
-private:
-public:
-    HanaCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int b_int, int traffic, int oil, int food, int hospital, int trip, int clnt_sock)
-        : Card(c_id, c_name, anufee, credit_chk, b_name, b_int, traffic, oil, food, hospital, trip, clnt_sock)
-    {}
-
-    virtual void show_card() const
-    {
-
-    }
-
-};
-
-class CardHandler
-{
-private:
-    std::vector<Card> baseCards;
-public:
-    CardHandler(/* args */);
-    ~CardHandler();
-};
-
-CardHandler::CardHandler(/* args */)
-{
-}
-
-CardHandler::~CardHandler()
-{
-}
+// public:
+//     SinhanCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int brand)
+//         : Card(c_id, c_name, anufee, credit_chk, b_name, brand)
+//     {}
 
 
+// };
+
+// class KBCard : Card
+// {
+// private:
+// public:
+//     KBCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int brand)
+//         : Card(c_id, c_name, anufee, credit_chk, b_name, brand)
+//     {}
+
+// };
+
+// class NHCard : Card
+// {
+// private:
+// public:
+//     NHCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int brand)
+//         : Card(c_id, c_name, anufee, credit_chk, b_name, brand)
+//     {}
+// };
+
+// class SamsungCard : Card
+// {
+// private:
+// public:
+//     SamsungCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int brand)
+//         : Card(c_id, c_name, anufee, credit_chk, b_name, brand)
+//     {}
+
+// };
+
+// class WooriCard : Card
+// {
+// private:
+// public:
+//     WooriCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int brand)
+//         : Card(c_id, c_name, anufee, credit_chk, b_name, brand)
+//     {}
+
+// };
+
+// class HanaCard : Card
+// {
+// private:
+// public:
+//     HanaCard(int c_id, std::string c_name, int anufee, bool credit_chk, std::string b_name, int brand)
+//         : Card(c_id, c_name, anufee, credit_chk, b_name, brand)
+//     {}
+
+// };
 
 
 int main(int argc, char *argv[])
