@@ -198,9 +198,7 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        std::string res = std::format("카드번호 : {} ", card_num);
-        std::string num = card_num;
-        res = "카드번호 : " + num;
+        res = "카드번호 : " + std::to_string(card_num);
 
 
 
