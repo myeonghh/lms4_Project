@@ -70,7 +70,7 @@ void* send_msg(void* arg)
         // Send message to the server
         if (write(sock, msg.c_str(), msg.size()) == -1)
         {
-            std::lock_guard<std::mutex> lock(mtx);
+            //std::lock_guard<std::mutex> lock(mtx);
             std::cerr << "write() error\n";
         }
     }
@@ -85,17 +85,16 @@ void* recv_msg(void* arg)
     while (true)
     {
         memset(msg, 0, BUF_SIZE);
-        int str_len = read(sock, msg, BUF_SIZE - 1);
+        int str_len = read(sock, msg, BUF_SIZE);
         if (str_len == -1)
         {
-            std::lock_guard<std::mutex> lock(mtx);
+            //std::lock_guard<std::mutex> lock(mtx);
             std::cerr << "read() error\n";
             return (void*)-1;
         }
 
         // Output the message received from the server
-        std::lock_guard<std::mutex> lock(mtx);
-        std::cout << msg << std::endl;
+        std::cout << msg;
     }
 
     return nullptr;
