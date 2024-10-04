@@ -12,7 +12,7 @@
 #include <mariadb/conncpp.hpp>
 #include <sstream>
 
-#define BUF_SIZE 1000
+#define BUF_SIZE 1024
 #define MAX_CLNT 256
 
 
@@ -25,6 +25,8 @@ void error_handling(const char * msg);
 void showTasks(std::unique_ptr<sql::Connection> &conn);
 void database(int clnt_sock, char *msg);
 void cardselect(std::unique_ptr<sql::Connection> &conn, std::string msg);
+void Benefitselect(std::unique_ptr<sql::Connection> &conn, std::string msg);
+void Brandselect(std::unique_ptr<sql::Connection> &conn, std::string msg);
 
 enum {SINHAN = 1, KB, NH, SAMSUNG, WOORI, HANA};
 
@@ -272,15 +274,15 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        res = "=========================================================================================\n" 
-              "번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
+        res = "====================================================\n" 
+              "카드번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
             + "이름: " + card_name + " // " + "연회비: " + std::to_string(anufee) + "\n"
             + "할인혜택: " + ((traffic != 0)? "교통 " + std::to_string(traffic) + "%, " : "") 
             + ((oil != 0)? "주유 " + std::to_string(oil) + "%, " : "") 
             + ((food != 0)? "푸드 " + std::to_string(food) + "%, " : "") 
             + ((hospital != 0)? "병원 " + std::to_string(hospital) + "%, " : "") 
             + ((trip != 0)? "여행 " + std::to_string(trip) + "% " : "") + "\n"
-            + "=========================================================================================\n";
+            + "====================================================\n";
 
         write(clnt_sock, res.c_str(), res.length());
     }
@@ -298,15 +300,15 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        res = "=========================================================================================\n" 
-              "번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
+        res = "====================================================\n" 
+              "카드번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
             + "이름: " + card_name + " // " + "연회비: " + std::to_string(anufee) + "\n"
             + "할인혜택: " + ((traffic != 0)? "교통 " + std::to_string(traffic) + "%, " : "") 
             + ((oil != 0)? "주유 " + std::to_string(oil) + "%, " : "") 
             + ((food != 0)? "푸드 " + std::to_string(food) + "%, " : "") 
             + ((hospital != 0)? "병원 " + std::to_string(hospital) + "%, " : "") 
             + ((trip != 0)? "여행 " + std::to_string(trip) + "% " : "") + "\n"
-            + "=========================================================================================\n";
+            + "====================================================\n";
 
         write(clnt_sock, res.c_str(), res.length());
     }
@@ -324,15 +326,15 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        res = "=========================================================================================\n" 
-              "번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
+        res = "====================================================\n" 
+              "카드번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
             + "이름: " + card_name + " // " + "연회비: " + std::to_string(anufee) + "\n"
             + "할인혜택: " + ((traffic != 0)? "교통 " + std::to_string(traffic) + "%, " : "") 
             + ((oil != 0)? "주유 " + std::to_string(oil) + "%, " : "") 
             + ((food != 0)? "푸드 " + std::to_string(food) + "%, " : "") 
             + ((hospital != 0)? "병원 " + std::to_string(hospital) + "%, " : "") 
             + ((trip != 0)? "여행 " + std::to_string(trip) + "% " : "") + "\n"
-            + "=========================================================================================\n";
+            + "====================================================\n";
 
         write(clnt_sock, res.c_str(), res.length());
     }
@@ -349,15 +351,15 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        res = "=========================================================================================\n" 
-              "번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
+        res = "====================================================\n" 
+              "카드번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
             + "이름: " + card_name + " // " + "연회비: " + std::to_string(anufee) + "\n"
             + "할인혜택: " + ((traffic != 0)? "교통 " + std::to_string(traffic) + "%, " : "") 
             + ((oil != 0)? "주유 " + std::to_string(oil) + "%, " : "") 
             + ((food != 0)? "푸드 " + std::to_string(food) + "%, " : "") 
             + ((hospital != 0)? "병원 " + std::to_string(hospital) + "%, " : "") 
             + ((trip != 0)? "여행 " + std::to_string(trip) + "% " : "") + "\n"
-            + "=========================================================================================\n";
+            + "====================================================\n";
 
         write(clnt_sock, res.c_str(), res.length());
     }
@@ -375,15 +377,15 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        res = "=========================================================================================\n" 
-              "번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
+        res = "====================================================\n" 
+              "카드번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
             + "이름: " + card_name + " // " + "연회비: " + std::to_string(anufee) + "\n"
             + "할인혜택: " + ((traffic != 0)? "교통 " + std::to_string(traffic) + "%, " : "") 
             + ((oil != 0)? "주유 " + std::to_string(oil) + "%, " : "") 
             + ((food != 0)? "푸드 " + std::to_string(food) + "%, " : "") 
             + ((hospital != 0)? "병원 " + std::to_string(hospital) + "%, " : "") 
             + ((trip != 0)? "여행 " + std::to_string(trip) + "% " : "") + "\n"
-            + "=========================================================================================\n";
+            + "====================================================\n";
 
         write(clnt_sock, res.c_str(), res.length());
     }
@@ -401,15 +403,15 @@ public:
     virtual void show_card() const
     {
         std::string res;
-        res = "=========================================================================================\n" 
-              "번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
+        res = "====================================================\n" 
+              "카드번호: " + std::to_string(card_num) + " // " + ((check_or_credit)? "신용카드" : "체크카드")  + " // " + brand_name + "\n"
             + "이름: " + card_name + " // " + "연회비: " + std::to_string(anufee) + "\n"
             + "할인혜택: " + ((traffic != 0)? "교통 " + std::to_string(traffic) + "%, " : "") 
             + ((oil != 0)? "주유 " + std::to_string(oil) + "%, " : "") 
             + ((food != 0)? "푸드 " + std::to_string(food) + "%, " : "") 
             + ((hospital != 0)? "병원 " + std::to_string(hospital) + "%, " : "") 
             + ((trip != 0)? "여행 " + std::to_string(trip) + "% " : "") + "\n"
-            + "=========================================================================================\n";
+            + "====================================================\n";
 
         write(clnt_sock, res.c_str(), res.length());
     }
@@ -420,18 +422,393 @@ class CardHandler
 {
 private:
     std::vector<Card*> cards_v;
+    int clnt_sock;
+    std::unique_ptr<sql::Connection> &conn;
     
 public:
-    CardHandler() {};
+    CardHandler(int clnt_sock, std::unique_ptr<sql::Connection> &conn)  : clnt_sock(clnt_sock), conn(conn)
+    {};
 
-    void db_conect()
+    void put_in_card()
     {
-        
+        // 새로운 Statement 생성
+        std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
+        // 쿼리 실행
+        sql::ResultSet *res = stmnt->executeQuery("select * from BASECARD A JOIN BENEFITS B ON A.CARDNUM = B.BENEFITNUM");
+        // 결과를 반복하면서 값 입력
+        while (res->next()) 
+        {
+            int cardNum = res->getInt(1);
+            std::string cardName = std::string(res->getString(2));  
+            int anuFee = res->getInt(3);
+            int checkOrCredit = res->getInt(4);
+            std::string cardBrand = std::string(res->getString(5)); 
+            int cardBrandInt = res->getInt(6);
+            int traffic = res->getInt(8);
+            int oil = res->getInt(9);
+            int food = res->getInt(10);
+            int hospital = res->getInt(11);
+            int trip = res->getInt(12);
+
+            // 카드사별 Card 객체 생성 후 벡터에 추가
+            // enum {SINHAN = 1, KB, NH, SAMSUNG, WOORI, HANA};
+            switch (cardBrandInt)
+            {
+            case SINHAN:
+                cards_v.emplace_back(new SinhanCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                break;
+            case KB:
+                cards_v.emplace_back(new KBCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                break;
+            case NH:
+                cards_v.emplace_back(new NHCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                break;
+            case SAMSUNG:
+                cards_v.emplace_back(new SamsungCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                break;
+            case WOORI:
+                cards_v.emplace_back(new WooriCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                break;
+            case HANA:
+                cards_v.emplace_back(new HanaCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                break;
+            default:
+                break;
+            }
+        }
     }
 
-    ~CardHandler() {};
+    void show_all_card()
+    {
+        for (Card* card : cards_v)
+        {
+            card->show_card();
+        }
+    }
 
+    void detailed_card_search()
+    {
+        char msg[BUF_SIZE];
+        int choice_arr[7] = {0,};
+        int choice, i;
+        bool check;
+        std::string brand_str = "선택안함";
+        std::string credit_chk_str = "선택안함";
+        std::string anufee_str = "선택안함";
+        std::string benefit1_str = "선택안함";
+        std::string benefit2_str = "선택안함";
+        std::string benefit3_str = "선택안함";
+        std::string benefit4_str = "선택안함";
+        std::string f_str;
 
+        f_str = "=============================================================================\n"
+                "[1] 카드회사: 선택안함 // [2] 신용/체크카드: 선택안함 // [3] 연회비: 선택안함\n"
+                "[4] 혜택 1: 선택안함 // [5] 혜택 2: 선택안함 // [6] 혜택 3: 선택안함 // [7] 혜택 4: 선택안함\n"
+                "=============================================================================\n"
+                "[8] 검색하기\n";
+        
+        while (true)
+        {
+            write(clnt_sock, "세부 조건을 선택해서 검색하세요\n", strlen("세부 조건을 선택해서 검색하세요\n"));
+            write(clnt_sock, f_str.c_str(), f_str.length());
+            
+            memset(msg, 0, sizeof(msg));
+            read(clnt_sock, msg, sizeof(msg));
+            choice = atoi(msg);
+            
+            switch (choice)
+            {
+            case 1:
+                write(clnt_sock, "1.신한 // 2.국민 // 3.농협 // 4.삼성 // 5.우리 // 6.하나\n", strlen("1.신한 // 2.국민 // 3.농협 // 4.삼성 // 5.우리 // 6.하나\n"));
+                memset(msg, 0, sizeof(msg));
+                read(clnt_sock, msg, sizeof(msg));
+                if (strcmp(msg, "1") == 0 || strcmp(msg, "신한") == 0)
+                {
+                    brand_str = "신한카드";
+                    choice_arr[0] = 1;
+                }
+                else if (strcmp(msg, "2") == 0 || strcmp(msg, "국민") == 0)
+                {
+                    brand_str = "국민카드";
+                    choice_arr[0] = 2;
+                }
+                else if (strcmp(msg, "3") == 0 || strcmp(msg, "농협") == 0)
+                {
+                    brand_str = "농협카드";
+                    choice_arr[0] = 3;
+                }
+                else if (strcmp(msg, "4") == 0 || strcmp(msg, "삼성") == 0)
+                {   
+                    brand_str = "삼성카드";
+                    choice_arr[0] = 4;
+                }
+                else if (strcmp(msg, "5") == 0 || strcmp(msg, "우리") == 0)
+                {
+                    brand_str = "우리카드";
+                    choice_arr[0] = 5;
+                }
+                else if (strcmp(msg, "6") == 0 || strcmp(msg, "하나") == 0)
+                {
+                    brand_str = "하나카드";
+                    choice_arr[0] = 6;
+                }
+                else
+                {
+                    write(clnt_sock, "다시 입력하세요.\n", strlen("다시 입력하세요.\n"));
+                }
+                break;
+            case 2:
+                write(clnt_sock, "1. 체크카드 // 2. 신용카드\n", strlen("1. 체크카드 // 2. 신용카드\n"));
+                memset(msg, 0, sizeof(msg));
+                read(clnt_sock, msg, sizeof(msg));
+                if (strcmp(msg, "1") == 0 || strcmp(msg, "체크카드") == 0)
+                {
+                    credit_chk_str = "체크카드";
+                    choice_arr[1] = 1;
+                }
+                else if (strcmp(msg, "2") == 0 || strcmp(msg, "신용카드") == 0)
+                {
+                    credit_chk_str = "신용카드";
+                    choice_arr[1] = 2;
+                }
+                else
+                {
+                    write(clnt_sock, "다시 입력하세요.\n", strlen("다시 입력하세요.\n"));
+                }
+                break;
+            case 3:
+                write(clnt_sock, "연회비를 입력하세요 (입력한 연회비 이하 검색)\n", strlen("연회비를 입력하세요 (입력한 연회비 이하 검색)\n"));
+                memset(msg, 0, sizeof(msg));
+                read(clnt_sock, msg, sizeof(msg));
+                if (atoi(msg) != 0)
+                {
+                    anufee_str = msg;
+                    choice_arr[2] = atoi(msg);
+                }
+                else
+                {
+                    write(clnt_sock, "다시 입력하세요.\n", strlen("다시 입력하세요.\n"));
+                }
+                break;
+            case 4:
+                input_benefit(msg, benefit1_str, choice_arr, 3);
+                break;
+            case 5:
+                if (choice_arr[3] == 0)
+                {
+                    write(clnt_sock, "혜택을 순서대로 선택하세요.\n", strlen("혜택을 순서대로 선택하세요.\n"));
+                    continue;
+                }
+                input_benefit(msg, benefit2_str, choice_arr, 4);
+                break;
+            case 6:
+                if (choice_arr[4] == 0)
+                {
+                    write(clnt_sock, "혜택을 순서대로 선택하세요.\n", strlen("혜택을 순서대로 선택하세요.\n"));
+                    continue;
+                }
+                input_benefit(msg, benefit3_str, choice_arr, 5);
+                break;
+            case 7:
+                if (choice_arr[5] == 0)
+                {
+                    write(clnt_sock, "혜택을 순서대로 선택하세요.\n", strlen("혜택을 순서대로 선택하세요.\n"));
+                    continue;
+                }
+                input_benefit(msg, benefit4_str, choice_arr, 6);
+                break;
+            case 8:
+                check = false;
+                for (i = 0; i < 7; i++)
+                {
+                    if (choice_arr[i] != 0)
+                    {
+                        check = true;
+                        break;
+                    }
+                }
+                if (check == true)
+                {
+                    detail_search(choice_arr);
+                    return;
+                }
+                else
+                {
+                    write(clnt_sock, "적어도 하나의 조건은 선택해야 합니다.\n", strlen("적어도 하나의 조건은 선택해야 합니다.\n"));
+                    continue;
+                }
+                break;
+            default:
+                write(clnt_sock, "다시 입력하세요.\n", strlen("다시 입력하세요.\n"));
+                break;
+            }
+            f_str = "\n=============================================================================\n"
+                    "[1] 카드회사: " + brand_str + " // [2] 신용/체크카드: " + credit_chk_str + " // [3] 연회비: " + anufee_str + " 이하\n"
+                    "[4] 혜택 1: " + benefit1_str + "// [5] 혜택 2: " + benefit2_str + " // [6] 혜택 3: " + benefit3_str + " // [7] 혜택 4: " + benefit4_str + "\n"
+                    "=============================================================================\n"
+                    "[8] 검색하기\n";
+        }
+    }
+
+    bool array_check(int choice_arr[], int index)
+    {
+        if (choice_arr[index] == 0) 
+        {
+            return false;
+        }
+
+        for (int i = 0; i < 7; i++) 
+        {
+            if (i != index && choice_arr[i] != 0) {
+                return false;  
+            }
+        }
+        return true;  // index 번째 요소만 0이 아니고 나머지는 모두 0일 때 true
+    }
+
+    void detail_search(int choice_arr[])
+    {
+        int e1 = choice_arr[0];
+        int e2 = choice_arr[1];
+        int e3 = choice_arr[2];
+        int e4 = choice_arr[3];
+        int e5 = choice_arr[4];
+        int e6 = choice_arr[5];
+        int e7 = choice_arr[6];
+
+        if (array_check(choice_arr, 0))
+        {
+            for (Card* card : cards_v)
+            {
+                if (e1 == card->get_bint())
+                {
+                    card->show_card();
+                }
+            }
+            return;
+        }
+        if (array_check(choice_arr, 1))
+        {
+            for (Card* card : cards_v)
+            {
+                if (e2-1 == card->get_cchk())
+                {
+                    card->show_card();
+                }
+            }
+            return;
+        }
+        if (array_check(choice_arr, 2))
+        {
+            for (Card* card : cards_v)
+            {
+                if (e3 >= card->get_anufee())
+                {
+                    card->show_card();
+                }
+            }
+            return;
+        }
+        if (array_check(choice_arr, 3))
+        {
+            for (Card* card : cards_v)
+            {
+                if (e4 == 1 && card->get_traffic() > 0)
+                {
+                    card->show_card();
+                }
+                else if (e4 == 2 && card->get_oil() > 0)
+                {
+                    card->show_card();
+                }
+                else if (e4 == 3 && card->get_food() > 0)
+                {
+                    card->show_card();
+                }
+                else if (e4 == 4 && card->get_hospital() > 0)
+                {
+                    card->show_card();
+                }
+                else if (e4 == 5 && card->get_trip() > 0)
+                {
+                    card->show_card();
+                }
+            }
+            return;
+        }
+
+    }
+
+    void check_show_benefit()
+    {
+        for (Card* card : cards_v)
+        {
+            if (e4 == 1 && card->get_traffic() > 0)
+            {
+                card->show_card();
+            }
+            else if (e4 == 2 && card->get_oil() > 0)
+            {
+                card->show_card();
+            }
+            else if (e4 == 3 && card->get_food() > 0)
+            {
+                card->show_card();
+            }
+            else if (e4 == 4 && card->get_hospital() > 0)
+            {
+                card->show_card();
+            }
+            else if (e4 == 5 && card->get_trip() > 0)
+            {
+                card->show_card();
+            }
+        }
+    }
+
+    void input_benefit(char *msg, std::string& benefit_str, int choice_arr[], int index)
+    {
+        write(clnt_sock, "1. 교통 // 2. 주유 // 3. 푸드 // 4. 병원 // 5. 여행\n", strlen("1. 교통 // 2. 주유 // 3. 푸드 // 4. 병원 // 5. 여행\n"));
+        memset(msg, 0, sizeof(msg));
+        read(clnt_sock, msg, sizeof(msg));
+        if (strcmp(msg, "1") == 0 || strcmp(msg, "교통") == 0)
+        {
+            benefit_str = "교통";
+            choice_arr[index] = 1;
+        }
+        else if (strcmp(msg, "2") == 0 || strcmp(msg, "주유") == 0)
+        {
+            benefit_str = "주유";
+            choice_arr[index] = 2;
+        }
+        else if (strcmp(msg, "3") == 0 || strcmp(msg, "푸드") == 0)
+        {
+            benefit_str = "푸드";
+            choice_arr[index] = 3;
+        }
+        else if (strcmp(msg, "4") == 0 || strcmp(msg, "병원") == 0)
+        {   
+            benefit_str = "병원";
+            choice_arr[index] = 4;
+        }
+        else if (strcmp(msg, "5") == 0 || strcmp(msg, "여행") == 0)
+        {
+            benefit_str = "여행";
+            choice_arr[index] = 5;
+        }
+        else
+        {
+            write(clnt_sock, "다시 입력하세요.\n", strlen("다시 입력하세요.\n"));
+        }
+    }
+
+    ~CardHandler() 
+    {
+        for (Card* card : cards_v)
+        {
+            delete card;
+        }
+    };
 };
 
 
@@ -496,9 +873,6 @@ void handle_clnt(int clnt_sock)
     write(clnt_sock, "카추추에 오신걸 환영합니다\n", strlen("카추추에 오신걸 환영합니다\n"));
     while (true)
     {
-        // str_len = read(clnt_sock, msg, sizeof(msg));
-        // database(clnt_sock, msg);
-
         write(clnt_sock, "\n1. 로그인  2. 회원가입  3. 회원탈퇴\n", strlen("\n1. 로그인  2. 회원가입  3. 회원탈퇴\n"));
         memset(msg, 0, sizeof(msg));
         str_len = read(clnt_sock, msg, sizeof(msg));
@@ -535,30 +909,88 @@ void handle_clnt(int clnt_sock)
             continue;
         }
     }
-    
+    // ============================== DB 연결 =====================================
+    sql::Driver* driver = sql::mariadb::get_driver_instance();
+    sql::SQLString url("jdbc:mariadb://10.10.20.111:3306/todo");
+    sql::Properties properties({{"user", "asd"}, {"password", "1234"}});
+    std::unique_ptr<sql::Connection> conn(driver->connect(url, properties));
+    // ============================================================================
+    CardHandler card_handler(clnt_sock, conn);
+    card_handler.put_in_card();
 
-    while (true) // 해당 클라이언트가 접속종료했을때
+    while (true) // 카드 추천 기능
     {
+        write(clnt_sock, "\n1. 카드전체 목록보기  2. 카드검색  3. 카드추천  4. 카드생성  5. 프로그램 종료\n\n", strlen("\n1. 카드전체 목록보기  2. 카드검색  3. 카드추천  4. 카드생성  5. 프로그램 종료\n\n"));
+        memset(msg, 0, sizeof(msg));
         str_len = read(clnt_sock, msg, sizeof(msg));
+        
         if (str_len == 0)
         {
             std::lock_guard<std::mutex> lock(mutx);
             clnt_socks.remove(clnt_sock);  // 리스트에서 해당 소켓 제거
             close(clnt_sock);
         }
-        
-        database(clnt_sock, msg);
+
+        choice = atoi(msg);
+        if (choice == 1) // 카드 전체보기
+        {
+            card_handler.show_all_card();
+            continue;
+        }
+        else if (choice == 2) // 카드 검색
+        {
+            while (true)
+            {
+                write(clnt_sock, "1. 카드사별 검색  2. 카드혜택별 검색  3. 세부 검색  4. 뒤로가기\n\n", strlen("1. 카드사별 검색  2. 카드혜택별 검색  3. 세부 검색  4. 뒤로가기\n\n"));
+                memset(msg, 0, sizeof(msg));
+                read(clnt_sock, msg, sizeof(msg));
+                choice = atoi(msg);
+                if (choice == 1) // 카드사별 검색
+                {
+ 
+                }
+                else if (choice == 2) // 카드혜택별 검색
+                {
+
+                }
+                else if (choice == 3) // 세부 검색
+                {
+                    card_handler.detailed_card_search();
+                } 
+                else if (choice == 4)
+                {
+                    break;
+                }
+                else
+                {
+                    write(clnt_sock, "다시 입력하세요.\n", strlen("다시 입력하세요.\n"));
+                    continue;
+                }
+            }
+            
+        }
+        else if (choice == 3) // 카드 추천
+        {
+
+        }
+        else if (choice == 4) // 카드 생성
+        {
+
+        }
+        else if (choice == 5) // 프로그램 종료
+        {
+            std::lock_guard<std::mutex> lock(mutx);
+            write(clnt_sock, "&close&", strlen("&close&"));
+            clnt_socks.remove(clnt_sock);  // 리스트에서 해당 소켓 제거
+            close(clnt_sock);
+        }
+        else
+        {
+            write(clnt_sock, "잘못 입력하셨습니다.\n", strlen("잘못 입력하셨습니다.\n"));
+            continue;
+        }
 
 
-
-
-
-
-
-
-
-
-        // send_msg(msg, str_len);
     }
 
 
@@ -591,80 +1023,110 @@ void database(int clnt_sock, char *msg)
 	std::vector<std::string> tokens;
 
 	std::string token;
-	while (iss >> token) { // 공백을 기준으로 단어를 읽어옴
+	while (iss >> token) 
+    { 
+        // 공백을 기준으로 단어를 읽어옴
 		tokens.push_back(token); // 벡터에 추가
-	}
-    if (tokens[0]== "/s")  // 문자열이 '/s'와 같은지 비교
+    }
+    if (tokens[0] == "/s")  // 문자열이 '/s'와 같은지 비교
     {
         showTasks(conn);  // '/s'를 입력하면 showTasks 호출
     }
-	else if (strcmp(msg, "/m") == 0)
-	{
-
-
-		cardselect(conn, tokens[1]);
-	}
+    else if (tokens[0] == "/m")
+    {
+        Brandselect(conn, tokens[1]);
+    }
+    else if (tokens[0] == "/b")
+    {
+        strtok(msg, " ");
+        char *msg0 = strtok(NULL, "\0");
+        std::string msg2 = msg0;
+        Benefitselect(conn, msg2);
+    }
+    
 }
-void cardselect(std::unique_ptr<sql::Connection> &conn, std::string msg)
+
+void Benefitselect(std::unique_ptr<sql::Connection> &conn, std::string msg)
+{
+	std::vector<Card> BrandCards;
+    std::string beneifit;
+    std::string asd = "";
+    try 
+    {
+        std::istringstream iss(msg);
+        std::vector<std::string> tokenss;
+
+        std::string token;
+        for (int i = 0; i < 4 && iss >> token; i++) 
+        { 
+            // 공백을 기준으로 단어를 읽어옴
+            tokenss.push_back(token); // 벡터에 추가
+            asd += " c." +tokenss[i]+ " DESC,";
+
+        }
+
+        // std::vector<std::string> parts = split(msg, ' ');
+
+        asd.pop_back();
+        std::cout << asd << std::endl;
+        std::string query = "SELECT b.CARDNAME, b.ANUFEE, b.`CHECK/CREDIT`, b.CARDBRAND, "
+        "b.CARDBRANDINT, c.`교통`, c.`주유`,c.`푸드`,c.병원 ,c.여행 "
+        "FROM BASECARD AS b JOIN BENEFITS AS c ON b.CARDNUM = c.BENEFITNUM "
+        "ORDER BY"+asd+ " LIMIT 10;";
+        std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement(query));
+      
+        sql::ResultSet *res = stmnt->executeQuery();
+		
+	
+        // 결과를 반복하면서 출력
+        while (res->next()) 
+        {
+            std::cout << std::string(res->getString(1)) << std::endl;
+            std::cout << res->getInt(2) << std::endl;
+            std::cout << res->getInt(3) << std::endl;
+            std::cout << std::string(res->getString(4)) << std::endl;
+            std::cout << res->getInt(6) << std::endl;
+            std::cout << res->getInt(7) << std::endl;
+            std::cout << res->getInt(8)<< std::endl;
+            std::cout << res->getInt(9)<< std::endl;
+            std::cout << res->getInt(10)<< std::endl;
+        }
+		
+    }
+    catch(sql::SQLException& e)
+    {
+        std::cerr << "작업 조회 중 오류: " << e.what() << std::endl;
+    }
+	
+}
+void Brandselect(std::unique_ptr<sql::Connection> &conn, std::string msg)
 {
 	std::vector<Card> BrandCards;
     try 
     {
-        // Create a new PreparedStatement
-        std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement(
-		"SELECT CARDNAME, ANUFEE, CHECK/CREDIT, CARDBRAND, CARDBRANDINT, 교통, 주유, 푸드, 병원, 여행 "
-		"FROM todo.? AS a "
-		"JOIN todo.BASECARD AS b ON a.BRANDNUM = b.CARDNUM "
-		"JOIN BENEFITS AS c ON b.CARDNUM = c.BENEFITNUM;"
-		));
-        // Bind values to SQL statement
-        stmnt->setString(1, msg);
-
-        // Execute query
-        // stmnt->executeQuery();
-		
-		// 쿼리 실행
-        // "select * from BASECARD A JOIN BENEFITS B ON A.CARDNUM = B.BENEFITNUM"
+        std::string query = "SELECT CARDNAME, ANUFEE, `CHECK/CREDIT`, CARDBRAND, CARDBRANDINT, 교통, 주유, 푸드, 병원, 여행 "
+                    "FROM " + msg + " AS a "
+                    "JOIN todo.BASECARD AS b ON a.BRANDNUM = b.CARDNUM "
+                    "JOIN BENEFITS AS c ON b.CARDNUM = c.BENEFITNUM;";
+        std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement(query));
+      
         sql::ResultSet *res = stmnt->executeQuery();
+		
+	
         // 결과를 반복하면서 출력
         while (res->next()) 
         {
-            std::string cardName = std::string(res->getString(1));  
-            int anuFee = res->getInt(2);
-            int checkOrCredit = res->getInt(3);
-            std::string cardBrand = std::string(res->getString(4)); 
-            int cardBrandInt = res->getInt(5);
-            int traffic = res->getInt(7);
-            int oil = res->getInt(8);
-            int food = res->getInt(9);
-            int hospital = res->getInt(10);
-            int trip = res->getInt(11);
-            // BaseCard 객체 생성 후 벡터에 추가
-			BrandCards.emplace_back(1, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, 0);
-           
+            std::cout << std::string(res->getString(1)) << std::endl;
+            std::cout << res->getInt(2) << std::endl;
+            std::cout << res->getInt(3) << std::endl;
+            std::cout << std::string(res->getString(4)) << std::endl;
+            std::cout << res->getInt(6) << std::endl;
+            std::cout << res->getInt(7) << std::endl;
+            std::cout << res->getInt(8)<< std::endl;
+            std::cout << res->getInt(9)<< std::endl;
+            std::cout << res->getInt(10)<< std::endl;
         }
-		for (const auto& card : BrandCards) 
-        {
-
-            // int card_num; // 카드 일련번호
-            // std::string card_name; // 카드 이름
-            // int anufee; // 카드 연회비
-            // bool check_or_credit; // 신용, 체크카드 여부
-            // std::string brand_name;
-            // int brand_int;
-            std::cout << "CARDNUM = " << card.get_cnum() << "\n";
-            std::cout << "CARDNAME = " << card.get_cname() << "\n";
-            std::cout << "ANUFEE = " << card.get_anufee() << "\n";
-            std::cout << "CHECK/CREDIT = " << card.get_cchk() << "\n";
-            std::cout << "CARDBRAND = " << card.get_bname() << "\n";
-            std::cout << "CARDBRANDINT = " << card.get_bint() << "\n";
-            std::cout << "TRAFFIC = " << card.get_traffic() << "\n";
-            std::cout << "OIL = " << card.get_oil() << "\n";
-            std::cout << "FOOD = " << card.get_food() << "\n";
-            std::cout << "HOSPITAL = " << card.get_hospital() << "\n";
-            std::cout << "TRIP = " << card.get_trip() << "\n";
-            std::cout << "---------------------------" << std::endl;
-        }
+		
     }
     catch(sql::SQLException& e)
     {
@@ -736,3 +1198,27 @@ void error_handling(const char* msg)
     std::cerr << msg << std::endl;
     exit(1);
 }
+
+
+// 문자열을 구분자로 분리하는 함수
+std::vector<std::string> split(const std::string &str, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::stringstream ss(str);
+    std::string token;
+    while (std::getline(ss, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+
+// 여기는 메인에서
+// while (std::getline(ss, line))
+// {
+//     if (!line.empty())
+//     {
+//         std::vector<std::string> parts = split(line, ' ');
+//     }
+// }

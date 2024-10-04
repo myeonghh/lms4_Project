@@ -9,7 +9,7 @@
 #include <thread>
 #include <mutex>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 1000
 
 void* send_msg(void* arg);
 void* recv_msg(void* arg);
@@ -61,16 +61,16 @@ void* send_msg(void* arg)
     {
         std::getline(std::cin, msg);
 
-        // if (msg == "/q" || msg == "/Q")
-        // {
-        //     close(sock);
-        //     exit(0);
-        // }
+        if (msg == "/q" || msg == "/Q")
+        {
+            close(sock);
+            exit(0);
+        }
 
         // Send message to the server
         if (write(sock, msg.c_str(), msg.size()) == -1)
         {
-            std::lock_guard<std::mutex> lock(mtx);
+            //std::lock_guard<std::mutex> lock(mtx);
             std::cerr << "write() error\n";
         }
     }
@@ -82,39 +82,26 @@ void* recv_msg(void* arg)
     int sock = *((int*)arg);
     char msg[BUF_SIZE];
 
-    while (true) 
-    {  
-        int str_len = read(sock, msg, sizeof(msg) - 1);
-
-        if (str_len > 0) 
-        { 
-            msg[str_len] = '\0'; 
-            std::string message = msg;
-
-            if (message == "&close&") // 프로그램 종료 선택했을때
-            {
-                close(sock);
-                exit(0);
-            }
-
-            size_t pos = 0;  
-            while ((pos = message.find("&clear&")) != std::string::npos) 
-            { 
-                std::cout << message.substr(0, pos);
-                system("clear");
-                message = message.substr(pos + 7);
-            }
-
-            if (!message.empty()) {
-                std::cout << message;  // 처리 후 남은 메시지를 출력
-            }
+    while (true)
+    {
+        memset(msg, 0, BUF_SIZE);
+        int str_len = read(sock, msg, BUF_SIZE);
+        if (str_len == -1)
+        {
+            //std::lock_guard<std::mutex> lock(mtx);
+            std::cerr << "read() error\n";
+            return (void*)-1;
         }
+
+        // Output the message received from the server
+        std::cout << msg;
     }
+
     return nullptr;
 }
 
 void error_handling(const std::string& msg)
 {
-    std::cerr << msg;
+    std::cerr << msg << std::endl;
     exit(1);
 }
