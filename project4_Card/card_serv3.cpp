@@ -422,6 +422,7 @@ class CardHandler
 {
 private:
     std::vector<Card*> cards_v;
+    std::vector<Card*> copy_v;
     int clnt_sock;
     std::unique_ptr<sql::Connection> &conn;
     
@@ -478,7 +479,7 @@ public:
         }
     }
 
-    std::vector<Card*>& put_in_card(std::vector<Card*> vector)
+    void put_in_card2()
     {
         // 새로운 Statement 생성
         std::unique_ptr<sql::Statement> stmnt(conn->createStatement());
@@ -504,29 +505,27 @@ public:
             switch (cardBrandInt)
             {
             case SINHAN:
-                vector.emplace_back(new SinhanCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                copy_v.emplace_back(new SinhanCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
                 break;
             case KB:
-                vector.emplace_back(new KBCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                copy_v.emplace_back(new KBCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
                 break;
             case NH:
-                vector.emplace_back(new NHCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                copy_v.emplace_back(new NHCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
                 break;
             case SAMSUNG:
-                vector.emplace_back(new SamsungCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                copy_v.emplace_back(new SamsungCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
                 break;
             case WOORI:
-                vector.emplace_back(new WooriCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                copy_v.emplace_back(new WooriCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
                 break;
             case HANA:
-                vector.emplace_back(new HanaCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
+                copy_v.emplace_back(new HanaCard(cardNum, cardName, anuFee, checkOrCredit, cardBrand, cardBrandInt, traffic, oil, food, hospital, trip, clnt_sock));
                 break;
             default:
                 break;
             }
         }
-
-        return vector;
     }
 
     void show_all_card()
@@ -719,14 +718,14 @@ public:
 
     void detail_search(int choice_arr[])
     {
-        std::vector<Card*> copy_v;
-        copy_v = put_in_card(copy_v);
+        put_in_card2();
+        std::cout<<"여기야"<<std::endl;
 
         for (Card* card : copy_v)
         {
             card->show_card();
         }
-
+        std::cout<<"여기야!!!!!!!!!!!!!"<<std::endl;
         int e1 = choice_arr[0];
         int e2 = choice_arr[1];
         int e3 = choice_arr[2];
@@ -735,11 +734,65 @@ public:
         int e6 = choice_arr[5];
         int e7 = choice_arr[6];
 
-        
+            // 카드사 필터링
+        if (e1 > 0) {
+            int cardBrand = choice_arr[0];
+            copy_v.erase(
+                std::remove_if(copy_v.begin(), copy_v.end(),
+                            [cardBrand](Card* card) { return card->get_bint() != cardBrand; }),
+                copy_v.end());
+        }
+
+        // 체크/신용카드 필터링
+        if (e2 > 0) {
+            int cardType = choice_arr[1];
+            copy_v.erase(
+                std::remove_if(copy_v.begin(), copy_v.end(),
+                            [cardType](Card* card) { return card->get_cchk() != cardType - 1; }),
+                copy_v.end());
+        }
+
+        // 연회비 필터링
+        if (e3 > 0) {
+            int maxAnuFee = choice_arr[2];
+            copy_v.erase(
+                std::remove_if(copy_v.begin(), copy_v.end(),
+                            [maxAnuFee](Card* card) { return card->get_anufee() > maxAnuFee; }),
+                copy_v.end());
+        }
+
+        // 혜택 필터링
+        for (int i = 3; i <= 6; ++i) {
+            if (array_check(choice_arr, i)) {
+                int benefitType = choice_arr[i];
+                copy_v.erase(
+                    std::remove_if(copy_v.begin(), copy_v.end(),
+                                [benefitType](Card* card) {
+                                    switch (benefitType) {
+                                        case 1: return card->get_traffic() <= 0;
+                                        case 2: return card->get_oil() <= 0;
+                                        case 3: return card->get_food() <= 0;
+                                        case 4: return card->get_hospital() <= 0;
+                                        case 5: return card->get_trip() <= 0;
+                                        default: return true; // 알 수 없는 혜택
+                                    }
+                                }),
+                    copy_v.end());
+            }
+        }
+
+        // 필터링된 카드 출력
+        for (Card* card : copy_v) {
+            card->show_card(); // 클라이언트에 카드 정보를 보여주기
+        }
+
+
+
         for (Card* card : copy_v)
         {
             delete card;
         }
+        copy_v.clear();
     }
 
   
