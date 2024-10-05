@@ -55,6 +55,8 @@
         "thread": "cpp",
         "list": "cpp",
         "sstream": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "unordered_set": "cpp",
+        "iomanip": "cpp"
     }
 }

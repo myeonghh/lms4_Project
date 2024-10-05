@@ -2,6 +2,14 @@
 #include <cstring>
 #include <mariadb/conncpp.hpp>
 
+
+// ============================== DB 연결 =====================================
+sql::Driver* driver = sql::mariadb::get_driver_instance();
+sql::SQLString url("jdbc:mariadb://10.10.20.111:3306/todo");
+sql::Properties properties({{"user", "asd"}, {"password", "1234"}});
+std::unique_ptr<sql::Connection> conn(driver->connect(url, properties));
+// ============================================================================
+
 // Delete a task record (indicated by id)
 // 미리 문장을 준비시키고 (prepareStatement),?자리에 변수를 대입시킨다.
 // executeQuery() 마리아디비 로 쿼리를 문자열로 보내실행 시킨다. 
