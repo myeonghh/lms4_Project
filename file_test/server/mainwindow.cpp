@@ -299,21 +299,22 @@ void MainWindow::sendMessage(QTcpSocket* socket)
     {
         if(socket->isOpen())
         {
-            // ui에서 입력할 message를 가져와
+            // 1. ui에서 입력할 message를 가져와
             QString str = ui->lineEdit_message->text();
 
-            // stream으로 보내는데
+            // 2. stream으로 보내는데
             QDataStream socketStream(socket);
             socketStream.setVersion(QDataStream::Qt_5_15);
 
-            // 헤더 부분에 fileType을 message로 설정한다.
+            // 3. 헤더 부분에 fileType을 message로 설정한다.
             QByteArray header;
             header.prepend(QString("fileType:message,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
             header.resize(128);
 
-            // message 인코딩 설정하고, QByteArray에 할당하고
+            // 1.2 message 인코딩 설정하고, QByteArray에 할당하고
             QByteArray byteArray = str.toUtf8();
-            // header 정보를 앞에 넣어준다.
+
+            // 3.2 header 정보를 앞에 넣어준다.
             byteArray.prepend(header);
 
             // stream으로 byteArray 정보 전송
@@ -341,18 +342,19 @@ void MainWindow::sendAttachment(QTcpSocket* socket, QString filePath)
                 QFileInfo fileInfo(m_file.fileName());
                 QString fileName(fileInfo.fileName());
 
-                // stream으로 보내는데
+                // 2. stream으로 보내는데
                 QDataStream socketStream(socket);
                 socketStream.setVersion(QDataStream::Qt_5_15);
 
-                // 헤더 부분에 fileType을 attachment로 설정한다.
+                // 3. 헤더 부분에 fileType을 attachment로 설정한다.
                 QByteArray header;
                 header.prepend(QString("fileType:attachment,fileName:%1,fileSize:%2;").arg(fileName).arg(m_file.size()).toUtf8());
                 header.resize(128);
 
-                // QByteArray에 file을 byte로 할당하고
+                // 1.2 QByteArray에 file을 byte로 할당하고
                 QByteArray byteArray = m_file.readAll();
-                // header 정보를 앞에 넣어준다.
+
+                // 3.1 header 정보를 앞에 넣어준다.
                 byteArray.prepend(header);
 
                 // stream으로 byteArray 정보 전송
