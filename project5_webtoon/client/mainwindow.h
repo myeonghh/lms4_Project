@@ -28,6 +28,7 @@ public:
     ~MainWindow();
 
 private:
+    enum TYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket* m_socket;
@@ -35,6 +36,7 @@ private:
 
 signals:
     void signal_newMessage(QString);
+    void operate_signal(bool);
 
 private slots:
     void slot_discardSocket();
@@ -43,6 +45,7 @@ private slots:
     void on_pushButton_sendMessage_clicked();
     void on_pushButton_sendAttachment_clicked();
     void slot_displayMessage(const QString& str);
+    void send_message(int type, QString id, QString pw, QString phone_num, QString email);
 };
 
 #endif // MAINWINDOW_H

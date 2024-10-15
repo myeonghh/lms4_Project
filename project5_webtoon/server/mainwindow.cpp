@@ -74,8 +74,9 @@ bool MainWindow::initializeDataBase() // DB 연결 함수
     else
     {
         qDebug() << "연결 성공\n";
+        return true;
     }
-    return true;
+
 }
 
 // [ex.02.3]
@@ -161,121 +162,197 @@ void MainWindow::slot_displayError(QAbstractSocket::SocketError socketError)
 }
 
 // [ex.02.7]
-// 첨부파일 또는 메시지 수신 처리
+// 클라이언트가 보낸 데이터를 소켓을 통해 읽고, 메시지인지 파일인지 확인한 후에 처리하는 함수
 void MainWindow::slot_readSocket()
 {
-    // [ex.02.5.1]
-    // 슬롯 함수가 실행되면, sender()를 통해 signal을 발생시킨 객체를 찾아 return
-    // 이 슬롯(slot_readSocket)은 서버에 연결된 socket의 readyread 시그널에 대한 슬롯으로
-    // 연결 메시지를 보낸 socket을 찾을 수 있다.
+    // [ex.02.7.1]
+    // sender() 함수를 사용하여 데이터를 보낸 소켓(QTcpSocket*)을 찾아서 포인터로 변환.
+    // 이 소켓이 실제로 데이터를 보낸 클라이언트의 소켓.
     QTcpSocket* socket = reinterpret_cast<QTcpSocket*>(sender());
 
-    // QByteArray 타입의 buffer를 만들고
+    // [ex.02.7.2]
+    // 클라이언트로부터 수신한 데이터를 임시로 저장할 QByteArray 타입의 buffer를 생성.
+    // 이 buffer는 나중에 클라이언트로부터 수신한 전체 데이터를 저장하게 됨.
     QByteArray buffer;
 
-    // 서버에 연결된 socket을 stream으로 연결한다.
+    // [ex.02.7.3]
+    // QDataStream을 사용하여 소켓으로부터 데이터를 읽어들임.
+    // 데이터 스트림에서 버전을 설정하는 이유는 서버와 클라이언트가 같은 Qt 버전을 사용해 데이터 형식을 호환하도록 하기 위함.
     QDataStream socketStream(socket);
     socketStream.setVersion(QDataStream::Qt_5_15);
 
-    // stream으로 데이터를 읽어들이고, buffer로 넘기면
+    // 트랜잭션을 시작.
+    //  startTransaction()은 데이터의 완전성을 보장하기 위한 작업으로,  데이터를 읽는 동안 문제가 발생하면 롤백할 수 있음.
     socketStream.startTransaction();
+
+    // 소켓으로부터 데이터를 읽어 buffer에 저장함.
     socketStream >> buffer;
 
-    // stream startTransaction 실행 문제시 에러 표시 후 함수 종료
-    if(!socketStream.commitTransaction())
+    // 데이터를 모두 읽지 못한 경우(예: 데이터가 아직 모두 도착하지 않았을 때) 트랜잭션을 완료하지 않고 데이터를 기다리겠다는 메시지를 출력함.
+    // commitTransaction()은 트랜잭션이 성공적으로 완료되었는지 확인하는 함수.
+    if (!socketStream.commitTransaction())
     {
+        // 소켓의 고유 소켓 디스크립터를 사용해 어떤 소켓이 데이터를 보내는지 식별하고, 대기 중이라는 메시지 시그널 emit.
         QString message = QString("%1 :: Waiting for more data to come..").arg(socket->socketDescriptor());
         emit singal_newMessage(message);
         return;
     }
 
-    // client 에서 보낸 payload(순수한 데이터, 전달 메시지)를
-    // buffer에서 처음 128 byte 부분만 읽어들여서 header 에 담고 fileType을 찾는다.
+    // [ex.02.7.4]
+    // 데이터의 첫 128바이트는 헤더로 사용됨.
+    // 헤더는 전송된 데이터가 메시지인지 파일인지를 구분하는 정보를 포함하고 있음.
+    // mid(0, 128)을 통해 buffer의 처음 128바이트를 추출하여 header 변수에 저장함.
     QString header = buffer.mid(0,128);
+
+    // 헤더를 파싱하여 첫 번째 값인 fileType(데이터 타입: message 또는 attachment)을 확인.
+    // header는 "fileType:attachment,fileName:example.txt,fileSize:1024;" 형식으로 데이터를 담고 있으며,
+    // 이를 콤마(,)와 콜론(:)으로 분리하여 fileType을 추출.
     QString fileType = header.split(",")[0].split(":")[1];
 
-    // buffer의 128 byte 이후 부분을
+    // 나머지 데이터는 실제 전송된 파일 또는 메시지 데이터
+    // 128바이트 이후부터는 실제 파일 혹은 메시지이므로 buffer에서 그 부분만 남김.
     buffer = buffer.mid(128);
 
-    // fileType이 attachment 라면 파일 수신 로직을 실행하고
-    // fileType이 message 라면 문장 수신 로직을 실핸한다.
+    // QSqlQuery qry;
+    // qry.prepare( "SELECT ID,PASSWORD FROM todo.tasks WHERE ID = :CHA AND PASSWORD = :SOOBIN" );
+    // qry.bindValue(":CHA",id);
+    // qry.bindValue(":SOOBIN",ps);
+    QString msg = buffer;
+    QString id, pw, phone_num, email;
+    QSqlQuery qry;
 
-    if(fileType=="attachment")
+    QStringList msgParts;
+
+    if (fileType == "login")
     {
-        // 파일 전송은, 1)저장될 파일 이름, 2) 파일 확장자 3) 파일 크기 정보가 필요하다.
-        QString fileName = header.split(",")[1].split(":")[1];
-        QString ext = fileName.split(".")[1];
-        QString size = header.split(",")[2].split(":")[1].split(";")[0];
 
-        // 파일 전송 메시지를 받으면, 메시지 박스를 띄워서 전송 받을 것인지 확인한다.
-        // 메시지 박스에서 yes를 선택하면 파일을 읽는다.
-        if (QMessageBox::Yes == (QMessageBox::question(this, "QTCPServer", QString("You are receiving an attachment from sd:%1 of size: %2 bytes, called %3. Do you want to accept it?").arg(socket->socketDescriptor()).arg(size).arg(fileName))))
+    }
+    else if (fileType == "signUp")
+    {
+        msgParts = msg.split(",");
+
+        id = msgParts[0];
+        pw = msgParts[1];
+        phone_num = msgParts[2];
+        email = msgParts[3];
+
+        qry.prepare("INSERT INTO USERS "
+                    "(ID, PW, PHONE_NUM, EMAIL) "
+                    "VALUES "
+                    "(:id, :pw, :pnum, :email)");
+
+        qry.bindValue(":id", id);
+        qry.bindValue(":pw", pw);
+        qry.bindValue(":pnum", phone_num);
+        qry.bindValue(":email", email);
+
+        if(qry.exec())
         {
-            // 저장될 파일의 경로를 설정하고, 파일 이름과, 확장자를 설정한다.
-            QString filePath = QFileDialog::getSaveFileName(this, tr("Save File"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)+"/"+fileName, QString("File (*.%1)").arg(ext));
-
-            // file 객체를 위에서 설정한 경로를 기반으로 연결하고
-            QFile file(filePath);
-
-            // file 객체를 열고, buffer에 들어있는 byte를 쓴다(내보낸다. 통신이랑 같다).
-            if(file.open(QIODevice::WriteOnly))
-            {
-                file.write(buffer);
-
-                // 파일이 저장되는 것에 대한 메시지를 ui에 출력한다.
-                QString message = QString("INFO :: Attachment from sd:%1 successfully stored on disk under the path %2").arg(socket->socketDescriptor()).arg(QString(filePath));
-                emit singal_newMessage(message);
-            }
-            else
-                QMessageBox::critical(this,"QTCPServer", "An error occurred while trying to write the attachment.");
+            qDebug() << "인서트 성공!!!!!";
+            sendMessage(socket, INFO, "signUp success");
         }
         else
         {
-            // 메시지 박스에서 No 전송 거부시 메시지를 출력한다.
-            QString message = QString("INFO :: Attachment from sd:%1 discarded").arg(socket->socketDescriptor());
-            emit singal_newMessage(message);
+            qDebug() << "인서트 실패!!!!!";
+            sendMessage(socket, INFO, "signUp error");
         }
+
     }
-    else if(fileType=="message")
+    else if (fileType == "idSearch")
     {
-        // 전송된 메시지를 서버에서 출력한다.
-        QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
+
+    }
+    else if (fileType == "pwSearch")
+    {
+
+    }
+    else if (fileType == "idDupChk")
+    {
+
+    }
+    else if (fileType == "pNumDupChk")
+    {
+
+    }
+
+
+    // [ex.02.7.5]
+    // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
+    if (fileType == "attachment")
+    {
+        // 헤더에서 파일 이름을 추출.
+        // "fileName:example.txt" 형식으로 되어 있으므로 이를 분리하여 실제 파일 이름을 얻는다.
+        QString fileName = header.split(",")[1].split(":")[1];
+
+        // 파일 확장자를 추출. 파일 이름에서 "."을 기준으로 확장자를 분리하여 저장한다.
+        QString ext = fileName.split(".")[1];
+
+        // 헤더에서 파일 크기 추출.  "fileSize:1024;"와 같은 형식에서 파일 크기를 추출한다.
+        QString size = header.split(",")[2].split(":")[1].split(";")[0];
+
+        // 새 파일 이름을 만듦. 기존 파일 이름에 소켓 디스크립터를 덧붙여 이름을 유일하게 만든다.
+        // 이렇게 하면 여러 클라이언트가 동시에 파일을 전송할 때 덮어 씌워지는 것을 방지할 수 있음.
+        QString newFileName = QString("%1_%2.%3").arg(fileName.split(".")[0]).arg(socket->socketDescriptor()).arg(ext);
+
+        // 파일을 저장할 경로를 지정.
+        // QFile 객체를 사용하여 새 파일을 만듦.
+        QFile file("C:/Users/DELL/" + newFileName);
+
+        if (file.open(QFile::WriteOnly))
+        {
+            file.write(buffer);
+            // 데이터를 파일에 쓴 후, 파일을 안전하게 닫음.
+            file.flush();
+            file.close();
+        }
+
+        // 파일이 성공적으로 저장되었다는 메시지를 생성하여 signal_newMessage 시그널을 emit함.
+        QString message = QString("%1 :: %2 of size: %3 bytes has been received").arg(socket->socketDescriptor()).arg(newFileName).arg(size);
+        emit singal_newMessage(message);
+    }
+    // [ex.02.7.6]
+    // fileType이 message(메시지)일 경우, 해당 메시지를 UI에 출력.
+    else
+    {
+        // buffer에 있는 메시지를 출력.  소켓 디스크립터와 메시지 내용을 포함하여 출력한다.
+        QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString(buffer));
         emit singal_newMessage(message);
     }
 }
+
 
 // [ex.02.8]
 // 서버에서 메시지를 보낼 때,
 // 1) 서버에 연결된 특정 대상에게 전송하거나
 // 2) 연결된 모든 대상에게 전송하도록 선택한다.(Broadcast)
-void MainWindow::on_pushButton_sendMessage_clicked()
-{
-    QString receiver = ui->comboBox_receiver->currentText();
+// void MainWindow::on_pushButton_sendMessage_clicked()
+// {
+//     QString receiver = ui->comboBox_receiver->currentText();
 
-    // Broadcast 라면, qset_connectedSKT 에 저장된 모든 대상에게 메시지 전송
-    if(receiver=="Broadcast")
-    {
-        foreach (QTcpSocket* socket,qset_connectedSKT)
-        {
-            sendMessage(socket);
-        }
-    }
-    // 선택한 대상을 qset_connectedSKT에서 소켓을 찾아 메시지 전송
-    else
-    {
-        foreach (QTcpSocket* socket, qset_connectedSKT)
-        {
-            if(socket->socketDescriptor() == receiver.toLongLong())
-            {
-                sendMessage(socket);
-                break;
-            }
-        }
-    }
+//     // Broadcast 라면, qset_connectedSKT 에 저장된 모든 대상에게 메시지 전송
+//     if(receiver=="Broadcast")
+//     {
+//         foreach (QTcpSocket* socket,qset_connectedSKT)
+//         {
+//             sendMessage(socket);
+//         }
+//     }
+//     // 선택한 대상을 qset_connectedSKT에서 소켓을 찾아 메시지 전송
+//     else
+//     {
+//         foreach (QTcpSocket* socket, qset_connectedSKT)
+//         {
+//             if(socket->socketDescriptor() == receiver.toLongLong())
+//             {
+//                 sendMessage(socket);
+//                 break;
+//             }
+//         }
+//     }
 
-    // 메시지 입력창 리셋
-    ui->lineEdit_message->clear();
-}
+//     // 메시지 입력창 리셋
+//     ui->lineEdit_message->clear();
+// }
 
 // [ex.02.9]
 // 서버에서 파일을 보낼 때
@@ -316,14 +393,15 @@ void MainWindow::on_pushButton_sendAttachment_clicked()
 }
 
 // [ex.02.10]
-void MainWindow::sendMessage(QTcpSocket* socket)
+// ============================ 서버에서 메시지 보내는 함수 ==================================================
+void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
 {
     if(socket)
     {
         if(socket->isOpen())
         {
             // ui에서 입력할 message를 가져와
-            QString str = ui->lineEdit_message->text();
+            // QString str = ui->lineEdit_message->text();
 
             // stream으로 보내는데
             QDataStream socketStream(socket);
@@ -331,11 +409,14 @@ void MainWindow::sendMessage(QTcpSocket* socket)
 
             // 헤더 부분에 fileType을 message로 설정한다.
             QByteArray header;
-            header.prepend(QString("fileType:message,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
-            header.resize(128);
+            if (type == INFO)
+            {
+                header.prepend(QString("fileType:info,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
 
+            header.resize(128);
             // message 인코딩 설정하고, QByteArray에 할당하고
-            QByteArray byteArray = str.toUtf8();
+            QByteArray byteArray = msg.toUtf8();
             // header 정보를 앞에 넣어준다.
             byteArray.prepend(header);
 
@@ -348,7 +429,7 @@ void MainWindow::sendMessage(QTcpSocket* socket)
     else
         QMessageBox::critical(this,"QTCPServer","Not connected");
 }
-
+// ===================================================================================================
 // [ex.02.11]
 void MainWindow::sendAttachment(QTcpSocket* socket, QString filePath)
 {

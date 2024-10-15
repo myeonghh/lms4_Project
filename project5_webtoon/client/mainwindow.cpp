@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     loginWidget = new Login();
     loginWidget->show();
 
+    connect(loginWidget, &Login::signup_signal, this, &MainWindow::send_message); // 회원가입 정보 전송 connect
+
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
     // 이 객체의(MainWindow) slot_readSocket 실행하여 처리
@@ -119,12 +121,27 @@ void MainWindow::slot_readSocket()
     QString header = buffer.mid(0,128);
     QString fileType = header.split(",")[0].split(":")[1];
 
-    // buffer의 128 byte 이후 부분을
+    // buffer의 128 byte 이후 부분 buffer에 다시 담음.
     buffer = buffer.mid(128);
+    QString msg = buffer;
+
+    if (fileType == "info")
+    {
+        if (msg == "signUp success")
+        {
+            emit operate_signal(true);
+        }
+        else if (msg == "signUp error")
+        {
+            emit operate_signal(false);
+        }
+    }
+
+
+
 
     // fileType이 attachment 라면 파일 수신 로직을 실행하고
     // fileType이 message 라면 문장 수신 로직을 실핸한다.
-
     if(fileType=="attachment")
     {
         // 파일 전송은, 1)저장될 파일 이름, 2) 파일 확장자 3) 파일 크기 정보가 필요하다.
@@ -168,6 +185,67 @@ void MainWindow::slot_readSocket()
         emit signal_newMessage(message);
     }
 }
+
+
+
+//============================== 메시지 서버에 전송 함수  ===================================
+void MainWindow::send_message(int type, QString id = "", QString pw = "", QString phone_num = "", QString email= "")
+{
+    if(m_socket)
+    {
+        if(m_socket->isOpen())
+        {
+            // ui에서 입력할 message를 가져와
+            QString str = id + "," + pw + "," + phone_num + "," + email;
+
+            // stream으로 보내는데
+            QDataStream socketStream(m_socket);
+            socketStream.setVersion(QDataStream::Qt_5_15);
+
+            // 헤더 부분에 fileType을 message로 설정한다.
+            QByteArray header;
+
+            switch (type) {
+            case LOGIN:
+                header.prepend(QString("fileType:login,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case SIGNUP:
+                header.prepend(QString("fileType:signUp,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case IDSEARCH:
+                header.prepend(QString("fileType:idSearch,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case PWSEARCH:
+                header.prepend(QString("fileType:pwSearch,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case IDDUPCHK:
+                header.prepend(QString("fileType:idDupChk,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case PNUMDUPCHK:
+                header.prepend(QString("fileType:pNumDupChk,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            default:
+                break;
+            }
+
+            header.resize(128);
+            // message 인코딩 설정하고, QByteArray에 할당하고
+            QByteArray byteArray = str.toUtf8();
+            // header 정보를 앞에 넣어준다.
+            byteArray.prepend(header);
+
+            // stream으로 byteArray 정보 전송
+            socketStream << byteArray;
+            qDebug()<<"서버에 회원가입 정보 전송 완료!!";
+        }
+        else
+            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
+    }
+    else
+        QMessageBox::critical(this,"QTCPClient","Not connected");
+}
+//============================================================================================================
+
 
 // [ex.02.5]
 // 메시지를 보냄

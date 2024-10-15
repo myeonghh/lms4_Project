@@ -59,7 +59,6 @@ public:
     QVBoxLayout *verticalLayout_4;
     QFrame *frame_7;
     QGridLayout *gridLayout_4;
-    QPushButton *pnumDupChkBtn;
     QLabel *label_6;
     QLabel *label_8;
     QLabel *label_5;
@@ -72,6 +71,7 @@ public:
     QLineEdit *s_emailText;
     QLineEdit *s_pNumText;
     QPushButton *idDupChkBtn;
+    QPushButton *pnumDupChkBtn;
     QFrame *frame_8;
     QHBoxLayout *horizontalLayout_2;
     QSpacerItem *horizontalSpacer_9;
@@ -278,11 +278,6 @@ public:
         frame_7->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_4 = new QGridLayout(frame_7);
         gridLayout_4->setObjectName("gridLayout_4");
-        pnumDupChkBtn = new QPushButton(frame_7);
-        pnumDupChkBtn->setObjectName("pnumDupChkBtn");
-
-        gridLayout_4->addWidget(pnumDupChkBtn, 2, 3, 1, 1);
-
         label_6 = new QLabel(frame_7);
         label_6->setObjectName("label_6");
         QFont font3;
@@ -350,6 +345,11 @@ public:
         idDupChkBtn->setObjectName("idDupChkBtn");
 
         gridLayout_4->addWidget(idDupChkBtn, 0, 3, 1, 1);
+
+        pnumDupChkBtn = new QPushButton(frame_7);
+        pnumDupChkBtn->setObjectName("pnumDupChkBtn");
+
+        gridLayout_4->addWidget(pnumDupChkBtn, 2, 3, 1, 1);
 
 
         verticalLayout_4->addWidget(frame_7);
@@ -600,8 +600,9 @@ public:
 
         retranslateUi(Login);
         QObject::connect(pwText, &QLineEdit::editingFinished, loginBtn, qOverload<>(&QPushButton::click));
+        QObject::connect(s_emailText, &QLineEdit::returnPressed, signUpBtn, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(Login);
@@ -618,13 +619,13 @@ public:
         toSignUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
         label->setText(QCoreApplication::translate("Login", "\353\257\274\354\204\235\354\235\264\354\235\230 \353\271\204\353\260\200 \354\204\234\353\236\215\354\236\245", nullptr));
         label_4->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220 \352\260\200\354\236\205", nullptr));
-        pnumDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
         label_6->setText(QCoreApplication::translate("Login", " \353\271\204\353\260\200\353\262\210\355\230\270 ", nullptr));
         label_8->setText(QCoreApplication::translate("Login", "\354\235\264\353\251\224\354\235\274 ", nullptr));
         label_5->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 ", nullptr));
         label_7->setText(QCoreApplication::translate("Login", "\355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270 ", nullptr));
         signUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
         idDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
+        pnumDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
         backBtn->setText(QCoreApplication::translate("Login", "\353\202\230\352\260\200\352\270\260", nullptr));
         label_9->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 \354\260\276\352\270\260", nullptr));
         idSearchBtn->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 \354\260\276\352\270\260", nullptr));

@@ -15,6 +15,7 @@
 #include <QSqlTableModel>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <QSqlQuery>
 
 
 
@@ -38,11 +39,11 @@ private:
     QSet<QTcpSocket*> qset_connectedSKT;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
-
+    enum TYPE {INFO = 0};
 
     bool initializeDataBase();
     void appendToSocketList(QTcpSocket* socket);
-    void sendMessage(QTcpSocket* socket);
+    void sendMessage(QTcpSocket* socket, int type, QString msg);
     void sendAttachment(QTcpSocket* socket, QString filePath);
     void refreshComboBox();
 
