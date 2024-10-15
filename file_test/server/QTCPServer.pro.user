@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 14.0.1, 2024-10-14T11:38:35. -->
+<!-- Written by QtCreator 14.0.1, 2024-10-15T10:29:21. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -250,7 +250,6 @@
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/lms105/project/lms4_project/file_test/server/build/Desktop_Qt_6_7_2-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>
