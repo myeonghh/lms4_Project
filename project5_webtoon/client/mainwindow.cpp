@@ -27,7 +27,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     loginWidget = new Login();
     loginWidget->show();
 
-    connect(loginWidget, &Login::signup_signal, this, &MainWindow::send_message); // 회원가입 정보 전송 connect
+    connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_message); // 회원가입 정보 전송 connect
+    connect(this, &MainWindow::operate_info_signal, loginWidget, &Login::signUp_operate);
+    connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
+    connect(this, &MainWindow::idSearch_info_signal, loginWidget, &Login::idSearch_operate);
+    connect(this, &MainWindow::pwSearch_info_signal, loginWidget, &Login::pwSearch_operate);
 
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
@@ -38,8 +42,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // [ex.02.1.3]
     // signal_newMessage 시그널이 발생하면 (socket read 가 아닌, MainWindow 시그널)
     // slot_displayMessage 실행하여 UI에 출력
-    connect(this, &MainWindow::signal_newMessage,
-            this, &MainWindow::slot_displayMessage);
+    // connect(this, &MainWindow::signal_newMessage,
+    //         this, &MainWindow::slot_displayMessage);
 
     // [ex.02.1.4]
     // 연결된 소켓과 연결이 해제되면,
@@ -125,18 +129,68 @@ void MainWindow::slot_readSocket()
     buffer = buffer.mid(128);
     QString msg = buffer;
 
-    if (fileType == "info")
+    if (fileType == "signUpInfo")
     {
-        if (msg == "signUp success")
+        if (msg == "signUp success") // 회원가입 성공
         {
-            emit operate_signal(true);
+            emit operate_info_signal("signUp success");
         }
-        else if (msg == "signUp error")
+        else if (msg == "signUp error") // 회원가입 에러
         {
-            emit operate_signal(false);
+            emit operate_info_signal("signUp error");
+        }
+        else if (msg == "signUp idDup") // 아이디 중복
+        {
+            emit operate_info_signal("signUp idDup");
+        }
+        else if (msg == "signUp !idDup") // 아이디 중복 아님
+        {
+            emit operate_info_signal("signUp !idDup");
+        }
+        else if (msg == "signUp phoneNumDup") // 휴대폰 번호 중복
+        {
+            emit operate_info_signal("signUp phoneNumDup");
+        }
+        else if (msg == "signUp !phoneNumDup") // 휴대폰 번호 중복 아님
+        {
+            emit operate_info_signal("signUp !phoneNumDup");
         }
     }
-
+    else if (fileType == "loginInfo")
+    {
+        if (msg == "login success")
+        {
+            emit login_info_signal("login success");
+            loginWidget->hide();
+            this->window()->show();
+        }
+        else if (msg == "login fail")
+        {
+            emit login_info_signal("login fail");
+        }
+    }
+    else if (fileType == "idInfo")
+    {
+        if (msg == "idSearch fail") // 아이디 찾기 실패
+        {
+            emit idSearch_info_signal("idSearch fail");
+        }
+        else
+        {
+            emit idSearch_info_signal(msg); // 아이디 찾기 성공
+        }
+    }
+    else if (fileType == "pwInfo")
+    {
+        if (msg == "pwSearch fail") // 비밀번호 찾기 실패
+        {
+            emit pwSearch_info_signal("pwSearch fail");
+        }
+        else
+        {
+            emit pwSearch_info_signal(msg); // 아이디 찾기 성공
+        }
+    }
 
 
 

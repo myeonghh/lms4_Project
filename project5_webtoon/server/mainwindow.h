@@ -39,7 +39,7 @@ private:
     QSet<QTcpSocket*> qset_connectedSKT;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
-    enum TYPE {INFO = 0};
+    enum TYPE {SIGNUPINFO = 0, LOGININFO, IDINFO, PWINFO};
 
     bool initializeDataBase();
     void appendToSocketList(QTcpSocket* socket);
@@ -55,7 +55,7 @@ private slots:
     void slot_discardSocket();
     void slot_displayError(QAbstractSocket::SocketError socketError);
     void slot_readSocket();
-    void on_pushButton_sendMessage_clicked();
+    // void on_pushButton_sendMessage_clicked();
     void on_pushButton_sendAttachment_clicked();
     void slot_displayMessage(const QString& str);
 };

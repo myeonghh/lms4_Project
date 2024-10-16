@@ -65,7 +65,7 @@
               </spacer>
              </item>
              <item row="0" column="2">
-              <widget class="QLineEdit" name="idText">
+              <widget class="QLineEdit" name="l_idText">
                <property name="minimumSize">
                 <size>
                  <width>0</width>
@@ -113,7 +113,7 @@
               </widget>
              </item>
              <item row="1" column="2">
-              <widget class="QLineEdit" name="pwText">
+              <widget class="QLineEdit" name="l_pwText">
                <property name="echoMode">
                 <enum>QLineEdit::EchoMode::Password</enum>
                </property>
@@ -276,21 +276,6 @@
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="1" column="1">
-              <widget class="QLabel" name="label_6">
-               <property name="font">
-                <font>
-                 <pointsize>13</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string> 비밀번호 </string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
              <item row="3" column="1">
               <widget class="QLabel" name="label_8">
                <property name="font">
@@ -303,6 +288,19 @@
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLineEdit" name="s_pwText"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLineEdit" name="s_idText"/>
+             </item>
+             <item row="2" column="3">
+              <widget class="QPushButton" name="pnumDupChkBtn">
+               <property name="text">
+                <string>중복 확인</string>
                </property>
               </widget>
              </item>
@@ -321,21 +319,44 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
+             <item row="2" column="4">
+              <widget class="QLabel" name="pnumDupChkText">
+               <property name="text">
+                <string/>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+              </widget>
              </item>
-             <item row="0" column="2">
-              <widget class="QLineEdit" name="s_idText"/>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="idDupChkBtn">
+               <property name="text">
+                <string>중복 확인</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="label_6">
+               <property name="font">
+                <font>
+                 <pointsize>13</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string> 비밀번호 </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLineEdit" name="s_pNumText"/>
+             </item>
+             <item row="4" column="2">
+              <widget class="QPushButton" name="signUpBtn">
+               <property name="text">
+                <string>회원가입</string>
+               </property>
+              </widget>
              </item>
              <item row="2" column="1">
               <widget class="QLabel" name="label_7">
@@ -352,7 +373,7 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="4">
+             <item row="3" column="4">
               <spacer name="horizontalSpacer_6">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
@@ -365,33 +386,26 @@
                </property>
               </spacer>
              </item>
-             <item row="4" column="2">
-              <widget class="QPushButton" name="signUpBtn">
-               <property name="text">
-                <string>회원가입</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLineEdit" name="s_pwText"/>
-             </item>
              <item row="3" column="2">
               <widget class="QLineEdit" name="s_emailText"/>
              </item>
-             <item row="2" column="2">
-              <widget class="QLineEdit" name="s_pNumText"/>
-             </item>
-             <item row="0" column="3">
-              <widget class="QPushButton" name="idDupChkBtn">
-               <property name="text">
-                <string>중복 확인</string>
+             <item row="2" column="0">
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
-              </widget>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
-             <item row="2" column="3">
-              <widget class="QPushButton" name="pnumDupChkBtn">
+             <item row="0" column="4">
+              <widget class="QLabel" name="idDupChkText">
                <property name="text">
-                <string>중복 확인</string>
+                <string/>
                </property>
               </widget>
              </item>
@@ -509,7 +523,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>200</height>
+              <height>0</height>
              </size>
             </property>
             <property name="frameShape">
@@ -519,12 +533,18 @@
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
-             <item row="2" column="1">
-              <widget class="QPushButton" name="idSearchBtn">
-               <property name="text">
-                <string>아이디 찾기</string>
+             <item row="0" column="1">
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
                </property>
-              </widget>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item row="2" column="2">
               <spacer name="horizontalSpacer_3">
@@ -538,6 +558,42 @@
                 </size>
                </property>
               </spacer>
+             </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="idSearchBtn">
+               <property name="text">
+                <string>아이디 찾기</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="0">
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="i_pNumText"/>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label_10">
@@ -554,47 +610,33 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="i_pNumText"/>
-             </item>
-             <item row="2" column="0">
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_17">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>70</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <widget class="QLabel" name="idShowText">
+               <property name="text">
+                <string/>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
                </property>
-              </spacer>
-             </item>
-             <item row="0" column="1">
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="1">
-              <spacer name="verticalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -716,7 +758,7 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>300</height>
+              <height>230</height>
              </size>
             </property>
             <property name="frameShape">
@@ -817,7 +859,41 @@
            </widget>
           </item>
           <item>
+           <widget class="QFrame" name="frame_18">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>70</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="0" column="0">
+              <widget class="QLabel" name="pwShowText">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
            <widget class="QFrame" name="frame_16">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>123</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -879,7 +955,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pwText</sender>
+   <sender>l_pwText</sender>
    <signal>editingFinished()</signal>
    <receiver>loginBtn</receiver>
    <slot>click()</slot>

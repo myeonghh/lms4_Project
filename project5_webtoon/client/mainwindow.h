@@ -36,7 +36,10 @@ private:
 
 signals:
     void signal_newMessage(QString);
-    void operate_signal(bool);
+    void operate_info_signal(QString info);
+    void login_info_signal(QString info);
+    void idSearch_info_signal(QString info);
+    void pwSearch_info_signal(QString info);
 
 private slots:
     void slot_discardSocket();

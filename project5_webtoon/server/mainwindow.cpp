@@ -220,17 +220,32 @@ void MainWindow::slot_readSocket()
     QString msg = buffer;
     QString id, pw, phone_num, email;
     QSqlQuery qry;
-
     QStringList msgParts;
+
+    msgParts = msg.split(",");
 
     if (fileType == "login")
     {
+        id = msgParts[0];
+        pw = msgParts[1];
+
+        qry.prepare("SELECT * FROM USERS WHERE ID = :id AND PW = :pw");
+        qry.bindValue(":id", id);
+        qry.bindValue(":pw", pw);
+        qry.exec();
+
+        if (qry.next()) // 아이디 비밀번호 일치
+        {
+            sendMessage(socket, LOGININFO, "login success");
+        }
+        else // 아이디 or 비밀번호 불일치
+        {
+            sendMessage(socket, LOGININFO, "login fail");
+        }
 
     }
     else if (fileType == "signUp")
     {
-        msgParts = msg.split(",");
-
         id = msgParts[0];
         pw = msgParts[1];
         phone_num = msgParts[2];
@@ -249,30 +264,91 @@ void MainWindow::slot_readSocket()
         if(qry.exec())
         {
             qDebug() << "인서트 성공!!!!!";
-            sendMessage(socket, INFO, "signUp success");
+            sendMessage(socket, SIGNUPINFO, "signUp success");
         }
         else
         {
             qDebug() << "인서트 실패!!!!!";
-            sendMessage(socket, INFO, "signUp error");
+            sendMessage(socket, SIGNUPINFO, "signUp error");
         }
 
     }
     else if (fileType == "idSearch")
     {
+        phone_num = msgParts[2];
+
+        qry.prepare("SELECT ID FROM USERS WHERE PHONE_NUM = :phone_num");
+        qry.bindValue(":phone_num", phone_num);
+        qry.exec();
+
+        if (qry.next()) // 휴대폰 번호로 아이디 찾음
+        {
+            sendMessage(socket, IDINFO, qry.value(0).toString());
+        }
+        else // 아이디 or 비밀번호 불일치
+        {
+            sendMessage(socket, IDINFO, "idSearch fail");
+        }
 
     }
     else if (fileType == "pwSearch")
     {
+        id = msgParts[0];
+        phone_num = msgParts[2];
+        email = msgParts[3];
+
+        qry.prepare("SELECT PW FROM USERS WHERE ID = :id AND PHONE_NUM = :phone_num AND EMAIL = :email");
+        qry.bindValue(":id", id);
+        qry.bindValue(":phone_num", phone_num);
+        qry.bindValue(":email", email);
+        qry.exec();
+
+        if (qry.next()) // 휴대폰 번호로 아이디 찾음
+        {
+            sendMessage(socket, PWINFO, qry.value(0).toString());
+        }
+        else // 아이디 or 비밀번호 불일치
+        {
+            sendMessage(socket, PWINFO, "pwSearch fail");
+        }
+
 
     }
     else if (fileType == "idDupChk")
     {
+        id = msgParts[0];
 
+        // 아이디 중복 확인
+        qry.prepare("SELECT * FROM USERS WHERE ID = :id");
+        qry.bindValue(":id", id);
+        qry.exec();
+
+        if (qry.next()) // 중복일 경우
+        {
+            sendMessage(socket, SIGNUPINFO, "signUp idDup");
+        }
+        else // 중복이 아닌 경우
+        {
+            sendMessage(socket, SIGNUPINFO, "signUp !idDup");
+        }
     }
     else if (fileType == "pNumDupChk")
     {
+        phone_num = msgParts[2];
 
+        // 휴대폰 번호 중복 확인
+        qry.prepare("SELECT * FROM USERS WHERE PHONE_NUM = :phone_num");
+        qry.bindValue(":phone_num", phone_num);
+        qry.exec();
+
+        if (qry.next()) // 중복일 경우
+        {
+            sendMessage(socket, SIGNUPINFO, "signUp phoneNumDup");
+        }
+        else // 중복이 아닌 경우
+        {
+            sendMessage(socket, SIGNUPINFO, "signUp !phoneNumDup");
+        }
     }
 
 
@@ -409,9 +485,22 @@ void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
 
             // 헤더 부분에 fileType을 message로 설정한다.
             QByteArray header;
-            if (type == INFO)
+
+            if (type == SIGNUPINFO)
             {
-                header.prepend(QString("fileType:info,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+                header.prepend(QString("fileType:signUpInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == LOGININFO)
+            {
+                header.prepend(QString("fileType:loginInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == IDINFO)
+            {
+                header.prepend(QString("fileType:idInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == PWINFO)
+            {
+                header.prepend(QString("fileType:pwInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
             }
 
             header.resize(128);
@@ -422,6 +511,7 @@ void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
 
             // stream으로 byteArray 정보 전송
             socketStream << byteArray;
+            qDebug()<< QString(byteArray);
         }
         else
             QMessageBox::critical(this,"QTCPServer","Socket doesn't seem to be opened");

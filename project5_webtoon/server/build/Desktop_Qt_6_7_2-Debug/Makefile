@@ -1024,6 +1024,8 @@ moc_mainwindow.cpp: ../../mainwindow.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlrecord.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlError \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlerror.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlQuery \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlquery.h \
 		moc_predefs.h \
 		/home/lms105/Qt/6.7.2/gcc_64/libexec/moc
 	/home/lms105/Qt/6.7.2/gcc_64/libexec/moc $(DEFINES) --include /home/lms105/project/lms4_project/project5_webtoon/server/build/Desktop_Qt_6_7_2-Debug/moc_predefs.h -I/home/lms105/Qt/6.7.2/gcc_64/mkspecs/linux-g++ -I/home/lms105/project/lms4_project/project5_webtoon/server -I/home/lms105/Qt/6.7.2/gcc_64/include -I/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets -I/home/lms105/Qt/6.7.2/gcc_64/include/QtGui -I/home/lms105/Qt/6.7.2/gcc_64/include/QtNetwork -I/home/lms105/Qt/6.7.2/gcc_64/include/QtSql -I/home/lms105/Qt/6.7.2/gcc_64/include/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../../mainwindow.h -o moc_mainwindow.cpp
@@ -1278,6 +1280,8 @@ main.o: ../../main.cpp ../../mainwindow.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlrecord.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlError \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlerror.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlQuery \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlquery.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QApplication \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp
@@ -1511,51 +1515,9 @@ mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlrecord.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlError \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlerror.h \
-		ui_mainwindow.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtCore/QVariant \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QApplication \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qapplication.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QComboBox \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qcombobox.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qstyleoption.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qvalidator.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtCore/qregularexpression.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qslider.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractslider.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qstyle.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtabbar.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qrubberband.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qframe.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QGridLayout \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qgridlayout.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qlayout.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qlayoutitem.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qboxlayout.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QHBoxLayout \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QLineEdit \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qlineedit.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextcursor.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextdocument.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextformat.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qpen.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextoption.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QMenuBar \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qmenubar.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qmenu.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QPushButton \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qpushbutton.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QStatusBar \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QTextBrowser \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtextbrowser.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtextedit.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QToolBar \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtoolbar.h \
-		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QWidget
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlQuery \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlquery.h \
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../mainwindow.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

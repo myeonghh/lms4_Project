@@ -36,11 +36,11 @@ public:
     QFrame *frame_3;
     QGridLayout *gridLayout_3;
     QSpacerItem *horizontalSpacer;
-    QLineEdit *idText;
+    QLineEdit *l_idText;
     QLabel *label_2;
     QSpacerItem *horizontalSpacer_2;
     QPushButton *loginBtn;
-    QLineEdit *pwText;
+    QLineEdit *l_pwText;
     QLabel *label_3;
     QFrame *frame_4;
     QHBoxLayout *horizontalLayout;
@@ -59,19 +59,21 @@ public:
     QVBoxLayout *verticalLayout_4;
     QFrame *frame_7;
     QGridLayout *gridLayout_4;
-    QLabel *label_6;
     QLabel *label_8;
-    QLabel *label_5;
-    QSpacerItem *horizontalSpacer_5;
+    QLineEdit *s_pwText;
     QLineEdit *s_idText;
+    QPushButton *pnumDupChkBtn;
+    QLabel *label_5;
+    QLabel *pnumDupChkText;
+    QPushButton *idDupChkBtn;
+    QLabel *label_6;
+    QLineEdit *s_pNumText;
+    QPushButton *signUpBtn;
     QLabel *label_7;
     QSpacerItem *horizontalSpacer_6;
-    QPushButton *signUpBtn;
-    QLineEdit *s_pwText;
     QLineEdit *s_emailText;
-    QLineEdit *s_pNumText;
-    QPushButton *idDupChkBtn;
-    QPushButton *pnumDupChkBtn;
+    QSpacerItem *horizontalSpacer_5;
+    QLabel *idDupChkText;
     QFrame *frame_8;
     QHBoxLayout *horizontalLayout_2;
     QSpacerItem *horizontalSpacer_9;
@@ -86,13 +88,16 @@ public:
     QVBoxLayout *verticalLayout_7;
     QFrame *frame_11;
     QGridLayout *gridLayout_5;
-    QPushButton *idSearchBtn;
-    QSpacerItem *horizontalSpacer_3;
-    QLabel *label_10;
-    QLineEdit *i_pNumText;
-    QSpacerItem *horizontalSpacer_4;
     QSpacerItem *verticalSpacer;
-    QSpacerItem *verticalSpacer_2;
+    QSpacerItem *horizontalSpacer_3;
+    QPushButton *idSearchBtn;
+    QSpacerItem *verticalSpacer_3;
+    QSpacerItem *horizontalSpacer_4;
+    QLineEdit *i_pNumText;
+    QLabel *label_10;
+    QFrame *frame_17;
+    QGridLayout *gridLayout_7;
+    QLabel *idShowText;
     QFrame *frame_12;
     QHBoxLayout *horizontalLayout_3;
     QSpacerItem *horizontalSpacer_11;
@@ -116,6 +121,9 @@ public:
     QLabel *label_15;
     QLineEdit *p_pNumText;
     QLineEdit *p_idText;
+    QFrame *frame_18;
+    QGridLayout *gridLayout_8;
+    QLabel *pwShowText;
     QFrame *frame_16;
     QHBoxLayout *horizontalLayout_4;
     QSpacerItem *horizontalSpacer_13;
@@ -153,11 +161,11 @@ public:
 
         gridLayout_3->addItem(horizontalSpacer, 0, 3, 1, 1);
 
-        idText = new QLineEdit(frame_3);
-        idText->setObjectName("idText");
-        idText->setMinimumSize(QSize(0, 0));
+        l_idText = new QLineEdit(frame_3);
+        l_idText->setObjectName("l_idText");
+        l_idText->setMinimumSize(QSize(0, 0));
 
-        gridLayout_3->addWidget(idText, 0, 2, 1, 1);
+        gridLayout_3->addWidget(l_idText, 0, 2, 1, 1);
 
         label_2 = new QLabel(frame_3);
         label_2->setObjectName("label_2");
@@ -177,11 +185,11 @@ public:
 
         gridLayout_3->addWidget(loginBtn, 2, 2, 1, 1);
 
-        pwText = new QLineEdit(frame_3);
-        pwText->setObjectName("pwText");
-        pwText->setEchoMode(QLineEdit::EchoMode::Password);
+        l_pwText = new QLineEdit(frame_3);
+        l_pwText->setObjectName("l_pwText");
+        l_pwText->setEchoMode(QLineEdit::EchoMode::Password);
 
-        gridLayout_3->addWidget(pwText, 1, 2, 1, 1);
+        gridLayout_3->addWidget(l_pwText, 1, 2, 1, 1);
 
         label_3 = new QLabel(frame_3);
         label_3->setObjectName("label_3");
@@ -278,21 +286,29 @@ public:
         frame_7->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_4 = new QGridLayout(frame_7);
         gridLayout_4->setObjectName("gridLayout_4");
-        label_6 = new QLabel(frame_7);
-        label_6->setObjectName("label_6");
-        QFont font3;
-        font3.setPointSize(13);
-        label_6->setFont(font3);
-        label_6->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
-
-        gridLayout_4->addWidget(label_6, 1, 1, 1, 1);
-
         label_8 = new QLabel(frame_7);
         label_8->setObjectName("label_8");
+        QFont font3;
+        font3.setPointSize(13);
         label_8->setFont(font3);
         label_8->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_4->addWidget(label_8, 3, 1, 1, 1);
+
+        s_pwText = new QLineEdit(frame_7);
+        s_pwText->setObjectName("s_pwText");
+
+        gridLayout_4->addWidget(s_pwText, 1, 2, 1, 1);
+
+        s_idText = new QLineEdit(frame_7);
+        s_idText->setObjectName("s_idText");
+
+        gridLayout_4->addWidget(s_idText, 0, 2, 1, 1);
+
+        pnumDupChkBtn = new QPushButton(frame_7);
+        pnumDupChkBtn->setObjectName("pnumDupChkBtn");
+
+        gridLayout_4->addWidget(pnumDupChkBtn, 2, 3, 1, 1);
 
         label_5 = new QLabel(frame_7);
         label_5->setObjectName("label_5");
@@ -301,14 +317,32 @@ public:
 
         gridLayout_4->addWidget(label_5, 0, 1, 1, 1);
 
-        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+        pnumDupChkText = new QLabel(frame_7);
+        pnumDupChkText->setObjectName("pnumDupChkText");
 
-        gridLayout_4->addItem(horizontalSpacer_5, 2, 0, 1, 1);
+        gridLayout_4->addWidget(pnumDupChkText, 2, 4, 1, 1);
 
-        s_idText = new QLineEdit(frame_7);
-        s_idText->setObjectName("s_idText");
+        idDupChkBtn = new QPushButton(frame_7);
+        idDupChkBtn->setObjectName("idDupChkBtn");
 
-        gridLayout_4->addWidget(s_idText, 0, 2, 1, 1);
+        gridLayout_4->addWidget(idDupChkBtn, 0, 3, 1, 1);
+
+        label_6 = new QLabel(frame_7);
+        label_6->setObjectName("label_6");
+        label_6->setFont(font3);
+        label_6->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+
+        gridLayout_4->addWidget(label_6, 1, 1, 1, 1);
+
+        s_pNumText = new QLineEdit(frame_7);
+        s_pNumText->setObjectName("s_pNumText");
+
+        gridLayout_4->addWidget(s_pNumText, 2, 2, 1, 1);
+
+        signUpBtn = new QPushButton(frame_7);
+        signUpBtn->setObjectName("signUpBtn");
+
+        gridLayout_4->addWidget(signUpBtn, 4, 2, 1, 1);
 
         label_7 = new QLabel(frame_7);
         label_7->setObjectName("label_7");
@@ -319,37 +353,21 @@ public:
 
         horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
-        gridLayout_4->addItem(horizontalSpacer_6, 2, 4, 1, 1);
-
-        signUpBtn = new QPushButton(frame_7);
-        signUpBtn->setObjectName("signUpBtn");
-
-        gridLayout_4->addWidget(signUpBtn, 4, 2, 1, 1);
-
-        s_pwText = new QLineEdit(frame_7);
-        s_pwText->setObjectName("s_pwText");
-
-        gridLayout_4->addWidget(s_pwText, 1, 2, 1, 1);
+        gridLayout_4->addItem(horizontalSpacer_6, 3, 4, 1, 1);
 
         s_emailText = new QLineEdit(frame_7);
         s_emailText->setObjectName("s_emailText");
 
         gridLayout_4->addWidget(s_emailText, 3, 2, 1, 1);
 
-        s_pNumText = new QLineEdit(frame_7);
-        s_pNumText->setObjectName("s_pNumText");
+        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
-        gridLayout_4->addWidget(s_pNumText, 2, 2, 1, 1);
+        gridLayout_4->addItem(horizontalSpacer_5, 2, 0, 1, 1);
 
-        idDupChkBtn = new QPushButton(frame_7);
-        idDupChkBtn->setObjectName("idDupChkBtn");
+        idDupChkText = new QLabel(frame_7);
+        idDupChkText->setObjectName("idDupChkText");
 
-        gridLayout_4->addWidget(idDupChkBtn, 0, 3, 1, 1);
-
-        pnumDupChkBtn = new QPushButton(frame_7);
-        pnumDupChkBtn->setObjectName("pnumDupChkBtn");
-
-        gridLayout_4->addWidget(pnumDupChkBtn, 2, 3, 1, 1);
+        gridLayout_4->addWidget(idDupChkText, 0, 4, 1, 1);
 
 
         verticalLayout_4->addWidget(frame_7);
@@ -411,19 +429,36 @@ public:
         verticalLayout_7->setObjectName("verticalLayout_7");
         frame_11 = new QFrame(frame_10);
         frame_11->setObjectName("frame_11");
-        frame_11->setMinimumSize(QSize(0, 200));
+        frame_11->setMinimumSize(QSize(0, 0));
         frame_11->setFrameShape(QFrame::Shape::StyledPanel);
         frame_11->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_5 = new QGridLayout(frame_11);
         gridLayout_5->setObjectName("gridLayout_5");
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
+
+        gridLayout_5->addItem(verticalSpacer, 0, 1, 1, 1);
+
+        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        gridLayout_5->addItem(horizontalSpacer_3, 2, 2, 1, 1);
+
         idSearchBtn = new QPushButton(frame_11);
         idSearchBtn->setObjectName("idSearchBtn");
 
         gridLayout_5->addWidget(idSearchBtn, 2, 1, 1, 1);
 
-        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
-        gridLayout_5->addItem(horizontalSpacer_3, 2, 2, 1, 1);
+        gridLayout_5->addItem(verticalSpacer_3, 3, 1, 1, 1);
+
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        gridLayout_5->addItem(horizontalSpacer_4, 2, 0, 1, 1);
+
+        i_pNumText = new QLineEdit(frame_11);
+        i_pNumText->setObjectName("i_pNumText");
+
+        gridLayout_5->addWidget(i_pNumText, 1, 1, 1, 1);
 
         label_10 = new QLabel(frame_11);
         label_10->setObjectName("label_10");
@@ -432,25 +467,24 @@ public:
 
         gridLayout_5->addWidget(label_10, 1, 0, 1, 1);
 
-        i_pNumText = new QLineEdit(frame_11);
-        i_pNumText->setObjectName("i_pNumText");
-
-        gridLayout_5->addWidget(i_pNumText, 1, 1, 1, 1);
-
-        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
-
-        gridLayout_5->addItem(horizontalSpacer_4, 2, 0, 1, 1);
-
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
-
-        gridLayout_5->addItem(verticalSpacer, 0, 1, 1, 1);
-
-        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
-
-        gridLayout_5->addItem(verticalSpacer_2, 3, 1, 1, 1);
-
 
         verticalLayout_7->addWidget(frame_11);
+
+        frame_17 = new QFrame(frame_10);
+        frame_17->setObjectName("frame_17");
+        frame_17->setMinimumSize(QSize(0, 70));
+        frame_17->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_17->setFrameShadow(QFrame::Shadow::Raised);
+        gridLayout_7 = new QGridLayout(frame_17);
+        gridLayout_7->setObjectName("gridLayout_7");
+        idShowText = new QLabel(frame_17);
+        idShowText->setObjectName("idShowText");
+        idShowText->setAlignment(Qt::AlignmentFlag::AlignCenter);
+
+        gridLayout_7->addWidget(idShowText, 0, 0, 1, 1);
+
+
+        verticalLayout_7->addWidget(frame_17);
 
         frame_12 = new QFrame(frame_10);
         frame_12->setObjectName("frame_12");
@@ -510,7 +544,7 @@ public:
         verticalLayout_10->setObjectName("verticalLayout_10");
         frame_15 = new QFrame(frame_14);
         frame_15->setObjectName("frame_15");
-        frame_15->setMinimumSize(QSize(0, 300));
+        frame_15->setMinimumSize(QSize(0, 230));
         frame_15->setFrameShape(QFrame::Shape::StyledPanel);
         frame_15->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_6 = new QGridLayout(frame_15);
@@ -567,8 +601,25 @@ public:
 
         verticalLayout_10->addWidget(frame_15);
 
+        frame_18 = new QFrame(frame_14);
+        frame_18->setObjectName("frame_18");
+        frame_18->setMinimumSize(QSize(0, 70));
+        frame_18->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_18->setFrameShadow(QFrame::Shadow::Raised);
+        gridLayout_8 = new QGridLayout(frame_18);
+        gridLayout_8->setObjectName("gridLayout_8");
+        pwShowText = new QLabel(frame_18);
+        pwShowText->setObjectName("pwShowText");
+        pwShowText->setAlignment(Qt::AlignmentFlag::AlignCenter);
+
+        gridLayout_8->addWidget(pwShowText, 0, 0, 1, 1);
+
+
+        verticalLayout_10->addWidget(frame_18);
+
         frame_16 = new QFrame(frame_14);
         frame_16->setObjectName("frame_16");
+        frame_16->setMinimumSize(QSize(0, 123));
         frame_16->setFrameShape(QFrame::Shape::StyledPanel);
         frame_16->setFrameShadow(QFrame::Shadow::Raised);
         horizontalLayout_4 = new QHBoxLayout(frame_16);
@@ -599,7 +650,7 @@ public:
 
 
         retranslateUi(Login);
-        QObject::connect(pwText, &QLineEdit::editingFinished, loginBtn, qOverload<>(&QPushButton::click));
+        QObject::connect(l_pwText, &QLineEdit::editingFinished, loginBtn, qOverload<>(&QPushButton::click));
         QObject::connect(s_emailText, &QLineEdit::returnPressed, signUpBtn, qOverload<>(&QPushButton::click));
 
         stackedWidget->setCurrentIndex(1);
@@ -619,23 +670,27 @@ public:
         toSignUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
         label->setText(QCoreApplication::translate("Login", "\353\257\274\354\204\235\354\235\264\354\235\230 \353\271\204\353\260\200 \354\204\234\353\236\215\354\236\245", nullptr));
         label_4->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220 \352\260\200\354\236\205", nullptr));
-        label_6->setText(QCoreApplication::translate("Login", " \353\271\204\353\260\200\353\262\210\355\230\270 ", nullptr));
         label_8->setText(QCoreApplication::translate("Login", "\354\235\264\353\251\224\354\235\274 ", nullptr));
-        label_5->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 ", nullptr));
-        label_7->setText(QCoreApplication::translate("Login", "\355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270 ", nullptr));
-        signUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
-        idDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
         pnumDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
+        label_5->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 ", nullptr));
+        pnumDupChkText->setText(QString());
+        idDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
+        label_6->setText(QCoreApplication::translate("Login", " \353\271\204\353\260\200\353\262\210\355\230\270 ", nullptr));
+        signUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
+        label_7->setText(QCoreApplication::translate("Login", "\355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270 ", nullptr));
+        idDupChkText->setText(QString());
         backBtn->setText(QCoreApplication::translate("Login", "\353\202\230\352\260\200\352\270\260", nullptr));
         label_9->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 \354\260\276\352\270\260", nullptr));
         idSearchBtn->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 \354\260\276\352\270\260", nullptr));
         label_10->setText(QCoreApplication::translate("Login", "\355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270", nullptr));
+        idShowText->setText(QString());
         backBtn_2->setText(QCoreApplication::translate("Login", "\353\202\230\352\260\200\352\270\260", nullptr));
         label_12->setText(QCoreApplication::translate("Login", "\353\271\204\353\260\200\353\262\210\355\230\270 \354\260\276\352\270\260", nullptr));
         label_14->setText(QCoreApplication::translate("Login", "\354\235\264\353\251\224\354\235\274", nullptr));
         pwSearchBtn->setText(QCoreApplication::translate("Login", "\353\271\204\353\260\200\353\262\210\355\230\270 \354\260\276\352\270\260", nullptr));
         label_13->setText(QCoreApplication::translate("Login", "\355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270", nullptr));
         label_15->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 ", nullptr));
+        pwShowText->setText(QString());
         backBtn_3->setText(QCoreApplication::translate("Login", "\353\202\230\352\260\200\352\270\260", nullptr));
     } // retranslateUi
 
