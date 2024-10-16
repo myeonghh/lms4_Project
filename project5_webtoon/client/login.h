@@ -36,6 +36,8 @@ private slots:
     void signUp();
     void idSearch();
     void pwSearch();
+    void idText_change();
+    void pNumText_change();
 
     // 내일 해야 될것 => 회원가입 성공시 로그인 화면으로 바꾸고, 로그인 성공 팝업 띄우기!!!!!!!!!!!!!!!!!!
     // connect는 mainwindow에서 시그널도 mainwindow에서,리시버와 슬롯 함수를 login 클래스에서 해야됨!!!!

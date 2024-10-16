@@ -17,7 +17,7 @@
    <item row="0" column="1">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="login">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -28,6 +28,9 @@
            <width>0</width>
            <height>300</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -43,6 +46,11 @@
               <width>0</width>
               <height>180</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
@@ -136,6 +144,11 @@
           </item>
           <item>
            <widget class="QFrame" name="frame_4">
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -269,6 +282,11 @@
               <height>300</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -295,7 +313,17 @@
               <widget class="QLineEdit" name="s_pwText"/>
              </item>
              <item row="0" column="2">
-              <widget class="QLineEdit" name="s_idText"/>
+              <widget class="QLineEdit" name="s_idText">
+               <property name="minimumSize">
+                <size>
+                 <width>180</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+              </widget>
              </item>
              <item row="2" column="3">
               <widget class="QPushButton" name="pnumDupChkBtn">
@@ -414,6 +442,11 @@
           </item>
           <item>
            <widget class="QFrame" name="frame_8">
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -526,6 +559,11 @@
               <height>0</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -621,6 +659,11 @@
               <height>70</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -648,6 +691,11 @@
               <width>0</width>
               <height>123</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
@@ -761,6 +809,11 @@
               <height>230</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -866,6 +919,11 @@
               <height>70</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
             </property>
@@ -893,6 +951,11 @@
               <width>0</width>
               <height>123</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame {
+    border: none;
+}</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::Shape::StyledPanel</enum>
@@ -983,6 +1046,38 @@
     <hint type="destinationlabel">
      <x>351</x>
      <y>387</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>i_pNumText</sender>
+   <signal>returnPressed()</signal>
+   <receiver>idSearchBtn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>334</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>p_emailText</sender>
+   <signal>returnPressed()</signal>
+   <receiver>pwSearchBtn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>399</x>
+     <y>265</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>390</x>
+     <y>309</y>
     </hint>
    </hints>
   </connection>

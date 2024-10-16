@@ -146,6 +146,7 @@ public:
         frame_2 = new QFrame(login);
         frame_2->setObjectName("frame_2");
         frame_2->setMinimumSize(QSize(0, 300));
+        frame_2->setStyleSheet(QString::fromUtf8(""));
         frame_2->setFrameShape(QFrame::Shape::StyledPanel);
         frame_2->setFrameShadow(QFrame::Shadow::Raised);
         verticalLayout = new QVBoxLayout(frame_2);
@@ -153,6 +154,9 @@ public:
         frame_3 = new QFrame(frame_2);
         frame_3->setObjectName("frame_3");
         frame_3->setMinimumSize(QSize(0, 180));
+        frame_3->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_3->setFrameShape(QFrame::Shape::StyledPanel);
         frame_3->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_3 = new QGridLayout(frame_3);
@@ -202,6 +206,9 @@ public:
 
         frame_4 = new QFrame(frame_2);
         frame_4->setObjectName("frame_4");
+        frame_4->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_4->setFrameShape(QFrame::Shape::StyledPanel);
         frame_4->setFrameShadow(QFrame::Shadow::Raised);
         horizontalLayout = new QHBoxLayout(frame_4);
@@ -282,6 +289,9 @@ public:
         frame_7 = new QFrame(frame_6);
         frame_7->setObjectName("frame_7");
         frame_7->setMinimumSize(QSize(0, 300));
+        frame_7->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_7->setFrameShape(QFrame::Shape::StyledPanel);
         frame_7->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_4 = new QGridLayout(frame_7);
@@ -302,6 +312,8 @@ public:
 
         s_idText = new QLineEdit(frame_7);
         s_idText->setObjectName("s_idText");
+        s_idText->setMinimumSize(QSize(180, 0));
+        s_idText->setStyleSheet(QString::fromUtf8(""));
 
         gridLayout_4->addWidget(s_idText, 0, 2, 1, 1);
 
@@ -374,6 +386,9 @@ public:
 
         frame_8 = new QFrame(frame_6);
         frame_8->setObjectName("frame_8");
+        frame_8->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_8->setFrameShape(QFrame::Shape::StyledPanel);
         frame_8->setFrameShadow(QFrame::Shadow::Raised);
         horizontalLayout_2 = new QHBoxLayout(frame_8);
@@ -430,6 +445,9 @@ public:
         frame_11 = new QFrame(frame_10);
         frame_11->setObjectName("frame_11");
         frame_11->setMinimumSize(QSize(0, 0));
+        frame_11->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_11->setFrameShape(QFrame::Shape::StyledPanel);
         frame_11->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_5 = new QGridLayout(frame_11);
@@ -473,6 +491,9 @@ public:
         frame_17 = new QFrame(frame_10);
         frame_17->setObjectName("frame_17");
         frame_17->setMinimumSize(QSize(0, 70));
+        frame_17->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_17->setFrameShape(QFrame::Shape::StyledPanel);
         frame_17->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_7 = new QGridLayout(frame_17);
@@ -489,6 +510,9 @@ public:
         frame_12 = new QFrame(frame_10);
         frame_12->setObjectName("frame_12");
         frame_12->setMinimumSize(QSize(0, 123));
+        frame_12->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_12->setFrameShape(QFrame::Shape::StyledPanel);
         frame_12->setFrameShadow(QFrame::Shadow::Raised);
         horizontalLayout_3 = new QHBoxLayout(frame_12);
@@ -545,6 +569,9 @@ public:
         frame_15 = new QFrame(frame_14);
         frame_15->setObjectName("frame_15");
         frame_15->setMinimumSize(QSize(0, 230));
+        frame_15->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_15->setFrameShape(QFrame::Shape::StyledPanel);
         frame_15->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_6 = new QGridLayout(frame_15);
@@ -604,6 +631,9 @@ public:
         frame_18 = new QFrame(frame_14);
         frame_18->setObjectName("frame_18");
         frame_18->setMinimumSize(QSize(0, 70));
+        frame_18->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_18->setFrameShape(QFrame::Shape::StyledPanel);
         frame_18->setFrameShadow(QFrame::Shadow::Raised);
         gridLayout_8 = new QGridLayout(frame_18);
@@ -620,6 +650,9 @@ public:
         frame_16 = new QFrame(frame_14);
         frame_16->setObjectName("frame_16");
         frame_16->setMinimumSize(QSize(0, 123));
+        frame_16->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"}"));
         frame_16->setFrameShape(QFrame::Shape::StyledPanel);
         frame_16->setFrameShadow(QFrame::Shadow::Raised);
         horizontalLayout_4 = new QHBoxLayout(frame_16);
@@ -652,6 +685,8 @@ public:
         retranslateUi(Login);
         QObject::connect(l_pwText, &QLineEdit::editingFinished, loginBtn, qOverload<>(&QPushButton::click));
         QObject::connect(s_emailText, &QLineEdit::returnPressed, signUpBtn, qOverload<>(&QPushButton::click));
+        QObject::connect(i_pNumText, &QLineEdit::returnPressed, idSearchBtn, qOverload<>(&QPushButton::click));
+        QObject::connect(p_emailText, &QLineEdit::returnPressed, pwSearchBtn, qOverload<>(&QPushButton::click));
 
         stackedWidget->setCurrentIndex(1);
 

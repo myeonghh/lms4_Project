@@ -8,6 +8,15 @@ Login::Login(QWidget *parent)
     ui->setupUi(this);
 
     pageMove(LOGIN);
+    ui->s_idText->setPlaceholderText("아이디를 입력하세요");
+    ui->s_pwText->setPlaceholderText("비밀번호를 입력하세요");
+    ui->s_pNumText->setPlaceholderText("전화번호를 입력하세요");
+    ui->s_emailText->setPlaceholderText("이메일을 입력하세요");
+    ui->i_pNumText->setPlaceholderText("전화번호를 입력하세요");
+    ui->p_idText->setPlaceholderText("아이디를 입력하세요");
+    ui->p_pNumText->setPlaceholderText("비밀번호를 입력하세요");
+    ui->p_emailText->setPlaceholderText("이메일을 입력하세요");
+
     connect(ui->toSignUpBtn, &QPushButton::clicked, this, [this](){pageMove(SIGNUP);});
     connect(ui->toSearchIdBtn, &QPushButton::clicked, this, [this](){pageMove(IDSEARCH);});
     connect(ui->toSearchPwBtn, &QPushButton::clicked, this, [this](){pageMove(PWSEARCH);});
@@ -23,11 +32,26 @@ Login::Login(QWidget *parent)
     connect(ui->idSearchBtn, &QPushButton::clicked, this, &Login::idSearch);
     connect(ui->pwSearchBtn, &QPushButton::clicked, this, &Login::pwSearch);
 
+    connect(ui->s_idText, &QLineEdit::textChanged, this, &Login::idText_change);
+    connect(ui->s_pNumText, &QLineEdit::textChanged, this, &Login::pNumText_change);
+
 }
 
 Login::~Login()
 {
     delete ui;
+}
+
+void Login::idText_change()
+{
+    id_dup_chk = false;
+    ui->idDupChkText->clear();
+}
+
+void Login::pNumText_change()
+{
+    pNum_dup_chk = false;
+    ui->pnumDupChkText->clear();
 }
 
 void Login::signUp_operate(QString info)
