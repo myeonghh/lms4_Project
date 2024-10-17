@@ -688,7 +688,7 @@ public:
         QObject::connect(i_pNumText, &QLineEdit::returnPressed, idSearchBtn, qOverload<>(&QPushButton::click));
         QObject::connect(p_emailText, &QLineEdit::returnPressed, pwSearchBtn, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(1);
+        stackedWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(Login);

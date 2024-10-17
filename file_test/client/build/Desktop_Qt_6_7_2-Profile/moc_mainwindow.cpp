@@ -52,12 +52,21 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "on_pushButton_sendAttachment_clicked",
     "slot_displayMessage",
     "str",
-    "send_message",
+    "send_toon_info",
     "type",
+    "send_user_info",
     "id",
     "pw",
     "phone_num",
-    "email"
+    "email",
+    "create_toonInfo_model",
+    "QString&",
+    "toonlist",
+    "create_toonList_model",
+    "view_double_clicked",
+    "QModelIndex",
+    "index",
+    "on_e_back_btn_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -70,7 +79,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      12,   14, // methods
+      18,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -78,20 +87,26 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   86,    2, 0x06,    1 /* Public */,
-       3,    1,   89,    2, 0x06,    3 /* Public */,
-       5,    1,   92,    2, 0x06,    5 /* Public */,
-       6,    1,   95,    2, 0x06,    7 /* Public */,
-       7,    1,   98,    2, 0x06,    9 /* Public */,
+       1,    1,  122,    2, 0x06,    1 /* Public */,
+       3,    1,  125,    2, 0x06,    3 /* Public */,
+       5,    1,  128,    2, 0x06,    5 /* Public */,
+       6,    1,  131,    2, 0x06,    7 /* Public */,
+       7,    1,  134,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    0,  101,    2, 0x08,   11 /* Private */,
-       9,    1,  102,    2, 0x08,   12 /* Private */,
-      12,    0,  105,    2, 0x08,   14 /* Private */,
-      13,    0,  106,    2, 0x08,   15 /* Private */,
-      14,    0,  107,    2, 0x08,   16 /* Private */,
-      15,    1,  108,    2, 0x08,   17 /* Private */,
-      17,    5,  111,    2, 0x08,   19 /* Private */,
+       8,    0,  137,    2, 0x08,   11 /* Private */,
+       9,    1,  138,    2, 0x08,   12 /* Private */,
+      12,    0,  141,    2, 0x08,   14 /* Private */,
+      13,    0,  142,    2, 0x08,   15 /* Private */,
+      14,    0,  143,    2, 0x08,   16 /* Private */,
+      15,    1,  144,    2, 0x08,   17 /* Private */,
+      17,    2,  147,    2, 0x08,   19 /* Private */,
+      17,    1,  152,    2, 0x28,   22 /* Private | MethodCloned */,
+      19,    5,  155,    2, 0x08,   24 /* Private */,
+      24,    1,  166,    2, 0x08,   30 /* Private */,
+      27,    1,  169,    2, 0x08,   32 /* Private */,
+      28,    1,  172,    2, 0x08,   34 /* Private */,
+      31,    0,  175,    2, 0x08,   36 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,
@@ -107,7 +122,13 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,   16,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString,   18,   19,   20,   21,   22,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString,   18,   16,
+    QMetaType::Void, QMetaType::Int,   18,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString,   18,   20,   21,   22,   23,
+    QMetaType::Void, 0x80000000 | 25,   26,
+    QMetaType::Void, 0x80000000 | 25,   26,
+    QMetaType::Void, 0x80000000 | 29,   30,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -150,13 +171,31 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'slot_displayMessage'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'send_message'
+        // method 'send_toon_info'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'send_toon_info'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'send_user_info'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'create_toonInfo_model'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QString &, std::false_type>,
+        // method 'create_toonList_model'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QString &, std::false_type>,
+        // method 'view_double_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QModelIndex &, std::false_type>,
+        // method 'on_e_back_btn_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -178,7 +217,13 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 8: _t->on_pushButton_sendMessage_clicked(); break;
         case 9: _t->on_pushButton_sendAttachment_clicked(); break;
         case 10: _t->slot_displayMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 11: _t->send_message((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[5]))); break;
+        case 11: _t->send_toon_info((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 12: _t->send_toon_info((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 13: _t->send_user_info((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[5]))); break;
+        case 14: _t->create_toonInfo_model((*reinterpret_cast< std::add_pointer_t<QString&>>(_a[1]))); break;
+        case 15: _t->create_toonList_model((*reinterpret_cast< std::add_pointer_t<QString&>>(_a[1]))); break;
+        case 16: _t->view_double_clicked((*reinterpret_cast< std::add_pointer_t<QModelIndex>>(_a[1]))); break;
+        case 17: _t->on_e_back_btn_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -251,13 +296,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 18)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 18;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 18)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 18;
     }
     return _id;
 }

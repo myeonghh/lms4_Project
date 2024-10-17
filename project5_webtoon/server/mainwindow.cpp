@@ -170,229 +170,287 @@ void MainWindow::slot_readSocket()
     // 이 소켓이 실제로 데이터를 보낸 클라이언트의 소켓.
     QTcpSocket* socket = reinterpret_cast<QTcpSocket*>(sender());
 
-    // [ex.02.7.2]
-    // 클라이언트로부터 수신한 데이터를 임시로 저장할 QByteArray 타입의 buffer를 생성.
-    // 이 buffer는 나중에 클라이언트로부터 수신한 전체 데이터를 저장하게 됨.
-    QByteArray buffer;
-
-    // [ex.02.7.3]
-    // QDataStream을 사용하여 소켓으로부터 데이터를 읽어들임.
-    // 데이터 스트림에서 버전을 설정하는 이유는 서버와 클라이언트가 같은 Qt 버전을 사용해 데이터 형식을 호환하도록 하기 위함.
-    QDataStream socketStream(socket);
-    socketStream.setVersion(QDataStream::Qt_5_15);
-
-    // 트랜잭션을 시작.
-    //  startTransaction()은 데이터의 완전성을 보장하기 위한 작업으로,  데이터를 읽는 동안 문제가 발생하면 롤백할 수 있음.
-    socketStream.startTransaction();
-
-    // 소켓으로부터 데이터를 읽어 buffer에 저장함.
-    socketStream >> buffer;
-
-    // 데이터를 모두 읽지 못한 경우(예: 데이터가 아직 모두 도착하지 않았을 때) 트랜잭션을 완료하지 않고 데이터를 기다리겠다는 메시지를 출력함.
-    // commitTransaction()은 트랜잭션이 성공적으로 완료되었는지 확인하는 함수.
-    if (!socketStream.commitTransaction())
+    while (socket->bytesAvailable())
     {
-        // 소켓의 고유 소켓 디스크립터를 사용해 어떤 소켓이 데이터를 보내는지 식별하고, 대기 중이라는 메시지 시그널 emit.
-        QString message = QString("%1 :: Waiting for more data to come..").arg(socket->socketDescriptor());
-        emit singal_newMessage(message);
-        return;
-    }
 
-    // [ex.02.7.4]
-    // 데이터의 첫 128바이트는 헤더로 사용됨.
-    // 헤더는 전송된 데이터가 메시지인지 파일인지를 구분하는 정보를 포함하고 있음.
-    // mid(0, 128)을 통해 buffer의 처음 128바이트를 추출하여 header 변수에 저장함.
-    QString header = buffer.mid(0,128);
+        // [ex.02.7.2]
+        // 클라이언트로부터 수신한 데이터를 임시로 저장할 QByteArray 타입의 buffer를 생성.
+        // 이 buffer는 나중에 클라이언트로부터 수신한 전체 데이터를 저장하게 됨.
+        QByteArray buffer;
 
-    // 헤더를 파싱하여 첫 번째 값인 fileType(데이터 타입: message 또는 attachment)을 확인.
-    // header는 "fileType:attachment,fileName:example.txt,fileSize:1024;" 형식으로 데이터를 담고 있으며,
-    // 이를 콤마(,)와 콜론(:)으로 분리하여 fileType을 추출.
-    QString fileType = header.split(",")[0].split(":")[1];
+        // [ex.02.7.3]
+        // QDataStream을 사용하여 소켓으로부터 데이터를 읽어들임.
+        // 데이터 스트림에서 버전을 설정하는 이유는 서버와 클라이언트가 같은 Qt 버전을 사용해 데이터 형식을 호환하도록 하기 위함.
+        QDataStream socketStream(socket);
+        socketStream.setVersion(QDataStream::Qt_5_15);
 
-    // 나머지 데이터는 실제 전송된 파일 또는 메시지 데이터
-    // 128바이트 이후부터는 실제 파일 혹은 메시지이므로 buffer에서 그 부분만 남김.
-    buffer = buffer.mid(128);
+        // 트랜잭션을 시작.
+        //  startTransaction()은 데이터의 완전성을 보장하기 위한 작업으로,  데이터를 읽는 동안 문제가 발생하면 롤백할 수 있음.
+        socketStream.startTransaction();
 
-    // QSqlQuery qry;
-    // qry.prepare( "SELECT ID,PASSWORD FROM todo.tasks WHERE ID = :CHA AND PASSWORD = :SOOBIN" );
-    // qry.bindValue(":CHA",id);
-    // qry.bindValue(":SOOBIN",ps);
-    QString msg = buffer;
-    QString id, pw, phone_num, email;
-    QSqlQuery qry;
-    QStringList msgParts;
-
-    msgParts = msg.split(",");
-
-    if (fileType == "login")
-    {
-        id = msgParts[0];
-        pw = msgParts[1];
-
-        qry.prepare("SELECT * FROM USERS WHERE ID = :id AND PW = :pw");
-        qry.bindValue(":id", id);
-        qry.bindValue(":pw", pw);
-        qry.exec();
-
-        if (qry.next()) // 아이디 비밀번호 일치
+        // 소켓으로부터 데이터를 읽어 buffer에 저장함.
+        socketStream >> buffer;
+        qDebug() << buffer;
+        // 데이터를 모두 읽지 못한 경우(예: 데이터가 아직 모두 도착하지 않았을 때) 트랜잭션을 완료하지 않고 데이터를 기다리겠다는 메시지를 출력함.
+        // commitTransaction()은 트랜잭션이 성공적으로 완료되었는지 확인하는 함수.
+        if (!socketStream.commitTransaction())
         {
-            sendMessage(socket, LOGININFO, "login success");
-        }
-        else // 아이디 or 비밀번호 불일치
-        {
-            sendMessage(socket, LOGININFO, "login fail");
+            // 소켓의 고유 소켓 디스크립터를 사용해 어떤 소켓이 데이터를 보내는지 식별하고, 대기 중이라는 메시지 시그널 emit.
+            QString message = QString("%1 :: Waiting for more data to come..").arg(socket->socketDescriptor());
+            emit singal_newMessage(message);
+            return;
         }
 
-    }
-    else if (fileType == "signUp")
-    {
-        id = msgParts[0];
-        pw = msgParts[1];
-        phone_num = msgParts[2];
-        email = msgParts[3];
+        // [ex.02.7.4]
+        // 데이터의 첫 128바이트는 헤더로 사용됨.
+        // 헤더는 전송된 데이터가 메시지인지 파일인지를 구분하는 정보를 포함하고 있음.
+        // mid(0, 128)을 통해 buffer의 처음 128바이트를 추출하여 header 변수에 저장함.
+        QString header = buffer.mid(0,128);
 
-        qry.prepare("INSERT INTO USERS "
-                    "(ID, PW, PHONE_NUM, EMAIL) "
-                    "VALUES "
-                    "(:id, :pw, :pnum, :email)");
+        // 헤더를 파싱하여 첫 번째 값인 fileType(데이터 타입: message 또는 attachment)을 확인.
+        // header는 "fileType:attachment,fileName:example.txt,fileSize:1024;" 형식으로 데이터를 담고 있으며,
+        // 이를 콤마(,)와 콜론(:)으로 분리하여 fileType을 추출.
+        QString fileType = header.split(",")[0].split(":")[1];
 
-        qry.bindValue(":id", id);
-        qry.bindValue(":pw", pw);
-        qry.bindValue(":pnum", phone_num);
-        qry.bindValue(":email", email);
+        // 나머지 데이터는 실제 전송된 파일 또는 메시지 데이터
+        // 128바이트 이후부터는 실제 파일 혹은 메시지이므로 buffer에서 그 부분만 남김.
+        buffer = buffer.mid(128);
 
-        if(qry.exec())
+        // QSqlQuery qry;
+        // qry.prepare( "SELECT ID,PASSWORD FROM todo.tasks WHERE ID = :CHA AND PASSWORD = :SOOBIN" );
+        // qry.bindValue(":CHA",id);
+        // qry.bindValue(":SOOBIN",ps);
+        QString msg = buffer;
+        QString id, pw, phone_num, email;
+        QSqlQuery qry;
+        QStringList msgParts;
+
+        msgParts = msg.split(",");
+
+        if (fileType == "login")
         {
-            qDebug() << "인서트 성공!!!!!";
-            sendMessage(socket, SIGNUPINFO, "signUp success");
+            id = msgParts[0];
+            pw = msgParts[1];
+
+            qry.prepare("SELECT * FROM USERS WHERE ID = :id AND PW = :pw");
+            qry.bindValue(":id", id);
+            qry.bindValue(":pw", pw);
+            qry.exec();
+
+            if (qry.next()) // 아이디 비밀번호 일치
+            {
+                sendMessage(socket, LOGININFO, "login success");
+            }
+            else // 아이디 or 비밀번호 불일치
+            {
+                sendMessage(socket, LOGININFO, "login fail");
+            }
+
         }
+        else if (fileType == "signUp")
+        {
+            id = msgParts[0];
+            pw = msgParts[1];
+            phone_num = msgParts[2];
+            email = msgParts[3];
+
+            qry.prepare("INSERT INTO USERS "
+                        "(ID, PW, PHONE_NUM, EMAIL) "
+                        "VALUES "
+                        "(:id, :pw, :pnum, :email)");
+
+            qry.bindValue(":id", id);
+            qry.bindValue(":pw", pw);
+            qry.bindValue(":pnum", phone_num);
+            qry.bindValue(":email", email);
+
+            if(qry.exec())
+            {
+                sendMessage(socket, SIGNUPINFO, "signUp success");
+            }
+            else
+            {
+                sendMessage(socket, SIGNUPINFO, "signUp error");
+            }
+
+        }
+        else if (fileType == "idSearch")
+        {
+            phone_num = msgParts[2];
+
+            qry.prepare("SELECT ID FROM USERS WHERE PHONE_NUM = :phone_num");
+            qry.bindValue(":phone_num", phone_num);
+            qry.exec();
+
+            if (qry.next()) // 휴대폰 번호로 아이디 찾음
+            {
+                sendMessage(socket, IDINFO, qry.value(0).toString());
+            }
+            else // 아이디 or 비밀번호 불일치
+            {
+                sendMessage(socket, IDINFO, "idSearch fail");
+            }
+
+        }
+        else if (fileType == "pwSearch")
+        {
+            id = msgParts[0];
+            phone_num = msgParts[2];
+            email = msgParts[3];
+
+            qry.prepare("SELECT PW FROM USERS WHERE ID = :id AND PHONE_NUM = :phone_num AND EMAIL = :email");
+            qry.bindValue(":id", id);
+            qry.bindValue(":phone_num", phone_num);
+            qry.bindValue(":email", email);
+            qry.exec();
+
+            if (qry.next()) // 휴대폰 번호로 아이디 찾음
+            {
+                sendMessage(socket, PWINFO, qry.value(0).toString());
+            }
+            else // 아이디 or 비밀번호 불일치
+            {
+                sendMessage(socket, PWINFO, "pwSearch fail");
+            }
+
+
+        }
+        else if (fileType == "idDupChk")
+        {
+            id = msgParts[0];
+
+            // 아이디 중복 확인
+            qry.prepare("SELECT * FROM USERS WHERE ID = :id");
+            qry.bindValue(":id", id);
+            qry.exec();
+
+            if (qry.next()) // 중복일 경우
+            {
+                sendMessage(socket, SIGNUPINFO, "signUp idDup");
+            }
+            else // 중복이 아닌 경우
+            {
+                sendMessage(socket, SIGNUPINFO, "signUp !idDup");
+            }
+        }
+        else if (fileType == "pNumDupChk")
+        {
+            phone_num = msgParts[2];
+
+            // 휴대폰 번호 중복 확인
+            qry.prepare("SELECT * FROM USERS WHERE PHONE_NUM = :phone_num");
+            qry.bindValue(":phone_num", phone_num);
+            qry.exec();
+
+            if (qry.next()) // 중복일 경우
+            {
+                sendMessage(socket, SIGNUPINFO, "signUp phoneNumDup");
+            }
+            else // 중복이 아닌 경우
+            {
+                sendMessage(socket, SIGNUPINFO, "signUp !phoneNumDup");
+            }
+        }
+        else if (fileType == "tooninfo")
+        {
+            QStringList toon_info_list;
+            QString toon_info_str;
+            qDebug() << "여기야11";
+            qry.prepare("SELECT * FROM TOON_INFO");
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString t_id = qry.value(0).toString();
+                    QString t_title = qry.value(1).toString();
+                    QString t_author = qry.value(2).toString();
+                    QString t_day = qry.value(3).toString();
+                    toon_info_list << QString("%1/%2/%3/%4").arg(t_id).arg(t_title).arg(t_author).arg(t_day);
+                }
+                toon_info_str = toon_info_list.join("\n");
+                sendMessage(socket, TOONINFO, toon_info_str);
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "toonlist")
+        {
+            QStringList toon_list;
+            QString toon_list_str;
+            qDebug() << "여기야33";
+            qry.prepare("SELECT * FROM WEBTOON.TOON_EPI A JOIN WEBTOON.TOON_INFO B ON A.TOON_ID = B.TOON_ID");
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString epi_id = qry.value(0).toString();
+                    QString t_id = qry.value(1).toString();
+                    QString epi_num = qry.value(2).toString();
+                    QString like_num = qry.value(3).toString();
+                    QString view_num = qry.value(4).toString();
+                    QString t_title = qry.value(6).toString();
+                    QString t_author = qry.value(7).toString();
+                    QString t_day = qry.value(8).toString();
+
+                    toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8").arg(epi_id).arg(t_id).arg(t_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
+                }
+                toon_list_str = toon_list.join("\n");
+                sendMessage(socket, TOONLIST, toon_list_str);
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+
+
+        // [ex.02.7.5]
+        // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
+        if (fileType == "attachment")
+        {
+
+            // 헤더에서 파일 이름을 추출.
+            // "fileName:example.txt" 형식으로 되어 있으므로 이를 분리하여 실제 파일 이름을 얻는다.
+            QString fileName = header.split(",")[1].split(":")[1];
+
+            // 파일 확장자를 추출. 파일 이름에서 "."을 기준으로 확장자를 분리하여 저장한다.
+            QString ext = fileName.split(".")[1];
+
+            // 헤더에서 파일 크기 추출.  "fileSize:1024;"와 같은 형식에서 파일 크기를 추출한다.
+            QString size = header.split(",")[2].split(":")[1].split(";")[0];
+
+            // 새 파일 이름을 만듦. 기존 파일 이름에 소켓 디스크립터를 덧붙여 이름을 유일하게 만든다.
+            // 이렇게 하면 여러 클라이언트가 동시에 파일을 전송할 때 덮어 씌워지는 것을 방지할 수 있음.
+            QString newFileName = QString("%1_%2.%3").arg(fileName.split(".")[0]).arg(socket->socketDescriptor()).arg(ext);
+
+            // 파일을 저장할 경로를 지정.
+            // QFile 객체를 사용하여 새 파일을 만듦.
+            QFile file("C:/Users/DELL/" + newFileName);
+
+            if (file.open(QFile::WriteOnly))
+            {
+                file.write(buffer);
+                // 데이터를 파일에 쓴 후, 파일을 안전하게 닫음.
+                file.flush();
+                file.close();
+            }
+
+            // 파일이 성공적으로 저장되었다는 메시지를 생성하여 signal_newMessage 시그널을 emit함.
+            QString message = QString("%1 :: %2 of size: %3 bytes has been received").arg(socket->socketDescriptor()).arg(newFileName).arg(size);
+            emit singal_newMessage(message);
+        }
+        // [ex.02.7.6]
+        // fileType이 message(메시지)일 경우, 해당 메시지를 UI에 출력.
         else
         {
-            qDebug() << "인서트 실패!!!!!";
-            sendMessage(socket, SIGNUPINFO, "signUp error");
+            // buffer에 있는 메시지를 출력.  소켓 디스크립터와 메시지 내용을 포함하여 출력한다.
+            QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString(buffer));
+            emit singal_newMessage(message);
         }
-
-    }
-    else if (fileType == "idSearch")
-    {
-        phone_num = msgParts[2];
-
-        qry.prepare("SELECT ID FROM USERS WHERE PHONE_NUM = :phone_num");
-        qry.bindValue(":phone_num", phone_num);
-        qry.exec();
-
-        if (qry.next()) // 휴대폰 번호로 아이디 찾음
-        {
-            sendMessage(socket, IDINFO, qry.value(0).toString());
-        }
-        else // 아이디 or 비밀번호 불일치
-        {
-            sendMessage(socket, IDINFO, "idSearch fail");
-        }
-
-    }
-    else if (fileType == "pwSearch")
-    {
-        id = msgParts[0];
-        phone_num = msgParts[2];
-        email = msgParts[3];
-
-        qry.prepare("SELECT PW FROM USERS WHERE ID = :id AND PHONE_NUM = :phone_num AND EMAIL = :email");
-        qry.bindValue(":id", id);
-        qry.bindValue(":phone_num", phone_num);
-        qry.bindValue(":email", email);
-        qry.exec();
-
-        if (qry.next()) // 휴대폰 번호로 아이디 찾음
-        {
-            sendMessage(socket, PWINFO, qry.value(0).toString());
-        }
-        else // 아이디 or 비밀번호 불일치
-        {
-            sendMessage(socket, PWINFO, "pwSearch fail");
-        }
-
-
-    }
-    else if (fileType == "idDupChk")
-    {
-        id = msgParts[0];
-
-        // 아이디 중복 확인
-        qry.prepare("SELECT * FROM USERS WHERE ID = :id");
-        qry.bindValue(":id", id);
-        qry.exec();
-
-        if (qry.next()) // 중복일 경우
-        {
-            sendMessage(socket, SIGNUPINFO, "signUp idDup");
-        }
-        else // 중복이 아닌 경우
-        {
-            sendMessage(socket, SIGNUPINFO, "signUp !idDup");
-        }
-    }
-    else if (fileType == "pNumDupChk")
-    {
-        phone_num = msgParts[2];
-
-        // 휴대폰 번호 중복 확인
-        qry.prepare("SELECT * FROM USERS WHERE PHONE_NUM = :phone_num");
-        qry.bindValue(":phone_num", phone_num);
-        qry.exec();
-
-        if (qry.next()) // 중복일 경우
-        {
-            sendMessage(socket, SIGNUPINFO, "signUp phoneNumDup");
-        }
-        else // 중복이 아닌 경우
-        {
-            sendMessage(socket, SIGNUPINFO, "signUp !phoneNumDup");
-        }
-    }
-
-
-    // [ex.02.7.5]
-    // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
-    if (fileType == "attachment")
-    {
-        // 헤더에서 파일 이름을 추출.
-        // "fileName:example.txt" 형식으로 되어 있으므로 이를 분리하여 실제 파일 이름을 얻는다.
-        QString fileName = header.split(",")[1].split(":")[1];
-
-        // 파일 확장자를 추출. 파일 이름에서 "."을 기준으로 확장자를 분리하여 저장한다.
-        QString ext = fileName.split(".")[1];
-
-        // 헤더에서 파일 크기 추출.  "fileSize:1024;"와 같은 형식에서 파일 크기를 추출한다.
-        QString size = header.split(",")[2].split(":")[1].split(";")[0];
-
-        // 새 파일 이름을 만듦. 기존 파일 이름에 소켓 디스크립터를 덧붙여 이름을 유일하게 만든다.
-        // 이렇게 하면 여러 클라이언트가 동시에 파일을 전송할 때 덮어 씌워지는 것을 방지할 수 있음.
-        QString newFileName = QString("%1_%2.%3").arg(fileName.split(".")[0]).arg(socket->socketDescriptor()).arg(ext);
-
-        // 파일을 저장할 경로를 지정.
-        // QFile 객체를 사용하여 새 파일을 만듦.
-        QFile file("C:/Users/DELL/" + newFileName);
-
-        if (file.open(QFile::WriteOnly))
-        {
-            file.write(buffer);
-            // 데이터를 파일에 쓴 후, 파일을 안전하게 닫음.
-            file.flush();
-            file.close();
-        }
-
-        // 파일이 성공적으로 저장되었다는 메시지를 생성하여 signal_newMessage 시그널을 emit함.
-        QString message = QString("%1 :: %2 of size: %3 bytes has been received").arg(socket->socketDescriptor()).arg(newFileName).arg(size);
-        emit singal_newMessage(message);
-    }
-    // [ex.02.7.6]
-    // fileType이 message(메시지)일 경우, 해당 메시지를 UI에 출력.
-    else
-    {
-        // buffer에 있는 메시지를 출력.  소켓 디스크립터와 메시지 내용을 포함하여 출력한다.
-        QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString(buffer));
-        emit singal_newMessage(message);
     }
 }
 
@@ -502,6 +560,14 @@ void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
             {
                 header.prepend(QString("fileType:pwInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
             }
+            else if (type == TOONINFO)
+            {
+                header.prepend(QString("fileType:tooninfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == TOONLIST)
+            {
+                header.prepend(QString("fileType:toonlist,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
 
             header.resize(128);
             // message 인코딩 설정하고, QByteArray에 할당하고
@@ -511,7 +577,7 @@ void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
 
             // stream으로 byteArray 정보 전송
             socketStream << byteArray;
-            qDebug()<< QString(byteArray);
+            // qDebug()<< QString(byteArray);
         }
         else
             QMessageBox::critical(this,"QTCPServer","Socket doesn't seem to be opened");

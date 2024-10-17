@@ -27,11 +27,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     loginWidget = new Login();
     loginWidget->show();
 
-    connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_message); // 회원가입 정보 전송 connect
+    connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_user_info); // 회원가입 정보 전송 connect
     connect(this, &MainWindow::operate_info_signal, loginWidget, &Login::signUp_operate);
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
     connect(this, &MainWindow::idSearch_info_signal, loginWidget, &Login::idSearch_operate);
     connect(this, &MainWindow::pwSearch_info_signal, loginWidget, &Login::pwSearch_operate);
+    connect(ui->e_tableView, &QTableView::doubleClicked, this, &MainWindow::view_double_clicked);
 
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
@@ -66,6 +67,8 @@ MainWindow::~MainWindow()
     if(m_socket->isOpen())
         m_socket->close();
     delete ui;
+    delete toonInfo_model;
+    delete toonList_model;
 }
 
 // [ex.02.3]
@@ -101,149 +104,364 @@ void MainWindow::slot_displayError(QAbstractSocket::SocketError socketError)
 // 첨부파일 또는 메시지 수신 처리
 void MainWindow::slot_readSocket()
 {
-    // QByteArray 타입의 buffer를 만들고
-    QByteArray buffer;
-
-    // 서버에 연결된 socket을 stream으로 연결한다.
-    QDataStream socketStream(m_socket);
-    socketStream.setVersion(QDataStream::Qt_5_15);
-
-    // stream으로 데이터를 읽어들이고, buffer로 넘기면
-    socketStream.startTransaction();
-    socketStream >> buffer;
-
-    // stream startTransaction 실행 문제시 에러 표시 후 함수 종료
-    if(!socketStream.commitTransaction())
+    while (m_socket->bytesAvailable())
     {
-        QString message = QString("%1 :: Waiting for more data to come..").arg(m_socket->socketDescriptor());
-        emit signal_newMessage(message);
-        return;
-    }
+        // QByteArray 타입의 buffer를 만들고
+        QByteArray buffer;
 
-    // client 에서 보낸 payload(순수한 데이터, 전달 메시지)를
-    // buffer에서 처음 128 byte 부분만 읽어들여서 header 에 담고 fileType을 찾는다.
-    QString header = buffer.mid(0,128);
-    QString fileType = header.split(",")[0].split(":")[1];
+        // 서버에 연결된 socket을 stream으로 연결한다.
+        QDataStream socketStream(m_socket);
+        socketStream.setVersion(QDataStream::Qt_5_15);
 
-    // buffer의 128 byte 이후 부분 buffer에 다시 담음.
-    buffer = buffer.mid(128);
-    QString msg = buffer;
+        // stream으로 데이터를 읽어들이고, buffer로 넘기면
+        socketStream.startTransaction();
+        socketStream >> buffer;
 
-    if (fileType == "signUpInfo")
-    {
-        if (msg == "signUp success") // 회원가입 성공
+        // stream startTransaction 실행 문제시 에러 표시 후 함수 종료
+        if(!socketStream.commitTransaction())
         {
-            emit operate_info_signal("signUp success");
+            QString message = QString("%1 :: Waiting for more data to come..").arg(m_socket->socketDescriptor());
+            emit signal_newMessage(message);
+            return;
         }
-        else if (msg == "signUp error") // 회원가입 에러
-        {
-            emit operate_info_signal("signUp error");
-        }
-        else if (msg == "signUp idDup") // 아이디 중복
-        {
-            emit operate_info_signal("signUp idDup");
-        }
-        else if (msg == "signUp !idDup") // 아이디 중복 아님
-        {
-            emit operate_info_signal("signUp !idDup");
-        }
-        else if (msg == "signUp phoneNumDup") // 휴대폰 번호 중복
-        {
-            emit operate_info_signal("signUp phoneNumDup");
-        }
-        else if (msg == "signUp !phoneNumDup") // 휴대폰 번호 중복 아님
-        {
-            emit operate_info_signal("signUp !phoneNumDup");
-        }
-    }
-    else if (fileType == "loginInfo")
-    {
-        if (msg == "login success")
-        {
-            emit login_info_signal("login success");
-            loginWidget->hide();
-            this->window()->show();
-        }
-        else if (msg == "login fail")
-        {
-            emit login_info_signal("login fail");
-        }
-    }
-    else if (fileType == "idInfo")
-    {
-        if (msg == "idSearch fail") // 아이디 찾기 실패
-        {
-            emit idSearch_info_signal("idSearch fail");
-        }
-        else
-        {
-            emit idSearch_info_signal(msg); // 아이디 찾기 성공
-        }
-    }
-    else if (fileType == "pwInfo")
-    {
-        if (msg == "pwSearch fail") // 비밀번호 찾기 실패
-        {
-            emit pwSearch_info_signal("pwSearch fail");
-        }
-        else
-        {
-            emit pwSearch_info_signal(msg); // 아이디 찾기 성공
-        }
-    }
 
+        // client 에서 보낸 payload(순수한 데이터, 전달 메시지)를
+        // buffer에서 처음 128 byte 부분만 읽어들여서 header 에 담고 fileType을 찾는다.
+        QString header = buffer.mid(0,128);
+        QString fileType = header.split(",")[0].split(":")[1];
 
+        // buffer의 128 byte 이후 부분 buffer에 다시 담음.
+        buffer = buffer.mid(128);
+        QString msg = buffer;
 
-    // fileType이 attachment 라면 파일 수신 로직을 실행하고
-    // fileType이 message 라면 문장 수신 로직을 실핸한다.
-    if(fileType=="attachment")
-    {
-        // 파일 전송은, 1)저장될 파일 이름, 2) 파일 확장자 3) 파일 크기 정보가 필요하다.
-        QString fileName = header.split(",")[1].split(":")[1];
-        QString ext = fileName.split(".")[1];
-        QString size = header.split(",")[2].split(":")[1].split(";")[0];
-
-        // 파일 전송 메시지를 받으면, 메시지 박스를 띄워서 전송 받을 것인지 확인한다.
-        // 메시지 박스에서 yes를 선택하면 파일을 읽는다.
-        if (QMessageBox::Yes == QMessageBox::question(this, "QTCPServer", QString("You are receiving an attachment from sd:%1 of size: %2 bytes, called %3. Do you want to accept it?").arg(m_socket->socketDescriptor()).arg(size).arg(fileName)))
+        if (fileType == "signUpInfo")
         {
-            // 저장될 파일의 경로를 설정하고, 파일 이름과, 확장자를 설정한다.
-            QString filePath = QFileDialog::getSaveFileName(this, tr("Save File"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)+"/"+fileName, QString("File (*.%1)").arg(ext));
-
-            // file 객체를 위에서 설정한 경로를 기반으로 연결하고
-            QFile file(filePath);
-
-            // file 객체를 열고, buffer에 들어있는 byte를 쓴다(내보낸다. 통신이랑 같다).
-            if(file.open(QIODevice::WriteOnly))
+            if (msg == "signUp success") // 회원가입 성공
             {
-                file.write(buffer);
+                emit operate_info_signal("signUp success");
+            }
+            else if (msg == "signUp error") // 회원가입 에러
+            {
+                emit operate_info_signal("signUp error");
+            }
+            else if (msg == "signUp idDup") // 아이디 중복
+            {
+                emit operate_info_signal("signUp idDup");
+            }
+            else if (msg == "signUp !idDup") // 아이디 중복 아님
+            {
+                emit operate_info_signal("signUp !idDup");
+            }
+            else if (msg == "signUp phoneNumDup") // 휴대폰 번호 중복
+            {
+                emit operate_info_signal("signUp phoneNumDup");
+            }
+            else if (msg == "signUp !phoneNumDup") // 휴대폰 번호 중복 아님
+            {
+                emit operate_info_signal("signUp !phoneNumDup");
+            }
+        }
+        else if (fileType == "loginInfo")
+        {
+            if (msg == "login success") // 로그인 성공
+            {
+                emit login_info_signal("login success");
+                send_toon_info(TOONLIST); // 툰 전체 리스트 모델 생성위해 서버에 메시지 전송
+                send_toon_info(TOONINFO); // 툰 정보 모델 생성위해 서버에 메시지 전송
 
-                // 파일이 저장되는 것에 대한 메시지를 ui에 출력한다.
-                QString message = QString("INFO :: Attachment from sd:%1 successfully stored on disk under the path %2").arg(m_socket->socketDescriptor()).arg(QString(filePath));
-                emit signal_newMessage(message);
+                loginWidget->hide();
+                this->window()->show();
+                ui->e_tableView->show();
+                ui->detailView_frame->hide();
+
+            }
+            else if (msg == "login fail")
+            {
+                emit login_info_signal("login fail");
+            }
+        }
+        else if (fileType == "idInfo")
+        {
+            if (msg == "idSearch fail") // 아이디 찾기 실패
+            {
+                emit idSearch_info_signal("idSearch fail");
             }
             else
-                QMessageBox::critical(this,"QTCPServer", "An error occurred while trying to write the attachment.");
+            {
+                emit idSearch_info_signal(msg); // 아이디 찾기 성공
+            }
         }
-        else
+        else if (fileType == "pwInfo")
         {
-            // 메시지 박스에서 No 전송 거부시 메시지를 출력한다.
-            QString message = QString("INFO :: Attachment from sd:%1 discarded").arg(m_socket->socketDescriptor());
+            if (msg == "pwSearch fail") // 비밀번호 찾기 실패
+            {
+                emit pwSearch_info_signal("pwSearch fail");
+            }
+            else
+            {
+                emit pwSearch_info_signal(msg); // 아이디 찾기 성공
+            }
+        }
+        else if (fileType == "tooninfo")
+        {
+            create_toonInfo_model(msg);
+        }
+        else if (fileType == "toonlist")
+        {
+            create_toonList_model(msg);
+        }
+
+
+
+        // fileType이 attachment 라면 파일 수신 로직을 실행하고
+        // fileType이 message 라면 문장 수신 로직을 실핸한다.
+        if(fileType=="attachment")
+        {
+            // 파일 전송은, 1)저장될 파일 이름, 2) 파일 확장자 3) 파일 크기 정보가 필요하다.
+            QString fileName = header.split(",")[1].split(":")[1];
+            QString ext = fileName.split(".")[1];
+            QString size = header.split(",")[2].split(":")[1].split(";")[0];
+
+            QStandardItemModel *model = new QStandardItemModel;
+
+
+            // 파일 전송 메시지를 받으면, 메시지 박스를 띄워서 전송 받을 것인지 확인한다.
+            // 메시지 박스에서 yes를 선택하면 파일을 읽는다.
+            if (QMessageBox::Yes == QMessageBox::question(this, "QTCPServer", QString("You are receiving an attachment from sd:%1 of size: %2 bytes, called %3. Do you want to accept it?").arg(m_socket->socketDescriptor()).arg(size).arg(fileName)))
+            {
+                // 저장될 파일의 경로를 설정하고, 파일 이름과, 확장자를 설정한다.
+                QString filePath = QFileDialog::getSaveFileName(this, tr("Save File"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)+"/"+fileName, QString("File (*.%1)").arg(ext));
+
+                // file 객체를 위에서 설정한 경로를 기반으로 연결하고
+                QFile file(filePath);
+
+                // file 객체를 열고, buffer에 들어있는 byte를 쓴다(내보낸다. 통신이랑 같다).
+                if(file.open(QIODevice::WriteOnly))
+                {
+                    file.write(buffer);
+
+                    // 파일이 저장되는 것에 대한 메시지를 ui에 출력한다.
+                    QString message = QString("INFO :: Attachment from sd:%1 successfully stored on disk under the path %2").arg(m_socket->socketDescriptor()).arg(QString(filePath));
+                    emit signal_newMessage(message);
+                }
+                else
+                    QMessageBox::critical(this,"QTCPServer", "An error occurred while trying to write the attachment.");
+            }
+            else
+            {
+                // 메시지 박스에서 No 전송 거부시 메시지를 출력한다.
+                QString message = QString("INFO :: Attachment from sd:%1 discarded").arg(m_socket->socketDescriptor());
+                emit signal_newMessage(message);
+            }
+        }
+        else if(fileType=="message")
+        {
+            // 전송된 메시지를 출력한다.
+            QString message = QString("%1 :: %2").arg(m_socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
             emit signal_newMessage(message);
         }
     }
-    else if(fileType=="message")
+}
+
+void MainWindow::create_day_view()
+{
+    QStringList day_str_list;
+    QList<QTableView*> day_view_list;
+
+    day_str_list <<"월"<< "화"<< "수"<< "목"<< "금"<< "토"<< "일";
+    day_view_list.append(ui->tableView_mon);
+    day_view_list.append(ui->tableView_tue);
+    day_view_list.append(ui->tableView_wed);
+    day_view_list.append(ui->tableView_thu);
+    day_view_list.append(ui->tableView_fri);
+    day_view_list.append(ui->tableView_sat);
+    day_view_list.append(ui->tableView_sun);
+
+    qDebug() << "여기야1";
+    for (int i = 0; i < day_view_list.size(); i++)
     {
-        // 전송된 메시지를 출력한다.
-        QString message = QString("%1 :: %2").arg(m_socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
-        emit signal_newMessage(message);
+        qDebug() << "여기야2";
+        // QSortFilterProxyModel을 생성하고 원본 모델과 연결
+        QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+        qDebug() << "여기야A";
+        proxyModel->setSourceModel(toonList_model);
+        qDebug() << "여기야3";
+        //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
+        proxyModel->setFilterRegularExpression(QRegularExpression(day_str_list[i]));
+        proxyModel->setFilterKeyColumn(5);// 필터링할 열
+        qDebug() << "여기야4";
+        // 필터링된 결과를 View에 출력
+        day_view_list[i]->setModel(proxyModel);
+        day_view_list[i]->resizeColumnsToContents();
+        day_view_list[i]->hideColumn(0);
+        day_view_list[i]->hideColumn(1);
+        day_view_list[i]->show();
+        qDebug() << "여기야5";
     }
+}
+
+void MainWindow::view_double_clicked(const QModelIndex &index)
+{
+    int return_column = 0; // 웹툰 일련번호 컬럼 인덱스번호
+    int clicked_row = index.row();
+    // 어떤 칸을 클릭해도 해당 열의 웹툰 일련번호가 리턴됨
+    QString data = index.sibling(clicked_row, return_column).data().toString();
+
+    // QSortFilterProxyModel을 생성하고 원본 모델과 연결
+    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel();
+    proxyModel->setSourceModel(toonList_model);
+
+    //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
+    proxyModel->setFilterRegularExpression(QRegularExpression(data));
+    proxyModel->setFilterKeyColumn(1);                  // 필터링할 열(여기서는 0번 열)
+
+    // 필터링된 결과를 View에 출력
+    ui->e_detailTableView->setModel(proxyModel);
+    ui->e_detailTableView->resizeColumnsToContents();
+    ui->e_detailTableView->hideColumn(0);
+    ui->e_detailTableView->hideColumn(1);
+    ui->e_detailTableView->show();
+    ui->e_tableView->hide();
+    ui->detailView_frame->show();
+}
+
+void MainWindow::create_toonList_model(QString &toonlist)
+{
+    QStringList str_list = toonlist.split("\n");
+    QStandardItem *epi_id, *t_id, *t_title, *t_author, *t_day, *epi_num, *view_num, *like_num;
+
+    toonList_model = new QStandardItemModel();
+    toonList_model->setColumnCount(8);
+    toonList_model->setHorizontalHeaderLabels(QStringList()<<"일련번호"<<"종류번호"<<"제목"<<"작가"<<"회차"<<"요일"<<"조회수"<<"좋아요수");
+
+    for (const QString &row: str_list)
+    {
+        QStringList columns = row.split("/");
+        if (columns.size() == 8)
+        {
+            epi_id = new QStandardItem(columns[0].trimmed());
+            t_id = new QStandardItem(columns[1].trimmed());
+            t_title = new QStandardItem(columns[2].trimmed());
+            t_author = new QStandardItem(columns[3].trimmed());
+            t_day = new QStandardItem(columns[4].trimmed());
+            epi_num = new QStandardItem(columns[5].trimmed());
+            view_num = new QStandardItem(columns[6].trimmed());
+            like_num = new QStandardItem(columns[7].trimmed());
+
+            t_title->setTextAlignment(Qt::AlignCenter);
+            t_author->setTextAlignment(Qt::AlignCenter);
+            t_day->setTextAlignment(Qt::AlignCenter);
+            epi_num->setTextAlignment(Qt::AlignCenter);
+            view_num->setTextAlignment(Qt::AlignCenter);
+            like_num->setTextAlignment(Qt::AlignCenter);
+
+            QList<QStandardItem*> items;
+            items << epi_id
+                  << t_id
+                  << t_title
+                  << t_author
+                  << epi_num
+                  << t_day
+                  << view_num
+                  << like_num;
+
+            toonList_model->appendRow(items);
+        }
+    }
+    ui->b_tableView->setModel(toonList_model);
+    ui->b_tableView->resizeColumnsToContents();
+    ui->b_tableView->hideColumn(0);
+    ui->b_tableView->hideColumn(1);
+
+    create_day_view();
+}
+
+void MainWindow::create_toonInfo_model(QString &toonlist)
+{
+    QStringList str_list = toonlist.split("\n");
+    QStandardItem *num, *title, *author, *day;
+
+    toonInfo_model = new QStandardItemModel();
+    toonInfo_model->setColumnCount(4);
+    toonInfo_model->setHorizontalHeaderLabels(QStringList()<< "번호" << "제목" << "작가"<< "요일");
+
+    for (const QString &row: str_list)
+    {
+        QStringList columns = row.split("/");
+        if (columns.size() == 4)
+        {
+            num = new QStandardItem(columns[0].trimmed());
+            title = new QStandardItem(columns[1].trimmed());
+            author = new QStandardItem(columns[2].trimmed());
+            day = new QStandardItem(columns[3].trimmed());
+
+            title->setTextAlignment(Qt::AlignCenter);
+            author->setTextAlignment(Qt::AlignCenter);
+            day->setTextAlignment(Qt::AlignCenter);
+
+            QList<QStandardItem*> items;
+            items << num
+                  << title
+                  << author
+                  << day;
+
+            toonInfo_model->appendRow(items);
+        }
+    }
+
+    ui->e_tableView->setModel(toonInfo_model);
+
+    ui->e_tableView->resizeColumnsToContents();
+    ui->e_tableView->hideColumn(0);
+}
+
+
+void MainWindow::send_toon_info(int type, QString str)
+{
+    if(m_socket)
+    {
+        if(m_socket->isOpen())
+        {
+            // stream으로 보내는데
+            QDataStream socketStream(m_socket);
+            socketStream.setVersion(QDataStream::Qt_5_15);
+
+            // 헤더 부분에 fileType을 message로 설정한다.
+            QByteArray header;
+
+            switch (type) {
+            case TOONINFO:
+                header.prepend(QString("fileType:tooninfo,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case TOONLIST:
+                header.prepend(QString("fileType:toonlist,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            default:
+                break;
+            }
+
+            header.resize(128);
+            // message 인코딩 설정하고, QByteArray에 할당하고
+            QByteArray byteArray = str.toUtf8();
+            // header 정보를 앞에 넣어준다.
+            byteArray.prepend(header);
+            // stream으로 byteArray 정보 전송
+            socketStream << byteArray;
+
+        }
+        else
+            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
+    }
+    else
+        QMessageBox::critical(this,"QTCPClient","Not connected");
 }
 
 
 
-//============================== 메시지 서버에 전송 함수  ===================================
-void MainWindow::send_message(int type, QString id = "", QString pw = "", QString phone_num = "", QString email= "")
+
+
+//============================== 회원 정보 메시지 서버에 전송 함수  ===================================
+void MainWindow::send_user_info(int type, QString id = "", QString pw = "", QString phone_num = "", QString email= "")
 {
     if(m_socket)
     {
@@ -290,7 +508,6 @@ void MainWindow::send_message(int type, QString id = "", QString pw = "", QStrin
 
             // stream으로 byteArray 정보 전송
             socketStream << byteArray;
-            qDebug()<<"서버에 회원가입 정보 전송 완료!!";
         }
         else
             QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
@@ -393,3 +610,10 @@ void MainWindow::slot_displayMessage(const QString& str)
 {
     ui->textBrowser_receivedMessages->append(str);
 }
+
+void MainWindow::on_e_back_btn_clicked()
+{
+    ui->detailView_frame->hide();
+    ui->e_tableView->show();
+}
+

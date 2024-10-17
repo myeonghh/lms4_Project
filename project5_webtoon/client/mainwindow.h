@@ -12,6 +12,10 @@
 #include <QString>
 #include <QStandardPaths>
 #include <QTcpSocket>
+#include <QStandardItemModel>
+#include <QTableView>
+#include <QSortFilterProxyModel>
+#include <QRegularExpression>
 #include "login.h"
 
 namespace Ui {
@@ -28,11 +32,14 @@ public:
     ~MainWindow();
 
 private:
-    enum TYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
+    enum USERTYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
+    enum TOONTYPE {TOONINFO = 0, TOONLIST};
     Ui::MainWindow *ui;
     Login *loginWidget;
-    QTcpSocket* m_socket;
-
+    QTcpSocket *m_socket;
+    QStandardItemModel *toonInfo_model;
+    QStandardItemModel *toonList_model;
+    void create_day_view();
 
 signals:
     void signal_newMessage(QString);
@@ -47,8 +54,13 @@ private slots:
     void slot_readSocket();
     void on_pushButton_sendMessage_clicked();
     void on_pushButton_sendAttachment_clicked();
-    void slot_displayMessage(const QString& str);
-    void send_message(int type, QString id, QString pw, QString phone_num, QString email);
+    void slot_displayMessage(const QString &str);
+    void send_toon_info(int type, QString str="");
+    void send_user_info(int type, QString id, QString pw, QString phone_num, QString email);
+    void create_toonInfo_model(QString &toonlist);
+    void create_toonList_model(QString &toonlist);
+    void view_double_clicked(const QModelIndex &index);
+    void on_e_back_btn_clicked();
 };
 
 #endif // MAINWINDOW_H

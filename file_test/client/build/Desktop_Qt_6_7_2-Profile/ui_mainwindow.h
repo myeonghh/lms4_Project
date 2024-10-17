@@ -11,18 +11,24 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -35,18 +41,50 @@ public:
     QStackedWidget *stackedWidget;
     QWidget *page;
     QGridLayout *gridLayout_3;
-    QTabWidget *tabWidget;
-    QWidget *tab;
+    QTabWidget *mainTabWidget;
+    QWidget *entireListTab;
     QGridLayout *gridLayout_4;
-    QTableView *tableView;
-    QWidget *tab_2;
+    QTableView *e_tableView;
+    QFrame *detailView_frame;
+    QVBoxLayout *verticalLayout_2;
+    QTableView *e_detailTableView;
+    QPushButton *e_back_btn;
+    QWidget *dayTab;
     QGridLayout *gridLayout_5;
-    QTabWidget *tabWidget_2;
+    QTabWidget *dayTabWidget;
     QWidget *tab_5;
+    QGridLayout *gridLayout_7;
+    QTableView *tableView_mon;
     QWidget *tab_6;
-    QWidget *tab_3;
-    QLineEdit *lineEdit;
-    QWidget *tab_4;
+    QGridLayout *gridLayout_8;
+    QTableView *tableView_tue;
+    QWidget *tab_7;
+    QGridLayout *gridLayout_9;
+    QTableView *tableView_wed;
+    QWidget *tab_8;
+    QGridLayout *gridLayout_10;
+    QTableView *tableView_thu;
+    QWidget *tab_9;
+    QGridLayout *gridLayout_11;
+    QTableView *tableView_fri;
+    QWidget *tab_10;
+    QGridLayout *gridLayout_12;
+    QTableView *tableView_sat;
+    QWidget *tab_11;
+    QGridLayout *gridLayout_13;
+    QTableView *tableView_sun;
+    QWidget *searchTab;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
+    QComboBox *comboBox;
+    QLabel *label;
+    QLineEdit *toonSearchText;
+    QPushButton *pushButton;
+    QSpacerItem *horizontalSpacer;
+    QTableView *tableView_2;
+    QWidget *bookMarkTab;
+    QGridLayout *gridLayout_6;
+    QTableView *b_tableView;
     QWidget *page_2;
     QWidget *layoutWidget;
     QGridLayout *gridLayout;
@@ -78,15 +116,15 @@ public:
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName("gridLayout_3");
-        tabWidget = new QTabWidget(page);
-        tabWidget->setObjectName("tabWidget");
-        tabWidget->setStyleSheet(QString::fromUtf8("QTabWidget::pane {\n"
+        mainTabWidget = new QTabWidget(page);
+        mainTabWidget->setObjectName("mainTabWidget");
+        mainTabWidget->setStyleSheet(QString::fromUtf8("#mainTabWidget QTabWidget::pane {\n"
 "    background-color: white;\n"
 "    border: 2px solid black;\n"
 "	border-radius:8px\n"
 "}\n"
 "\n"
-"QTabBar::tab {\n"
+"#mainTabWidget QTabBar::tab {\n"
 "    background: white;\n"
 "    border: 3px solid black;\n"
 "    border-radius: 8px; \n"
@@ -99,7 +137,7 @@ public:
 "	font-size: 16px;\n"
 "}\n"
 "\n"
-"QTabBar::tab:selected {\n"
+"#mainTabWidget QTabBar::tab:selected {\n"
 "    background: gray;\n"
 "	color: white;\n"
 "	font-weight: bold;\n"
@@ -109,47 +147,242 @@ public:
 "QTabWidget::tab-bar {  /* \355\203\255 \353\262\204\355\212\274\354\235\204 \352\260\220\354\213\270\353\212\224 \353\260\224 */\n"
 "    left: 20px;  /* \355\203\255 \353\252\251\353\241\235\354\235\264 \354\231\274\354\252\275\354\234\274\353\241\234 \354\241\260\352\270\210 \354\235\264\353\217\231 */\n"
 "}"));
-        tab = new QWidget();
-        tab->setObjectName("tab");
-        gridLayout_4 = new QGridLayout(tab);
+        entireListTab = new QWidget();
+        entireListTab->setObjectName("entireListTab");
+        gridLayout_4 = new QGridLayout(entireListTab);
         gridLayout_4->setSpacing(6);
         gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName("gridLayout_4");
-        tableView = new QTableView(tab);
-        tableView->setObjectName("tableView");
+        e_tableView = new QTableView(entireListTab);
+        e_tableView->setObjectName("e_tableView");
+        QFont font;
+        font.setFamilies({QString::fromUtf8("Ubuntu")});
+        font.setPointSize(13);
+        font.setBold(false);
+        e_tableView->setFont(font);
+        e_tableView->setStyleSheet(QString::fromUtf8(""));
+        e_tableView->setFrameShape(QFrame::Shape::StyledPanel);
+        e_tableView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
+        e_tableView->setTextElideMode(Qt::TextElideMode::ElideMiddle);
+        e_tableView->setGridStyle(Qt::PenStyle::SolidLine);
+        e_tableView->setSortingEnabled(false);
 
-        gridLayout_4->addWidget(tableView, 0, 0, 1, 1);
+        gridLayout_4->addWidget(e_tableView, 0, 0, 1, 1);
 
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName("tab_2");
-        gridLayout_5 = new QGridLayout(tab_2);
+        detailView_frame = new QFrame(entireListTab);
+        detailView_frame->setObjectName("detailView_frame");
+        detailView_frame->setMinimumSize(QSize(0, 0));
+        detailView_frame->setStyleSheet(QString::fromUtf8("#detailView_frame QFrame {\n"
+"    border: none;\n"
+"	padding:0px;\n"
+"}"));
+        detailView_frame->setFrameShape(QFrame::Shape::StyledPanel);
+        detailView_frame->setFrameShadow(QFrame::Shadow::Raised);
+        verticalLayout_2 = new QVBoxLayout(detailView_frame);
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName("verticalLayout_2");
+        e_detailTableView = new QTableView(detailView_frame);
+        e_detailTableView->setObjectName("e_detailTableView");
+        QFont font1;
+        font1.setFamilies({QString::fromUtf8("Ubuntu")});
+        e_detailTableView->setFont(font1);
+        e_detailTableView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
+
+        verticalLayout_2->addWidget(e_detailTableView);
+
+        e_back_btn = new QPushButton(detailView_frame);
+        e_back_btn->setObjectName("e_back_btn");
+
+        verticalLayout_2->addWidget(e_back_btn);
+
+
+        gridLayout_4->addWidget(detailView_frame, 0, 1, 1, 1);
+
+        mainTabWidget->addTab(entireListTab, QString());
+        dayTab = new QWidget();
+        dayTab->setObjectName("dayTab");
+        gridLayout_5 = new QGridLayout(dayTab);
         gridLayout_5->setSpacing(6);
         gridLayout_5->setContentsMargins(11, 11, 11, 11);
         gridLayout_5->setObjectName("gridLayout_5");
-        tabWidget_2 = new QTabWidget(tab_2);
-        tabWidget_2->setObjectName("tabWidget_2");
+        dayTabWidget = new QTabWidget(dayTab);
+        dayTabWidget->setObjectName("dayTabWidget");
+        dayTabWidget->setStyleSheet(QString::fromUtf8("#dayTabWidget QTabWidget::pane {\n"
+"    background-color: white;\n"
+"    border: 2px solid black;\n"
+"	border-radius:8px\n"
+"}\n"
+"\n"
+"#dayTabWidget QTabBar::tab {\n"
+"    background: lightblue;\n"
+"    border: 3px solid black;\n"
+"    border-radius: 8px; \n"
+"    padding: 10px;\n"
+"	margin-right: 10px;\n"
+"	margin-bottom: 5px;\n"
+"	min-width: 65px;  \n"
+"    min-height: 20px;  \n"
+"	color: black;\n"
+"	font-size: 16px;\n"
+"}\n"
+"\n"
+"#dayTabWidget QTabBar::tab:selected {\n"
+"    background: darkblue;\n"
+"	color: white;\n"
+"	font-weight: bold;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QTabWidget::tab-bar {  /* \355\203\255 \353\262\204\355\212\274\354\235\204 \352\260\220\354\213\270\353\212\224 \353\260\224 */\n"
+"    left: 130px;  /* \355\203\255 \353\252\251\353\241\235\354\235\264 \354\231\274\354\252\275\354\234\274\353\241\234 \354\241\260\352\270\210 \354\235\264\353\217\231 */\n"
+"}"));
         tab_5 = new QWidget();
         tab_5->setObjectName("tab_5");
-        tabWidget_2->addTab(tab_5, QString());
+        gridLayout_7 = new QGridLayout(tab_5);
+        gridLayout_7->setSpacing(6);
+        gridLayout_7->setContentsMargins(11, 11, 11, 11);
+        gridLayout_7->setObjectName("gridLayout_7");
+        tableView_mon = new QTableView(tab_5);
+        tableView_mon->setObjectName("tableView_mon");
+
+        gridLayout_7->addWidget(tableView_mon, 0, 0, 1, 1);
+
+        dayTabWidget->addTab(tab_5, QString());
         tab_6 = new QWidget();
         tab_6->setObjectName("tab_6");
-        tabWidget_2->addTab(tab_6, QString());
+        gridLayout_8 = new QGridLayout(tab_6);
+        gridLayout_8->setSpacing(6);
+        gridLayout_8->setContentsMargins(11, 11, 11, 11);
+        gridLayout_8->setObjectName("gridLayout_8");
+        tableView_tue = new QTableView(tab_6);
+        tableView_tue->setObjectName("tableView_tue");
 
-        gridLayout_5->addWidget(tabWidget_2, 0, 0, 1, 1);
+        gridLayout_8->addWidget(tableView_tue, 0, 0, 1, 1);
 
-        tabWidget->addTab(tab_2, QString());
-        tab_3 = new QWidget();
-        tab_3->setObjectName("tab_3");
-        lineEdit = new QLineEdit(tab_3);
-        lineEdit->setObjectName("lineEdit");
-        lineEdit->setGeometry(QRect(490, 30, 113, 25));
-        tabWidget->addTab(tab_3, QString());
-        tab_4 = new QWidget();
-        tab_4->setObjectName("tab_4");
-        tabWidget->addTab(tab_4, QString());
+        dayTabWidget->addTab(tab_6, QString());
+        tab_7 = new QWidget();
+        tab_7->setObjectName("tab_7");
+        gridLayout_9 = new QGridLayout(tab_7);
+        gridLayout_9->setSpacing(6);
+        gridLayout_9->setContentsMargins(11, 11, 11, 11);
+        gridLayout_9->setObjectName("gridLayout_9");
+        tableView_wed = new QTableView(tab_7);
+        tableView_wed->setObjectName("tableView_wed");
 
-        gridLayout_3->addWidget(tabWidget, 0, 0, 1, 1);
+        gridLayout_9->addWidget(tableView_wed, 0, 0, 1, 1);
+
+        dayTabWidget->addTab(tab_7, QString());
+        tab_8 = new QWidget();
+        tab_8->setObjectName("tab_8");
+        gridLayout_10 = new QGridLayout(tab_8);
+        gridLayout_10->setSpacing(6);
+        gridLayout_10->setContentsMargins(11, 11, 11, 11);
+        gridLayout_10->setObjectName("gridLayout_10");
+        tableView_thu = new QTableView(tab_8);
+        tableView_thu->setObjectName("tableView_thu");
+
+        gridLayout_10->addWidget(tableView_thu, 0, 0, 1, 1);
+
+        dayTabWidget->addTab(tab_8, QString());
+        tab_9 = new QWidget();
+        tab_9->setObjectName("tab_9");
+        gridLayout_11 = new QGridLayout(tab_9);
+        gridLayout_11->setSpacing(6);
+        gridLayout_11->setContentsMargins(11, 11, 11, 11);
+        gridLayout_11->setObjectName("gridLayout_11");
+        tableView_fri = new QTableView(tab_9);
+        tableView_fri->setObjectName("tableView_fri");
+
+        gridLayout_11->addWidget(tableView_fri, 0, 0, 1, 1);
+
+        dayTabWidget->addTab(tab_9, QString());
+        tab_10 = new QWidget();
+        tab_10->setObjectName("tab_10");
+        gridLayout_12 = new QGridLayout(tab_10);
+        gridLayout_12->setSpacing(6);
+        gridLayout_12->setContentsMargins(11, 11, 11, 11);
+        gridLayout_12->setObjectName("gridLayout_12");
+        tableView_sat = new QTableView(tab_10);
+        tableView_sat->setObjectName("tableView_sat");
+
+        gridLayout_12->addWidget(tableView_sat, 0, 0, 1, 1);
+
+        dayTabWidget->addTab(tab_10, QString());
+        tab_11 = new QWidget();
+        tab_11->setObjectName("tab_11");
+        gridLayout_13 = new QGridLayout(tab_11);
+        gridLayout_13->setSpacing(6);
+        gridLayout_13->setContentsMargins(11, 11, 11, 11);
+        gridLayout_13->setObjectName("gridLayout_13");
+        tableView_sun = new QTableView(tab_11);
+        tableView_sun->setObjectName("tableView_sun");
+
+        gridLayout_13->addWidget(tableView_sun, 0, 0, 1, 1);
+
+        dayTabWidget->addTab(tab_11, QString());
+
+        gridLayout_5->addWidget(dayTabWidget, 0, 0, 1, 1);
+
+        mainTabWidget->addTab(dayTab, QString());
+        searchTab = new QWidget();
+        searchTab->setObjectName("searchTab");
+        verticalLayout = new QVBoxLayout(searchTab);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName("verticalLayout");
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName("horizontalLayout");
+        comboBox = new QComboBox(searchTab);
+        comboBox->addItem(QString());
+        comboBox->addItem(QString());
+        comboBox->setObjectName("comboBox");
+
+        horizontalLayout->addWidget(comboBox);
+
+        label = new QLabel(searchTab);
+        label->setObjectName("label");
+
+        horizontalLayout->addWidget(label);
+
+        toonSearchText = new QLineEdit(searchTab);
+        toonSearchText->setObjectName("toonSearchText");
+
+        horizontalLayout->addWidget(toonSearchText);
+
+        pushButton = new QPushButton(searchTab);
+        pushButton->setObjectName("pushButton");
+
+        horizontalLayout->addWidget(pushButton);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer);
+
+
+        verticalLayout->addLayout(horizontalLayout);
+
+        tableView_2 = new QTableView(searchTab);
+        tableView_2->setObjectName("tableView_2");
+
+        verticalLayout->addWidget(tableView_2);
+
+        mainTabWidget->addTab(searchTab, QString());
+        bookMarkTab = new QWidget();
+        bookMarkTab->setObjectName("bookMarkTab");
+        gridLayout_6 = new QGridLayout(bookMarkTab);
+        gridLayout_6->setSpacing(6);
+        gridLayout_6->setContentsMargins(11, 11, 11, 11);
+        gridLayout_6->setObjectName("gridLayout_6");
+        b_tableView = new QTableView(bookMarkTab);
+        b_tableView->setObjectName("b_tableView");
+
+        gridLayout_6->addWidget(b_tableView, 0, 0, 1, 1);
+
+        mainTabWidget->addTab(bookMarkTab, QString());
+
+        gridLayout_3->addWidget(mainTabWidget, 0, 0, 1, 1);
 
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
@@ -208,8 +441,8 @@ public:
         retranslateUi(MainWindow);
 
         stackedWidget->setCurrentIndex(0);
-        tabWidget->setCurrentIndex(1);
-        tabWidget_2->setCurrentIndex(1);
+        mainTabWidget->setCurrentIndex(2);
+        dayTabWidget->setCurrentIndex(6);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -218,12 +451,23 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "QTCPClient", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \354\240\204\354\262\264\353\252\251\353\241\235", nullptr));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_5), QCoreApplication::translate("MainWindow", "Tab 1", nullptr));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_6), QCoreApplication::translate("MainWindow", "Tab 2", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("MainWindow", "\354\232\224\354\235\274\353\263\204 \354\233\271\355\210\260", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_3), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \352\262\200\354\203\211", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_4), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \354\246\220\352\262\250\354\260\276\352\270\260", nullptr));
+        e_back_btn->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234 \352\260\200\352\270\260", nullptr));
+        mainTabWidget->setTabText(mainTabWidget->indexOf(entireListTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \354\240\204\354\262\264\353\252\251\353\241\235", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_5), QCoreApplication::translate("MainWindow", "\354\233\224\354\232\224\354\235\274", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_6), QCoreApplication::translate("MainWindow", "\355\231\224\354\232\224\354\235\274", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_7), QCoreApplication::translate("MainWindow", "\354\210\230\354\232\224\354\235\274", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_8), QCoreApplication::translate("MainWindow", "\353\252\251\354\232\224\354\235\274", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_9), QCoreApplication::translate("MainWindow", "\352\270\210\354\232\224\354\235\274", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_10), QCoreApplication::translate("MainWindow", "\355\206\240\354\232\224\354\235\274", nullptr));
+        dayTabWidget->setTabText(dayTabWidget->indexOf(tab_11), QCoreApplication::translate("MainWindow", "\354\235\274\354\232\224\354\235\274", nullptr));
+        mainTabWidget->setTabText(mainTabWidget->indexOf(dayTab), QCoreApplication::translate("MainWindow", "\354\232\224\354\235\274\353\263\204 \354\233\271\355\210\260", nullptr));
+        comboBox->setItemText(0, QCoreApplication::translate("MainWindow", "\354\240\234\353\252\251", nullptr));
+        comboBox->setItemText(1, QCoreApplication::translate("MainWindow", "\354\236\221\352\260\200", nullptr));
+
+        label->setText(QString());
+        pushButton->setText(QCoreApplication::translate("MainWindow", "\352\262\200\354\203\211", nullptr));
+        mainTabWidget->setTabText(mainTabWidget->indexOf(searchTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \352\262\200\354\203\211", nullptr));
+        mainTabWidget->setTabText(mainTabWidget->indexOf(bookMarkTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \354\246\220\352\262\250\354\260\276\352\270\260", nullptr));
         pushButton_sendMessage->setText(QCoreApplication::translate("MainWindow", "Send Message", nullptr));
         pushButton_sendAttachment->setText(QCoreApplication::translate("MainWindow", "Send Attachment", nullptr));
     } // retranslateUi

@@ -53,9 +53,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../../main.cpp \
-		../../mainwindow.cpp moc_mainwindow.cpp
+		../../mainwindow.cpp qrc_toons.cpp \
+		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
+		qrc_toons.o \
 		moc_mainwindow.o
 DIST          = /home/lms105/Qt/6.7.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/lms105/Qt/6.7.2/gcc_64/mkspecs/common/unix.conf \
@@ -511,6 +513,7 @@ Makefile: ../../QTCPServer.pro /home/lms105/Qt/6.7.2/gcc_64/mkspecs/linux-g++/qm
 		/home/lms105/Qt/6.7.2/gcc_64/mkspecs/features/yacc.prf \
 		/home/lms105/Qt/6.7.2/gcc_64/mkspecs/features/lex.prf \
 		../../QTCPServer.pro \
+		../../toons.qrc \
 		/home/lms105/Qt/6.7.2/gcc_64/lib/libQt6Widgets.prl \
 		/home/lms105/Qt/6.7.2/gcc_64/lib/libQt6Gui.prl \
 		/home/lms105/Qt/6.7.2/gcc_64/lib/libQt6Network.prl \
@@ -738,6 +741,7 @@ Makefile: ../../QTCPServer.pro /home/lms105/Qt/6.7.2/gcc_64/mkspecs/linux-g++/qm
 /home/lms105/Qt/6.7.2/gcc_64/mkspecs/features/yacc.prf:
 /home/lms105/Qt/6.7.2/gcc_64/mkspecs/features/lex.prf:
 ../../QTCPServer.pro:
+../../toons.qrc:
 /home/lms105/Qt/6.7.2/gcc_64/lib/libQt6Widgets.prl:
 /home/lms105/Qt/6.7.2/gcc_64/lib/libQt6Gui.prl:
 /home/lms105/Qt/6.7.2/gcc_64/lib/libQt6Network.prl:
@@ -757,6 +761,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents ../../toons.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /home/lms105/Qt/6.7.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../mainwindow.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../../main.cpp ../../mainwindow.cpp $(DISTDIR)/
@@ -784,8 +789,13 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_toons.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_toons.cpp
+qrc_toons.cpp: ../../toons.qrc \
+		/home/lms105/Qt/6.7.2/gcc_64/libexec/rcc
+	/home/lms105/Qt/6.7.2/gcc_64/libexec/rcc -name toons --no-zstd ../../toons.qrc -o qrc_toons.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
@@ -1047,7 +1057,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
 
@@ -1517,8 +1527,55 @@ mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlerror.h \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/QSqlQuery \
 		/home/lms105/Qt/6.7.2/gcc_64/include/QtSql/qsqlquery.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtCore/QVariant \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QApplication \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qapplication.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QComboBox \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qvalidator.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtCore/qregularexpression.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qslider.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qstyle.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qframe.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QGridLayout \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qlayout.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QHBoxLayout \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QLineEdit \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextcursor.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextdocument.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextformat.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qpen.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtGui/qtextoption.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QMenuBar \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qmenubar.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qmenu.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QPushButton \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QStatusBar \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qstatusbar.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QTextBrowser \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtextedit.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QToolBar \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/qtoolbar.h \
+		/home/lms105/Qt/6.7.2/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../mainwindow.cpp
+
+qrc_toons.o: qrc_toons.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_toons.o qrc_toons.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
