@@ -34,7 +34,7 @@ public:
 
 private:
     enum USERTYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
-    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE};
+    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE, BOOKMARK};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
@@ -45,9 +45,11 @@ private:
     void thumbnail_to_item(QByteArray &img_buf);
     QList<QLabel*> imgLabel_list;
     QString toonInfo_data;
-    QList<QStandardItem*> thumbnail_list;
+    QList<QPixmap> thumbnail_list;
     QStandardItemModel *model123;
     int rowIndex = 0;
+    QString login_user_id;
+    QString present_toon_id;
 
 signals:
     void signal_newMessage(QString);
@@ -72,6 +74,9 @@ private slots:
     void on_toList_backBtn_clicked();
     void epi_view_double_clicked(const QModelIndex &index);
     void on_backList_btn_clicked();
+    void bookmark_control();
+    void like_control();
+    void get_login_user_info(QString id);
 };
 
 #endif // MAINWINDOW_H

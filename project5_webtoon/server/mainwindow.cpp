@@ -474,6 +474,33 @@ void MainWindow::slot_readSocket()
                     qDebug() << "파일 오픈 실패:" << imagePath;
                 }
             }
+            // 조회수 증가 로직
+            query.prepare("UPDATE TOON_EPI SET VIEW_NUM = VIEW_NUM+1 WHERE EPI_ID = :epi_id");
+            query.bindValue(":epi_id", epi_id);
+            if (!query.exec())
+            {
+                qDebug() << "조회수 업데이트 오류";
+            }
+        }
+        else if (fileType == "bookmark")
+        {
+            msgParts = msg.split(",");
+            QString user_id = msgParts[0];
+            QString epi_id = msgParts[1];
+
+            qry.prepare("SELECT * FROM BOOKMARK WHERE ID = :id AND EPI_ID = :epi_id");
+            qry.bindValue(":id", user_id);
+            qry.bindValue(":epi_id", epi_id);
+            qry.exec();
+
+            if (qry.next()) // 북마크 있을때
+            {
+                sendMessage(socket, LOGININFO, "login success");
+            }
+            else // 북마크 없을때
+            {
+                sendMessage(socket, LOGININFO, "login fail");
+            }
         }
 
 

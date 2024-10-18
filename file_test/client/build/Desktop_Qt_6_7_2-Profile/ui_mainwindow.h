@@ -99,11 +99,12 @@ public:
     QWidget *toon_scrollArea_contents;
     QVBoxLayout *verticalLayout_4;
     QGridLayout *gridLayout_17;
-    QPushButton *like_btn;
     QPushButton *beforeEpi_btn;
     QPushButton *backList_btn;
     QPushButton *afterEpi_btn;
     QPushButton *bookmark_add_btn;
+    QPushButton *like_btn;
+    QLabel *like_cnt_label;
     QWidget *page_2;
     QWidget *layoutWidget;
     QGridLayout *gridLayout;
@@ -462,11 +463,6 @@ public:
         gridLayout_17 = new QGridLayout();
         gridLayout_17->setSpacing(6);
         gridLayout_17->setObjectName("gridLayout_17");
-        like_btn = new QPushButton(webtoon_page);
-        like_btn->setObjectName("like_btn");
-
-        gridLayout_17->addWidget(like_btn, 1, 1, 1, 1);
-
         beforeEpi_btn = new QPushButton(webtoon_page);
         beforeEpi_btn->setObjectName("beforeEpi_btn");
 
@@ -486,6 +482,16 @@ public:
         bookmark_add_btn->setObjectName("bookmark_add_btn");
 
         gridLayout_17->addWidget(bookmark_add_btn, 1, 2, 1, 1);
+
+        like_btn = new QPushButton(webtoon_page);
+        like_btn->setObjectName("like_btn");
+
+        gridLayout_17->addWidget(like_btn, 1, 0, 1, 1);
+
+        like_cnt_label = new QLabel(webtoon_page);
+        like_cnt_label->setObjectName("like_cnt_label");
+
+        gridLayout_17->addWidget(like_cnt_label, 1, 1, 1, 1);
 
 
         verticalLayout_2->addLayout(gridLayout_17);
@@ -547,7 +553,7 @@ public:
         retranslateUi(MainWindow);
         QObject::connect(toonSearchText, &QLineEdit::returnPressed, searchButton, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(2);
         mainTabWidget->setCurrentIndex(0);
         dayTabWidget->setCurrentIndex(0);
 
@@ -575,11 +581,12 @@ public:
         mainTabWidget->setTabText(mainTabWidget->indexOf(searchTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \352\262\200\354\203\211", nullptr));
         mainTabWidget->setTabText(mainTabWidget->indexOf(bookMarkTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \354\246\220\352\262\250\354\260\276\352\270\260", nullptr));
         toList_backBtn->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234 \352\260\200\352\270\260", nullptr));
-        like_btn->setText(QCoreApplication::translate("MainWindow", "\354\242\213\354\225\204\354\232\224", nullptr));
         beforeEpi_btn->setText(QCoreApplication::translate("MainWindow", "<<\354\235\264\354\240\204\355\231\224", nullptr));
         backList_btn->setText(QCoreApplication::translate("MainWindow", "\353\252\251\353\241\235\354\234\274\353\241\234 \353\217\214\354\225\204\352\260\200\352\270\260", nullptr));
         afterEpi_btn->setText(QCoreApplication::translate("MainWindow", "\353\213\244\354\235\214\355\231\224>>", nullptr));
         bookmark_add_btn->setText(QCoreApplication::translate("MainWindow", "\354\246\220\352\262\250\354\260\276\352\270\260 \354\266\224\352\260\200", nullptr));
+        like_btn->setText(QCoreApplication::translate("MainWindow", "\354\242\213\354\225\204\354\232\224", nullptr));
+        like_cnt_label->setText(QString());
         pushButton_sendMessage->setText(QCoreApplication::translate("MainWindow", "Send Message", nullptr));
         pushButton_sendAttachment->setText(QCoreApplication::translate("MainWindow", "Send Attachment", nullptr));
     } // retranslateUi

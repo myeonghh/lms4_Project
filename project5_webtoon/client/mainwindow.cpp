@@ -28,12 +28,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     loginWidget->show();
 
     connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_user_info); // 회원가입 정보 전송 connect
+    connect(loginWidget, &Login::login_success_signal, this, &MainWindow::get_login_user_info);
     connect(this, &MainWindow::operate_info_signal, loginWidget, &Login::signUp_operate);
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
     connect(this, &MainWindow::idSearch_info_signal, loginWidget, &Login::idSearch_operate);
     connect(this, &MainWindow::pwSearch_info_signal, loginWidget, &Login::pwSearch_operate);
     connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::toon_search);
     connect(ui->epiList_tableView, &QTableView::doubleClicked, this, &MainWindow::epi_view_double_clicked);
+    connect(ui->bookmark_add_btn, &QPushButton::clicked, this, &MainWindow::bookmark_control);
+    connect(ui->like_btn, &QPushButton::clicked, this, &MainWindow::like_control);
 
     QList<QTableView*> view_list;
     view_list.append(ui->e_tableView);
@@ -236,8 +239,6 @@ void MainWindow::slot_readSocket()
             toon_img_show(buffer);
         }
 
-
-
         // fileType이 attachment 라면 파일 수신 로직을 실행하고
         // fileType이 message 라면 문장 수신 로직을 실핸한다.
         if(fileType=="attachment")
@@ -288,12 +289,31 @@ void MainWindow::slot_readSocket()
     }
 }
 
+void MainWindow::get_login_user_info(QString id)
+{
+    login_user_id = id;
+    qDebug() << "현재 로그인유저 아이디: " << login_user_id;
+}
+
+void MainWindow::bookmark_control()
+{
+
+    send_toon_info(BOOKMARK, login_user_id+","+present_toon_id );
+
+}
+
+void MainWindow::like_control()
+{
+    ui->like_btn->setStyleSheet("backgrond-color: hotpink;");
+}
+
 void MainWindow::epi_view_double_clicked(const QModelIndex &index)
 {
     int return_column = 0; // 웹툰 에피소드 일련번호 컬럼 인덱스번호
     int clicked_row = index.row();
     // 어떤 칸을 클릭해도 해당 열의 웹툰 에피소드 일련번호가 리턴됨
     QString data = index.sibling(clicked_row, return_column).data().toString();
+    present_toon_id = data;
     send_toon_info(TOONIMAGE, data);
 }
 
@@ -318,17 +338,19 @@ void MainWindow::toon_search()
     {
         //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
         proxyModel->setFilterRegularExpression(QRegularExpression(ui->toonSearchText->text()));
-        proxyModel->setFilterKeyColumn(1);// 필터링할 열
+        proxyModel->setFilterKeyColumn(2);// 필터링할 열
     }
     else
     {
         proxyModel->setFilterRegularExpression(QRegularExpression(ui->toonSearchText->text()));
-        proxyModel->setFilterKeyColumn(2);// 필터링할 열
+        proxyModel->setFilterKeyColumn(3);// 필터링할 열
     }
 
     // 필터링된 결과를 View에 출력
     ui->searchTableView->setModel(proxyModel);
+    ui->searchTableView->setIconSize(QSize(100, 100));
     ui->searchTableView->resizeColumnsToContents();
+    ui->searchTableView->resizeRowsToContents();
     ui->searchTableView->hideColumn(0);
     ui->searchTableView->show();
 }
@@ -356,14 +378,17 @@ void MainWindow::create_day_view()
         proxyModel->setSourceModel(toonInfo_model);
         //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
         proxyModel->setFilterRegularExpression(QRegularExpression(day_str_list[i]));
-        proxyModel->setFilterKeyColumn(3);// 필터링할 열
+        proxyModel->setFilterKeyColumn(4);// 필터링할 열
         // 필터링된 결과를 View에 출력
         day_view_list[i]->setModel(proxyModel);
+        day_view_list[i]->setIconSize(QSize(100, 100));
         day_view_list[i]->resizeColumnsToContents();
+        day_view_list[i]->resizeRowsToContents();
         day_view_list[i]->hideColumn(0);
         day_view_list[i]->show();
     }
 }
+
 
 void MainWindow::view_double_clicked(const QModelIndex &index)
 {
@@ -430,31 +455,10 @@ void MainWindow::create_toonList_model(QString &toonlist)
 
 void MainWindow::thumbnail_to_item(QByteArray &img_buf)
 {
-    qDebug() << "여기야1";
     QPixmap thumbnailPixmap;
     thumbnailPixmap.loadFromData(img_buf);
-    qDebug() << "여기야2";
     QPixmap resizedPixmap = thumbnailPixmap.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    qDebug() << "여기야3";
-    // 모델의 특정 행(row)에 이미지 추가
-    QStandardItem *imageItem = new QStandardItem();
-    qDebug() << "여기야4";
-    // QPixmap을 QIcon으로 변환하여 항목에 설정
-    imageItem->setIcon(QIcon(resizedPixmap));
-
-    // model123 = new QStandardItemModel();
-    model123->setColumnCount(1);
-    model123->setHorizontalHeaderLabels(QStringList()<< "썸네일");
-
-    model123->appendRow(imageItem);
-    // model123->setItem(rowIndex, 0, imageItem);
-
-
-
-    qDebug() << "여기야5";
-    thumbnail_list.append(imageItem);
-    qDebug() << "여기야6";
-    qDebug() << thumbnail_list;
+    thumbnail_list.append(resizedPixmap);
 }
 
 void MainWindow::create_toonInfo_model(QString &toonlist)
@@ -462,26 +466,23 @@ void MainWindow::create_toonInfo_model(QString &toonlist)
     QStringList str_list = toonlist.split("\n");
     QStandardItem *num, *title, *author, *day;
     int index = 0;
+
     toonInfo_model = new QStandardItemModel();
     toonInfo_model->setColumnCount(5);
     toonInfo_model->setHorizontalHeaderLabels(QStringList()<<"번호"<< "썸네일" << "제목" << "작가"<< "요일");
 
-    ui->b_tableView->setModel(model123);
-    ui->b_tableView->setIconSize(QSize(100, 100));
-    ui->b_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);  // 열 크기 자동 조정
-    ui->b_tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->b_tableView->show();
-
     for (const QString &row: str_list)
     {
         QStringList columns = row.split("/");
-        if (columns.size() == 5)
+        if (columns.size() == 4)
         {
-
             num = new QStandardItem(columns[0].trimmed());
             title = new QStandardItem(columns[1].trimmed());
             author = new QStandardItem(columns[2].trimmed());
             day = new QStandardItem(columns[3].trimmed());
+
+            QStandardItem *thumbnail_item = new QStandardItem();
+            thumbnail_item->setIcon(QIcon(thumbnail_list[index++]));
 
             title->setTextAlignment(Qt::AlignCenter);
             author->setTextAlignment(Qt::AlignCenter);
@@ -489,26 +490,21 @@ void MainWindow::create_toonInfo_model(QString &toonlist)
 
             QList<QStandardItem*> items;
             items << num
-                  << thumbnail_list[index]
+                  << thumbnail_item
                   << title
                   << author
                   << day;
             toonInfo_model->appendRow(items);
-            index++;
         }
     }
-    qDebug() << toonInfo_model;
-    qDebug() << "여기야7";
-    // // 테이블 뷰의 행 높이와 열 너비를 이미지 크기에 맞게 조정
-    // ui->tableView->setRowHeight(rowIndex, 100);  // 행 높이 설정
-    // ui->tableView->setColumnWidth(0, 100);       // 열 너비 설정
 
     ui->e_tableView->setModel(toonInfo_model);
+    ui->e_tableView->setIconSize(QSize(100, 100));
     ui->e_tableView->resizeColumnsToContents();
+    ui->e_tableView->resizeRowsToContents();
     ui->e_tableView->hideColumn(0);
     ui->e_tableView->show();
     create_day_view();
-    qDebug() << "여기야8";
 }
 
 
@@ -534,6 +530,9 @@ void MainWindow::send_toon_info(int type, QString str)
                 break;
             case TOONIMAGE:
                 header.prepend(QString("fileType:toonimage,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case BOOKMARK:
+                header.prepend(QString("fileType:bookmark,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
                 break;
             default:
                 break;

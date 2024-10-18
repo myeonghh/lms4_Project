@@ -101,6 +101,7 @@ void Login::login_operate(QString info)
 {
     if (info == "login success")
     {
+        emit login_success_signal(ui->l_idText->text());
         ui->l_idText->clear();
         ui->l_pwText->clear();
         id_dup_chk = false;

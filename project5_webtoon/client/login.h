@@ -19,6 +19,7 @@ public:
 
 signals:
     void user_info_signal(int type, QString id="", QString pw="", QString phone_num="", QString email="");
+    void login_success_signal(QString login_user_id);
     // void login_info_signal(int type, QString id, QString pw);
     // void search_info_signal(int type, QString id, QString phone_num, QString email="");
 
