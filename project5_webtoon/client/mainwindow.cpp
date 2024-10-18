@@ -32,7 +32,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
     connect(this, &MainWindow::idSearch_info_signal, loginWidget, &Login::idSearch_operate);
     connect(this, &MainWindow::pwSearch_info_signal, loginWidget, &Login::pwSearch_operate);
-    connect(ui->e_tableView, &QTableView::doubleClicked, this, &MainWindow::view_double_clicked);
+    connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::toon_search);
+
+    QList<QTableView*> view_list;
+    view_list.append(ui->e_tableView);
+    view_list.append(ui->tableView_mon);
+    view_list.append(ui->tableView_tue);
+    view_list.append(ui->tableView_wed);
+    view_list.append(ui->tableView_thu);
+    view_list.append(ui->tableView_fri);
+    view_list.append(ui->tableView_sat);
+    view_list.append(ui->tableView_sun);
+    view_list.append(ui->searchTableView);
+    for (QTableView *tableView : view_list)
+    {
+        connect(tableView, &QTableView::doubleClicked, this, &MainWindow::view_double_clicked);
+    }
 
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
@@ -166,13 +181,13 @@ void MainWindow::slot_readSocket()
             if (msg == "login success") // 로그인 성공
             {
                 emit login_info_signal("login success");
-                send_toon_info(TOONLIST); // 툰 전체 리스트 모델 생성위해 서버에 메시지 전송
                 send_toon_info(TOONINFO); // 툰 정보 모델 생성위해 서버에 메시지 전송
 
                 loginWidget->hide();
                 this->window()->show();
+                ui->stackedWidget->setCurrentWidget(ui->main_page);
                 ui->e_tableView->show();
-                ui->detailView_frame->hide();
+
 
             }
             else if (msg == "login fail")
@@ -263,6 +278,33 @@ void MainWindow::slot_readSocket()
     }
 }
 
+
+void MainWindow::toon_search()
+{
+    // QSortFilterProxyModel을 생성하고 원본 모델과 연결
+    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(toonInfo_model);
+
+    if (ui->searchComboBox->currentText() == "제목")
+    {
+        //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
+        proxyModel->setFilterRegularExpression(QRegularExpression(ui->toonSearchText->text()));
+        proxyModel->setFilterKeyColumn(1);// 필터링할 열
+    }
+    else
+    {
+        proxyModel->setFilterRegularExpression(QRegularExpression(ui->toonSearchText->text()));
+        proxyModel->setFilterKeyColumn(2);// 필터링할 열
+    }
+
+    // 필터링된 결과를 View에 출력
+    ui->searchTableView->setModel(proxyModel);
+    ui->searchTableView->resizeColumnsToContents();
+    ui->searchTableView->hideColumn(0);
+    ui->searchTableView->show();
+}
+
+
 void MainWindow::create_day_view()
 {
     QStringList day_str_list;
@@ -277,26 +319,21 @@ void MainWindow::create_day_view()
     day_view_list.append(ui->tableView_sat);
     day_view_list.append(ui->tableView_sun);
 
-    qDebug() << "여기야1";
+
     for (int i = 0; i < day_view_list.size(); i++)
     {
-        qDebug() << "여기야2";
+
         // QSortFilterProxyModel을 생성하고 원본 모델과 연결
         QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
-        qDebug() << "여기야A";
-        proxyModel->setSourceModel(toonList_model);
-        qDebug() << "여기야3";
+        proxyModel->setSourceModel(toonInfo_model);
         //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
         proxyModel->setFilterRegularExpression(QRegularExpression(day_str_list[i]));
-        proxyModel->setFilterKeyColumn(5);// 필터링할 열
-        qDebug() << "여기야4";
+        proxyModel->setFilterKeyColumn(3);// 필터링할 열
         // 필터링된 결과를 View에 출력
         day_view_list[i]->setModel(proxyModel);
         day_view_list[i]->resizeColumnsToContents();
         day_view_list[i]->hideColumn(0);
-        day_view_list[i]->hideColumn(1);
         day_view_list[i]->show();
-        qDebug() << "여기야5";
     }
 }
 
@@ -306,49 +343,35 @@ void MainWindow::view_double_clicked(const QModelIndex &index)
     int clicked_row = index.row();
     // 어떤 칸을 클릭해도 해당 열의 웹툰 일련번호가 리턴됨
     QString data = index.sibling(clicked_row, return_column).data().toString();
-
-    // QSortFilterProxyModel을 생성하고 원본 모델과 연결
-    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel();
-    proxyModel->setSourceModel(toonList_model);
-
-    //0번째 열에 위에서 받은 data가 포함된 항목만 필터링
-    proxyModel->setFilterRegularExpression(QRegularExpression(data));
-    proxyModel->setFilterKeyColumn(1);                  // 필터링할 열(여기서는 0번 열)
-
-    // 필터링된 결과를 View에 출력
-    ui->e_detailTableView->setModel(proxyModel);
-    ui->e_detailTableView->resizeColumnsToContents();
-    ui->e_detailTableView->hideColumn(0);
-    ui->e_detailTableView->hideColumn(1);
-    ui->e_detailTableView->show();
-    ui->e_tableView->hide();
-    ui->detailView_frame->show();
+    send_toon_info(TOONLIST, data); // 툰 리스트 모델 생성위해 서버에 메시지 전송
 }
 
 void MainWindow::create_toonList_model(QString &toonlist)
 {
     QStringList str_list = toonlist.split("\n");
-    QStandardItem *epi_id, *t_id, *t_title, *t_author, *t_day, *epi_num, *view_num, *like_num;
+    QStandardItem *epi_id, *t_id, *t_title, *epi_title, *t_author, *t_day, *epi_num, *view_num, *like_num;
 
     toonList_model = new QStandardItemModel();
-    toonList_model->setColumnCount(8);
-    toonList_model->setHorizontalHeaderLabels(QStringList()<<"일련번호"<<"종류번호"<<"제목"<<"작가"<<"회차"<<"요일"<<"조회수"<<"좋아요수");
+    toonList_model->setColumnCount(9);
+    toonList_model->setHorizontalHeaderLabels(QStringList()<<"일련번호"<<"종류번호"<<"웹툰제목"<<"회차제목"<<"작가"<<"회차"<<"요일"<<"조회수"<<"좋아요수");
 
     for (const QString &row: str_list)
     {
         QStringList columns = row.split("/");
-        if (columns.size() == 8)
+        if (columns.size() == 9)
         {
             epi_id = new QStandardItem(columns[0].trimmed());
             t_id = new QStandardItem(columns[1].trimmed());
             t_title = new QStandardItem(columns[2].trimmed());
-            t_author = new QStandardItem(columns[3].trimmed());
-            t_day = new QStandardItem(columns[4].trimmed());
-            epi_num = new QStandardItem(columns[5].trimmed());
-            view_num = new QStandardItem(columns[6].trimmed());
-            like_num = new QStandardItem(columns[7].trimmed());
+            epi_title = new QStandardItem(columns[3].trimmed());
+            t_author = new QStandardItem(columns[4].trimmed());
+            t_day = new QStandardItem(columns[5].trimmed());
+            epi_num = new QStandardItem(columns[6].trimmed());
+            view_num = new QStandardItem(columns[7].trimmed());
+            like_num = new QStandardItem(columns[8].trimmed());
 
             t_title->setTextAlignment(Qt::AlignCenter);
+            epi_title->setTextAlignment(Qt::AlignCenter);
             t_author->setTextAlignment(Qt::AlignCenter);
             t_day->setTextAlignment(Qt::AlignCenter);
             epi_num->setTextAlignment(Qt::AlignCenter);
@@ -359,6 +382,7 @@ void MainWindow::create_toonList_model(QString &toonlist)
             items << epi_id
                   << t_id
                   << t_title
+                  << epi_title
                   << t_author
                   << epi_num
                   << t_day
@@ -368,12 +392,12 @@ void MainWindow::create_toonList_model(QString &toonlist)
             toonList_model->appendRow(items);
         }
     }
-    ui->b_tableView->setModel(toonList_model);
-    ui->b_tableView->resizeColumnsToContents();
-    ui->b_tableView->hideColumn(0);
-    ui->b_tableView->hideColumn(1);
-
-    create_day_view();
+    ui->epiList_tableView->setModel(toonList_model);
+    ui->epiList_tableView->resizeColumnsToContents();
+    ui->epiList_tableView->hideColumn(0);
+    ui->epiList_tableView->hideColumn(1);
+    ui->epiList_tableView->show();
+    ui->stackedWidget->setCurrentWidget(ui->toonList_page);
 }
 
 void MainWindow::create_toonInfo_model(QString &toonlist)
@@ -410,9 +434,10 @@ void MainWindow::create_toonInfo_model(QString &toonlist)
     }
 
     ui->e_tableView->setModel(toonInfo_model);
-
     ui->e_tableView->resizeColumnsToContents();
     ui->e_tableView->hideColumn(0);
+
+    create_day_view();
 }
 
 
@@ -611,9 +636,10 @@ void MainWindow::slot_displayMessage(const QString& str)
     ui->textBrowser_receivedMessages->append(str);
 }
 
-void MainWindow::on_e_back_btn_clicked()
+
+
+void MainWindow::on_toList_backBtn_clicked()
 {
-    ui->detailView_frame->hide();
-    ui->e_tableView->show();
+    ui->stackedWidget->setCurrentWidget(ui->main_page);
 }
 

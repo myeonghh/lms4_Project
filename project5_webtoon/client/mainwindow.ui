@@ -23,7 +23,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="page">
+      <widget class="QWidget" name="main_page">
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <widget class="QTabWidget" name="mainTabWidget">
@@ -95,58 +95,21 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QFrame" name="detailView_frame">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">#detailView_frame QFrame {
-    border: none;
-	padding:0px;
-}</string>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Shape::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Shadow::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QTableView" name="e_detailTableView">
-                 <property name="font">
-                  <font>
-                   <family>Ubuntu</family>
-                  </font>
-                 </property>
-                 <property name="editTriggers">
-                  <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="e_back_btn">
-                 <property name="text">
-                  <string>뒤로 가기</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="dayTab">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <attribute name="title">
             <string>요일별 웹툰</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
              <widget class="QTabWidget" name="dayTabWidget">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="styleSheet">
                <string notr="true">#dayTabWidget QTabWidget::pane {
     background-color: white;
@@ -179,7 +142,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }</string>
               </property>
               <property name="currentIndex">
-               <number>6</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab_5">
                <attribute name="title">
@@ -187,7 +150,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_7">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_mon"/>
+                 <widget class="QTableView" name="tableView_mon">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -197,7 +164,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_8">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_tue"/>
+                 <widget class="QTableView" name="tableView_tue">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -207,7 +178,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_9">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_wed"/>
+                 <widget class="QTableView" name="tableView_wed">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -217,7 +192,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_10">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_thu"/>
+                 <widget class="QTableView" name="tableView_thu">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -227,7 +206,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_11">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_fri"/>
+                 <widget class="QTableView" name="tableView_fri">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -237,7 +220,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_12">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_sat"/>
+                 <widget class="QTableView" name="tableView_sat">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -247,7 +234,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </attribute>
                <layout class="QGridLayout" name="gridLayout_13">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView_sun"/>
+                 <widget class="QTableView" name="tableView_sun">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -263,7 +254,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
-               <widget class="QComboBox" name="comboBox">
+               <widget class="QComboBox" name="searchComboBox">
                 <item>
                  <property name="text">
                   <string>제목</string>
@@ -287,7 +278,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                <widget class="QLineEdit" name="toonSearchText"/>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="searchButton">
                 <property name="text">
                  <string>검색</string>
                 </property>
@@ -309,7 +300,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
              </layout>
             </item>
             <item>
-             <widget class="QTableView" name="tableView_2"/>
+             <widget class="QTableView" name="searchTableView">
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -319,10 +314,84 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
            </attribute>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
-             <widget class="QTableView" name="b_tableView"/>
+             <widget class="QTableView" name="b_tableView">
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="toonList_page">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::Shape::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="0" column="0">
+            <widget class="QTableView" name="epiList_tableView"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_2">
+          <property name="frameShape">
+           <enum>QFrame::Shape::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_15">
+           <item row="0" column="1">
+            <widget class="QPushButton" name="toList_backBtn">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>뒤로 가기</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="2">
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -413,5 +482,22 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>toonSearchText</sender>
+   <signal>returnPressed()</signal>
+   <receiver>searchButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>144</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>545</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

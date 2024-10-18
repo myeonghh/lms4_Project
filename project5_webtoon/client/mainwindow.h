@@ -60,7 +60,8 @@ private slots:
     void create_toonInfo_model(QString &toonlist);
     void create_toonList_model(QString &toonlist);
     void view_double_clicked(const QModelIndex &index);
-    void on_e_back_btn_clicked();
+    void toon_search();
+    void on_toList_backBtn_clicked();
 };
 
 #endif // MAINWINDOW_H

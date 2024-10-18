@@ -225,10 +225,11 @@ void MainWindow::slot_readSocket()
         QSqlQuery qry;
         QStringList msgParts;
 
-        msgParts = msg.split(",");
+
 
         if (fileType == "login")
         {
+            msgParts = msg.split(",");
             id = msgParts[0];
             pw = msgParts[1];
 
@@ -249,6 +250,7 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "signUp")
         {
+            msgParts = msg.split(",");
             id = msgParts[0];
             pw = msgParts[1];
             phone_num = msgParts[2];
@@ -276,6 +278,7 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "idSearch")
         {
+            msgParts = msg.split(",");
             phone_num = msgParts[2];
 
             qry.prepare("SELECT ID FROM USERS WHERE PHONE_NUM = :phone_num");
@@ -294,6 +297,7 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "pwSearch")
         {
+            msgParts = msg.split(",");
             id = msgParts[0];
             phone_num = msgParts[2];
             email = msgParts[3];
@@ -317,6 +321,7 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "idDupChk")
         {
+            msgParts = msg.split(",");
             id = msgParts[0];
 
             // 아이디 중복 확인
@@ -335,6 +340,7 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "pNumDupChk")
         {
+            msgParts = msg.split(",");
             phone_num = msgParts[2];
 
             // 휴대폰 번호 중복 확인
@@ -380,8 +386,10 @@ void MainWindow::slot_readSocket()
         {
             QStringList toon_list;
             QString toon_list_str;
-            qDebug() << "여기야33";
-            qry.prepare("SELECT * FROM WEBTOON.TOON_EPI A JOIN WEBTOON.TOON_INFO B ON A.TOON_ID = B.TOON_ID");
+            QString toon_id = msg;
+            qry.prepare("SELECT * FROM WEBTOON.TOON_EPI A JOIN WEBTOON.TOON_INFO B ON A.TOON_ID = B.TOON_ID "
+                        "WHERE A.TOON_ID = :toon_id");
+            qry.bindValue(":toon_id", toon_id);
 
             if (qry.exec())
             {
@@ -392,11 +400,12 @@ void MainWindow::slot_readSocket()
                     QString epi_num = qry.value(2).toString();
                     QString like_num = qry.value(3).toString();
                     QString view_num = qry.value(4).toString();
-                    QString t_title = qry.value(6).toString();
-                    QString t_author = qry.value(7).toString();
-                    QString t_day = qry.value(8).toString();
+                    QString epi_title = qry.value(5).toString();
+                    QString t_title = qry.value(7).toString();
+                    QString t_author = qry.value(8).toString();
+                    QString t_day = qry.value(9).toString();
 
-                    toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8").arg(epi_id).arg(t_id).arg(t_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
+                    toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9").arg(epi_id).arg(t_id).arg(t_title).arg(epi_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
                 }
                 toon_list_str = toon_list.join("\n");
                 sendMessage(socket, TOONLIST, toon_list_str);

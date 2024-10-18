@@ -66,7 +66,8 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "view_double_clicked",
     "QModelIndex",
     "index",
-    "on_e_back_btn_clicked"
+    "toon_search",
+    "on_toList_backBtn_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -79,7 +80,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      18,   14, // methods
+      19,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -87,26 +88,27 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,  122,    2, 0x06,    1 /* Public */,
-       3,    1,  125,    2, 0x06,    3 /* Public */,
-       5,    1,  128,    2, 0x06,    5 /* Public */,
-       6,    1,  131,    2, 0x06,    7 /* Public */,
-       7,    1,  134,    2, 0x06,    9 /* Public */,
+       1,    1,  128,    2, 0x06,    1 /* Public */,
+       3,    1,  131,    2, 0x06,    3 /* Public */,
+       5,    1,  134,    2, 0x06,    5 /* Public */,
+       6,    1,  137,    2, 0x06,    7 /* Public */,
+       7,    1,  140,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    0,  137,    2, 0x08,   11 /* Private */,
-       9,    1,  138,    2, 0x08,   12 /* Private */,
-      12,    0,  141,    2, 0x08,   14 /* Private */,
-      13,    0,  142,    2, 0x08,   15 /* Private */,
-      14,    0,  143,    2, 0x08,   16 /* Private */,
-      15,    1,  144,    2, 0x08,   17 /* Private */,
-      17,    2,  147,    2, 0x08,   19 /* Private */,
-      17,    1,  152,    2, 0x28,   22 /* Private | MethodCloned */,
-      19,    5,  155,    2, 0x08,   24 /* Private */,
-      24,    1,  166,    2, 0x08,   30 /* Private */,
-      27,    1,  169,    2, 0x08,   32 /* Private */,
-      28,    1,  172,    2, 0x08,   34 /* Private */,
-      31,    0,  175,    2, 0x08,   36 /* Private */,
+       8,    0,  143,    2, 0x08,   11 /* Private */,
+       9,    1,  144,    2, 0x08,   12 /* Private */,
+      12,    0,  147,    2, 0x08,   14 /* Private */,
+      13,    0,  148,    2, 0x08,   15 /* Private */,
+      14,    0,  149,    2, 0x08,   16 /* Private */,
+      15,    1,  150,    2, 0x08,   17 /* Private */,
+      17,    2,  153,    2, 0x08,   19 /* Private */,
+      17,    1,  158,    2, 0x28,   22 /* Private | MethodCloned */,
+      19,    5,  161,    2, 0x08,   24 /* Private */,
+      24,    1,  172,    2, 0x08,   30 /* Private */,
+      27,    1,  175,    2, 0x08,   32 /* Private */,
+      28,    1,  178,    2, 0x08,   34 /* Private */,
+      31,    0,  181,    2, 0x08,   36 /* Private */,
+      32,    0,  182,    2, 0x08,   37 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,
@@ -128,6 +130,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
     QMetaType::Void, 0x80000000 | 25,   26,
     QMetaType::Void, 0x80000000 | 25,   26,
     QMetaType::Void, 0x80000000 | 29,   30,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -194,7 +197,9 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'view_double_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QModelIndex &, std::false_type>,
-        // method 'on_e_back_btn_clicked'
+        // method 'toon_search'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_toList_backBtn_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -223,7 +228,8 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 14: _t->create_toonInfo_model((*reinterpret_cast< std::add_pointer_t<QString&>>(_a[1]))); break;
         case 15: _t->create_toonList_model((*reinterpret_cast< std::add_pointer_t<QString&>>(_a[1]))); break;
         case 16: _t->view_double_clicked((*reinterpret_cast< std::add_pointer_t<QModelIndex>>(_a[1]))); break;
-        case 17: _t->on_e_back_btn_clicked(); break;
+        case 17: _t->toon_search(); break;
+        case 18: _t->on_toList_backBtn_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -296,13 +302,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 18)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 18;
+        _id -= 19;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 18)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 18;
+        _id -= 19;
     }
     return _id;
 }
