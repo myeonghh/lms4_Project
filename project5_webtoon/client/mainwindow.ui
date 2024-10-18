@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1051</width>
-    <height>687</height>
+    <width>802</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }</string>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="entireListTab">
            <attribute name="title">
@@ -138,7 +138,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }
 
 QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
-    left: 130px;  /* 탭 목록이 왼쪽으로 조금 이동 */
+    left: 20px;  /* 탭 목록이 왼쪽으로 조금 이동 */
 }</string>
               </property>
               <property name="currentIndex">
@@ -396,6 +396,71 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="webtoon_page">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QGridLayout" name="gridLayout_16">
+          <item row="0" column="0">
+           <widget class="QScrollArea" name="toon_scrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="toon_scrollArea_contents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>762</width>
+               <height>488</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4"/>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_17">
+          <item row="1" column="1">
+           <widget class="QPushButton" name="like_btn">
+            <property name="text">
+             <string>좋아요</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="beforeEpi_btn">
+            <property name="text">
+             <string>&lt;&lt;이전화</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="backList_btn">
+            <property name="text">
+             <string>목록으로 돌아가기</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="afterEpi_btn">
+            <property name="text">
+             <string>다음화&gt;&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="bookmark_add_btn">
+            <property name="text">
+             <string>즐겨찾기 추가</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="page_2">
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
@@ -465,7 +530,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1051</width>
+     <width>802</width>
      <height>22</height>
     </rect>
    </property>

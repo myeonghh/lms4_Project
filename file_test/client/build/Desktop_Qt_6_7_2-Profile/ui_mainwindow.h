@@ -21,6 +21,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
@@ -91,6 +92,18 @@ public:
     QPushButton *toList_backBtn;
     QSpacerItem *horizontalSpacer_2;
     QSpacerItem *horizontalSpacer_3;
+    QWidget *webtoon_page;
+    QVBoxLayout *verticalLayout_2;
+    QGridLayout *gridLayout_16;
+    QScrollArea *toon_scrollArea;
+    QWidget *toon_scrollArea_contents;
+    QVBoxLayout *verticalLayout_4;
+    QGridLayout *gridLayout_17;
+    QPushButton *like_btn;
+    QPushButton *beforeEpi_btn;
+    QPushButton *backList_btn;
+    QPushButton *afterEpi_btn;
+    QPushButton *bookmark_add_btn;
     QWidget *page_2;
     QWidget *layoutWidget;
     QGridLayout *gridLayout;
@@ -106,7 +119,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(1051, 687);
+        MainWindow->resize(802, 663);
         MainWindow->setStyleSheet(QString::fromUtf8(""));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName("centralWidget");
@@ -213,7 +226,7 @@ public:
 "}\n"
 "\n"
 "QTabWidget::tab-bar {  /* \355\203\255 \353\262\204\355\212\274\354\235\204 \352\260\220\354\213\270\353\212\224 \353\260\224 */\n"
-"    left: 130px;  /* \355\203\255 \353\252\251\353\241\235\354\235\264 \354\231\274\354\252\275\354\234\274\353\241\234 \354\241\260\352\270\210 \354\235\264\353\217\231 */\n"
+"    left: 20px;  /* \355\203\255 \353\252\251\353\241\235\354\235\264 \354\231\274\354\252\275\354\234\274\353\241\234 \354\241\260\352\270\210 \354\235\264\353\217\231 */\n"
 "}"));
         tab_5 = new QWidget();
         tab_5->setObjectName("tab_5");
@@ -420,6 +433,64 @@ public:
         verticalLayout_3->addWidget(frame_2);
 
         stackedWidget->addWidget(toonList_page);
+        webtoon_page = new QWidget();
+        webtoon_page->setObjectName("webtoon_page");
+        verticalLayout_2 = new QVBoxLayout(webtoon_page);
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName("verticalLayout_2");
+        gridLayout_16 = new QGridLayout();
+        gridLayout_16->setSpacing(6);
+        gridLayout_16->setObjectName("gridLayout_16");
+        toon_scrollArea = new QScrollArea(webtoon_page);
+        toon_scrollArea->setObjectName("toon_scrollArea");
+        toon_scrollArea->setWidgetResizable(true);
+        toon_scrollArea_contents = new QWidget();
+        toon_scrollArea_contents->setObjectName("toon_scrollArea_contents");
+        toon_scrollArea_contents->setGeometry(QRect(0, 0, 762, 488));
+        verticalLayout_4 = new QVBoxLayout(toon_scrollArea_contents);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName("verticalLayout_4");
+        toon_scrollArea->setWidget(toon_scrollArea_contents);
+
+        gridLayout_16->addWidget(toon_scrollArea, 0, 0, 1, 1);
+
+
+        verticalLayout_2->addLayout(gridLayout_16);
+
+        gridLayout_17 = new QGridLayout();
+        gridLayout_17->setSpacing(6);
+        gridLayout_17->setObjectName("gridLayout_17");
+        like_btn = new QPushButton(webtoon_page);
+        like_btn->setObjectName("like_btn");
+
+        gridLayout_17->addWidget(like_btn, 1, 1, 1, 1);
+
+        beforeEpi_btn = new QPushButton(webtoon_page);
+        beforeEpi_btn->setObjectName("beforeEpi_btn");
+
+        gridLayout_17->addWidget(beforeEpi_btn, 0, 0, 1, 1);
+
+        backList_btn = new QPushButton(webtoon_page);
+        backList_btn->setObjectName("backList_btn");
+
+        gridLayout_17->addWidget(backList_btn, 0, 1, 1, 1);
+
+        afterEpi_btn = new QPushButton(webtoon_page);
+        afterEpi_btn->setObjectName("afterEpi_btn");
+
+        gridLayout_17->addWidget(afterEpi_btn, 0, 2, 1, 1);
+
+        bookmark_add_btn = new QPushButton(webtoon_page);
+        bookmark_add_btn->setObjectName("bookmark_add_btn");
+
+        gridLayout_17->addWidget(bookmark_add_btn, 1, 2, 1, 1);
+
+
+        verticalLayout_2->addLayout(gridLayout_17);
+
+        stackedWidget->addWidget(webtoon_page);
         page_2 = new QWidget();
         page_2->setObjectName("page_2");
         layoutWidget = new QWidget(page_2);
@@ -464,7 +535,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName("menuBar");
-        menuBar->setGeometry(QRect(0, 0, 1051, 22));
+        menuBar->setGeometry(QRect(0, 0, 802, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName("mainToolBar");
@@ -477,7 +548,7 @@ public:
         QObject::connect(toonSearchText, &QLineEdit::returnPressed, searchButton, qOverload<>(&QPushButton::click));
 
         stackedWidget->setCurrentIndex(0);
-        mainTabWidget->setCurrentIndex(2);
+        mainTabWidget->setCurrentIndex(0);
         dayTabWidget->setCurrentIndex(0);
 
 
@@ -504,6 +575,11 @@ public:
         mainTabWidget->setTabText(mainTabWidget->indexOf(searchTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \352\262\200\354\203\211", nullptr));
         mainTabWidget->setTabText(mainTabWidget->indexOf(bookMarkTab), QCoreApplication::translate("MainWindow", "\354\233\271\355\210\260 \354\246\220\352\262\250\354\260\276\352\270\260", nullptr));
         toList_backBtn->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234 \352\260\200\352\270\260", nullptr));
+        like_btn->setText(QCoreApplication::translate("MainWindow", "\354\242\213\354\225\204\354\232\224", nullptr));
+        beforeEpi_btn->setText(QCoreApplication::translate("MainWindow", "<<\354\235\264\354\240\204\355\231\224", nullptr));
+        backList_btn->setText(QCoreApplication::translate("MainWindow", "\353\252\251\353\241\235\354\234\274\353\241\234 \353\217\214\354\225\204\352\260\200\352\270\260", nullptr));
+        afterEpi_btn->setText(QCoreApplication::translate("MainWindow", "\353\213\244\354\235\214\355\231\224>>", nullptr));
+        bookmark_add_btn->setText(QCoreApplication::translate("MainWindow", "\354\246\220\352\262\250\354\260\276\352\270\260 \354\266\224\352\260\200", nullptr));
         pushButton_sendMessage->setText(QCoreApplication::translate("MainWindow", "Send Message", nullptr));
         pushButton_sendAttachment->setText(QCoreApplication::translate("MainWindow", "Send Attachment", nullptr));
     } // retranslateUi

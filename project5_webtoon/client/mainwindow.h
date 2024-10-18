@@ -16,6 +16,7 @@
 #include <QTableView>
 #include <QSortFilterProxyModel>
 #include <QRegularExpression>
+#include <QIcon>
 #include "login.h"
 
 namespace Ui {
@@ -33,13 +34,20 @@ public:
 
 private:
     enum USERTYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
-    enum TOONTYPE {TOONINFO = 0, TOONLIST};
+    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
     QStandardItemModel *toonInfo_model;
     QStandardItemModel *toonList_model;
     void create_day_view();
+    void toon_img_show(QByteArray &img_buf);
+    void thumbnail_to_item(QByteArray &img_buf);
+    QList<QLabel*> imgLabel_list;
+    QString toonInfo_data;
+    QList<QStandardItem*> thumbnail_list;
+    QStandardItemModel *model123;
+    int rowIndex = 0;
 
 signals:
     void signal_newMessage(QString);
@@ -62,6 +70,8 @@ private slots:
     void view_double_clicked(const QModelIndex &index);
     void toon_search();
     void on_toList_backBtn_clicked();
+    void epi_view_double_clicked(const QModelIndex &index);
+    void on_backList_btn_clicked();
 };
 
 #endif // MAINWINDOW_H
