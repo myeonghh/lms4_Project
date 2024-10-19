@@ -691,8 +691,6 @@ void MainWindow::slot_readSocket()
         //     }
         // }
 
-
-
         // [ex.02.7.5]
         // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
         if (fileType == "attachment")

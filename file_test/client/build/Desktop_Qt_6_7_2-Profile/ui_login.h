@@ -48,7 +48,7 @@ public:
     QPushButton *toSearchPwBtn;
     QPushButton *toSignUpBtn;
     QFrame *frame;
-    QVBoxLayout *verticalLayout_2;
+    QGridLayout *gridLayout_9;
     QLabel *label;
     QWidget *signup;
     QVBoxLayout *verticalLayout_3;
@@ -134,7 +134,104 @@ public:
     {
         if (Login->objectName().isEmpty())
             Login->setObjectName("Login");
-        Login->resize(681, 592);
+        Login->resize(846, 715);
+        Login->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"    background-color: #3498db;\n"
+"    color: white;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px 10px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #2980b9;\n"
+"}\n"
+"QLabel {\n"
+"    padding: 5px;\n"
+"    margin: 0px;\n"
+"    font-size: 16px;\n"
+"	font-weight: bold;\n"
+"	color:black;\n"
+"    qproperty-alignment: AlignVCenter; /* \354\204\270\353\241\234 \354\244\221\354\225\231 \354\240\225\353\240\254 */\n"
+"}\n"
+"\n"
+"\n"
+"\n"
+"/* \353\262\204\355\212\274 (\354\244\221\353\263\265 \355\231\225\354\235\270, \355\232\214\354\233\220\352\260\200\354\236\205, \353\241\234\352\267\270\354\235\270, \353\202\230\352\260\200\352\270\260 \353\223\261) */\n"
+"QPushButton {\n"
+"    background-color: #3498db; /* \355\214\214\353\236\200\354\203\211 */\n"
+"    color: white;\n"
+"    border: 2px solid #2980b9;\n"
+"    border-radius: 10px;\n"
+"    padding: 8px 15px;\n"
+"    font-size: 16px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #2980b9"
+                        "; /* \353\247\210\354\232\260\354\212\244\353\245\274 \354\230\254\353\240\270\354\235\204 \353\225\214 \353\215\224 \354\247\231\354\235\200 \355\214\214\353\236\200\354\203\211 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #1f618d; /* \355\201\264\353\246\255\355\226\210\354\235\204 \353\225\214 \353\215\224 \354\226\264\353\221\220\354\232\264 \355\214\214\353\236\200\354\203\211 */\n"
+"    border: 2px solid #1f618d;\n"
+"}\n"
+"\n"
+"/* \354\236\205\353\240\245 \355\225\204\353\223\234 (ID, \353\271\204\353\260\200\353\262\210\355\230\270, \355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270, \354\235\264\353\251\224\354\235\274) */\n"
+"QLineEdit {\n"
+"    background-color: #ffffff;\n"
+"    color: black;\n"
+"    border: 2px solid #dcdcdc;\n"
+"    border-radius: 8px;\n"
+"    padding: 6px 10px;\n"
+"    font-size: 14px;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border-color: #3498db; /* \355\217\254\354\273\244\354\212\244 \354\213\234 \355\214\214\353\236\200\354\203\211 \355\205\214"
+                        "\353\221\220\353\246\254 */\n"
+"    outline: none;\n"
+"}\n"
+"\n"
+"/* \355\224\204\353\240\210\354\236\204 \355\205\214\353\221\220\353\246\254 */\n"
+"QFrame {\n"
+"    border: 3px solid black;\n"
+"    border-radius: 12px;\n"
+"    padding: 10px;\n"
+"    background-color: #ffffff;\n"
+"}\n"
+"\n"
+"/* QLineEdit\354\235\230 Placeholder \355\205\215\354\212\244\355\212\270 */\n"
+"QLineEdit[placeholderText] {\n"
+"    color: #a0a0a0;\n"
+"    font-style: italic;\n"
+"}\n"
+"\n"
+"/* \353\202\230\352\260\200\352\270\260 \353\262\204\355\212\274 */\n"
+"QPushButton#backBtn {\n"
+"    background-color: #e74c3c; /* \353\271\250\352\260\204\354\203\211 */\n"
+"    border: 2px solid #c0392b;\n"
+"}\n"
+"\n"
+"QPushButton#backBtn_2{\n"
+"    background-color: #e74c3c; /* \353\271\250\352\260\204\354\203\211 */\n"
+"    border: 2px solid #c0392b;\n"
+"}\n"
+"\n"
+"QPushButton#backBtn_3 {\n"
+"    background-color: #e74c3c; /* \353\271\250\352\260\204\354\203\211 */\n"
+"    border: 2px solid #c0392b;\n"
+"}\n"
+"\n"
+"QPushButton#exitButton:hover "
+                        "{\n"
+"    background-color: #c0392b;\n"
+"}\n"
+"\n"
+"QPushButton#exitButton:pressed {\n"
+"    background-color: #96281b;\n"
+"}\n"
+""));
         gridLayout = new QGridLayout(Login);
         gridLayout->setObjectName("gridLayout");
         stackedWidget = new QStackedWidget(Login);
@@ -174,7 +271,7 @@ public:
         label_2 = new QLabel(frame_3);
         label_2->setObjectName("label_2");
         QFont font;
-        font.setPointSize(14);
+        font.setBold(true);
         label_2->setFont(font);
 
         gridLayout_3->addWidget(label_2, 0, 1, 1, 1);
@@ -239,18 +336,21 @@ public:
         frame->setMinimumSize(QSize(0, 250));
         frame->setFrameShape(QFrame::Shape::StyledPanel);
         frame->setFrameShadow(QFrame::Shadow::Raised);
-        verticalLayout_2 = new QVBoxLayout(frame);
-        verticalLayout_2->setObjectName("verticalLayout_2");
+        gridLayout_9 = new QGridLayout(frame);
+        gridLayout_9->setObjectName("gridLayout_9");
         label = new QLabel(frame);
         label->setObjectName("label");
-        QFont font1;
-        font1.setPointSize(30);
-        label->setFont(font1);
+        label->setFont(font);
+        label->setStyleSheet(QString::fromUtf8("QLabel{\n"
+"	font-size: 60px;\n"
+"	qproperty-alignment: 'AlignCenter';\n"
+"}\n"
+""));
         label->setTextFormat(Qt::TextFormat::AutoText);
         label->setScaledContents(false);
         label->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
-        verticalLayout_2->addWidget(label);
+        gridLayout_9->addWidget(label, 0, 0, 1, 1);
 
 
         gridLayout_2->addWidget(frame, 0, 0, 1, 1);
@@ -269,10 +369,8 @@ public:
         verticalLayout_5->setObjectName("verticalLayout_5");
         label_4 = new QLabel(frame_5);
         label_4->setObjectName("label_4");
-        QFont font2;
-        font2.setPointSize(15);
-        label_4->setFont(font2);
-        label_4->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        label_4->setFont(font);
+        label_4->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         verticalLayout_5->addWidget(label_4);
 
@@ -298,10 +396,8 @@ public:
         gridLayout_4->setObjectName("gridLayout_4");
         label_8 = new QLabel(frame_7);
         label_8->setObjectName("label_8");
-        QFont font3;
-        font3.setPointSize(13);
-        label_8->setFont(font3);
-        label_8->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_8->setFont(font);
+        label_8->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_4->addWidget(label_8, 3, 1, 1, 1);
 
@@ -324,8 +420,8 @@ public:
 
         label_5 = new QLabel(frame_7);
         label_5->setObjectName("label_5");
-        label_5->setFont(font3);
-        label_5->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_5->setFont(font);
+        label_5->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_4->addWidget(label_5, 0, 1, 1, 1);
 
@@ -341,8 +437,8 @@ public:
 
         label_6 = new QLabel(frame_7);
         label_6->setObjectName("label_6");
-        label_6->setFont(font3);
-        label_6->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_6->setFont(font);
+        label_6->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_4->addWidget(label_6, 1, 1, 1, 1);
 
@@ -358,8 +454,8 @@ public:
 
         label_7 = new QLabel(frame_7);
         label_7->setObjectName("label_7");
-        label_7->setFont(font3);
-        label_7->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_7->setFont(font);
+        label_7->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_4->addWidget(label_7, 2, 1, 1, 1);
 
@@ -427,8 +523,8 @@ public:
         verticalLayout_6->setObjectName("verticalLayout_6");
         label_9 = new QLabel(frame_9);
         label_9->setObjectName("label_9");
-        label_9->setFont(font2);
-        label_9->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        label_9->setFont(font);
+        label_9->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         verticalLayout_6->addWidget(label_9);
 
@@ -480,8 +576,8 @@ public:
 
         label_10 = new QLabel(frame_11);
         label_10->setObjectName("label_10");
-        label_10->setFont(font3);
-        label_10->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_10->setFont(font);
+        label_10->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_5->addWidget(label_10, 1, 0, 1, 1);
 
@@ -500,7 +596,7 @@ public:
         gridLayout_7->setObjectName("gridLayout_7");
         idShowText = new QLabel(frame_17);
         idShowText->setObjectName("idShowText");
-        idShowText->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        idShowText->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_7->addWidget(idShowText, 0, 0, 1, 1);
 
@@ -551,8 +647,8 @@ public:
         verticalLayout_9->setObjectName("verticalLayout_9");
         label_12 = new QLabel(frame_13);
         label_12->setObjectName("label_12");
-        label_12->setFont(font2);
-        label_12->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        label_12->setFont(font);
+        label_12->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         verticalLayout_9->addWidget(label_12);
 
@@ -587,8 +683,8 @@ public:
 
         label_14 = new QLabel(frame_15);
         label_14->setObjectName("label_14");
-        label_14->setFont(font3);
-        label_14->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_14->setFont(font);
+        label_14->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_6->addWidget(label_14, 2, 1, 1, 1);
 
@@ -603,15 +699,15 @@ public:
 
         label_13 = new QLabel(frame_15);
         label_13->setObjectName("label_13");
-        label_13->setFont(font3);
-        label_13->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_13->setFont(font);
+        label_13->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_6->addWidget(label_13, 1, 1, 1, 1);
 
         label_15 = new QLabel(frame_15);
         label_15->setObjectName("label_15");
-        label_15->setFont(font3);
-        label_15->setAlignment(Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter);
+        label_15->setFont(font);
+        label_15->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_6->addWidget(label_15, 0, 1, 1, 1);
 
@@ -640,7 +736,7 @@ public:
         gridLayout_8->setObjectName("gridLayout_8");
         pwShowText = new QLabel(frame_18);
         pwShowText->setObjectName("pwShowText");
-        pwShowText->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        pwShowText->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
         gridLayout_8->addWidget(pwShowText, 0, 0, 1, 1);
 
@@ -688,7 +784,7 @@ public:
         QObject::connect(i_pNumText, &QLineEdit::returnPressed, idSearchBtn, qOverload<>(&QPushButton::click));
         QObject::connect(p_emailText, &QLineEdit::returnPressed, pwSearchBtn, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(3);
+        stackedWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(Login);
@@ -703,7 +799,7 @@ public:
         toSearchIdBtn->setText(QCoreApplication::translate("Login", "\354\225\204\354\235\264\353\224\224 \354\260\276\352\270\260", nullptr));
         toSearchPwBtn->setText(QCoreApplication::translate("Login", "\353\271\204\353\260\200\353\262\210\355\230\270 \354\260\276\352\270\260", nullptr));
         toSignUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
-        label->setText(QCoreApplication::translate("Login", "\353\257\274\354\204\235\354\235\264\354\235\230 \353\271\204\353\260\200 \354\204\234\353\236\215\354\236\245", nullptr));
+        label->setText(QCoreApplication::translate("Login", "T_T OON", nullptr));
         label_4->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220 \352\260\200\354\236\205", nullptr));
         label_8->setText(QCoreApplication::translate("Login", "\354\235\264\353\251\224\354\235\274 ", nullptr));
         pnumDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));

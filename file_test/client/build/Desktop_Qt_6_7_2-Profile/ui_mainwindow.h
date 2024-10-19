@@ -124,8 +124,34 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(895, 701);
-        MainWindow->setStyleSheet(QString::fromUtf8(""));
+        MainWindow->resize(993, 734);
+        MainWindow->setStyleSheet(QString::fromUtf8("QTableView {\n"
+"    border: 2px solid #2c3e50; /* \355\205\214\353\221\220\353\246\254 \353\221\220\352\273\230 */\n"
+"    gridline-color: #34495e;    /* \354\205\200 \352\265\254\353\266\204\354\204\240 \354\203\211\354\203\201 */\n"
+"    font-size: 16px;           /* \353\202\264\353\266\200 \355\205\215\354\212\244\355\212\270 \355\201\254\352\270\260 */\n"
+"    font-family: Arial;        /* \353\202\264\353\266\200 \355\205\215\354\212\244\355\212\270 \355\217\260\355\212\270 */\n"
+"}\n"
+"\n"
+"QHeaderView::section {\n"
+"    background-color: #3498db; /* \355\227\244\353\215\224 \353\260\260\352\262\275 */\n"
+"    color: white;              /* \355\227\244\353\215\224 \352\270\200\354\236\220 \354\203\211\354\203\201 */\n"
+"    font-size: 18px;           /* \355\227\244\353\215\224 \352\270\200\354\236\220 \355\201\254\352\270\260 */\n"
+"    font-weight: bold;         /* \355\227\244\353\215\224 \352\270\200\354\236\220 \352\265\265\352\270\260 */\n"
+"    padding: 4px;\n"
+"    border: 1px solid #2980b9; /*"
+                        " \355\227\244\353\215\224 \355\205\214\353\221\220\353\246\254 */\n"
+"}\n"
+"\n"
+"QPushButton {\n"
+"    background-color: #3498db;\n"
+"    color: white;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px 10px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #2980b9;\n"
+"}"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName("centralWidget");
         gridLayout_2 = new QGridLayout(centralWidget);
@@ -180,8 +206,7 @@ public:
         e_tableView = new QTableView(entireListTab);
         e_tableView->setObjectName("e_tableView");
         QFont font;
-        font.setFamilies({QString::fromUtf8("Ubuntu")});
-        font.setPointSize(13);
+        font.setFamilies({QString::fromUtf8("Arial")});
         font.setBold(false);
         e_tableView->setFont(font);
         e_tableView->setStyleSheet(QString::fromUtf8(""));
@@ -572,7 +597,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName("menuBar");
-        menuBar->setGeometry(QRect(0, 0, 895, 22));
+        menuBar->setGeometry(QRect(0, 0, 993, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName("mainToolBar");

@@ -55,17 +55,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     {
         connect(tableView, &QTableView::doubleClicked, this, &MainWindow::view_double_clicked);
     }
+
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
     // 이 객체의(MainWindow) slot_readSocket 실행하여 처리
     connect(m_socket, &QTcpSocket::readyRead,
             this,     &MainWindow::slot_readSocket);
-
-    // [ex.02.1.3]
-    // signal_newMessage 시그널이 발생하면 (socket read 가 아닌, MainWindow 시그널)
-    // slot_displayMessage 실행하여 UI에 출력
-    // connect(this, &MainWindow::signal_newMessage,
-    //         this, &MainWindow::slot_displayMessage);
 
     // [ex.02.1.4]
     // 연결된 소켓과 연결이 해제되면,
@@ -417,6 +412,8 @@ void MainWindow::create_bookmark_model(QString &toonlist)
     ui->b_tableView->resizeColumnsToContents();
     ui->b_tableView->hideColumn(0);
     ui->b_tableView->hideColumn(1);
+    ui->b_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->b_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->b_tableView->show();
 }
 
@@ -483,6 +480,8 @@ void MainWindow::toon_search()
     ui->searchTableView->resizeColumnsToContents();
     ui->searchTableView->resizeRowsToContents();
     ui->searchTableView->hideColumn(0);
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->searchTableView->show();
 }
 
@@ -516,6 +515,8 @@ void MainWindow::create_day_view()
         day_view_list[i]->resizeColumnsToContents();
         day_view_list[i]->resizeRowsToContents();
         day_view_list[i]->hideColumn(0);
+        day_view_list[i]->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+        day_view_list[i]->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
         day_view_list[i]->show();
     }
 }
@@ -580,6 +581,8 @@ void MainWindow::create_toonList_model(QString &toonlist)
     ui->epiList_tableView->resizeColumnsToContents();
     ui->epiList_tableView->hideColumn(0);
     ui->epiList_tableView->hideColumn(1);
+    ui->epiList_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->epiList_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->epiList_tableView->show();
     ui->stackedWidget->setCurrentWidget(ui->toonList_page);
 }
@@ -634,6 +637,8 @@ void MainWindow::create_toonInfo_model(QString &toonlist)
     ui->e_tableView->resizeColumnsToContents();
     ui->e_tableView->resizeRowsToContents();
     ui->e_tableView->hideColumn(0);
+    ui->e_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->e_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->e_tableView->show();
     create_day_view();
 }

@@ -6,18 +6,114 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>681</width>
-    <height>592</height>
+    <width>846</width>
+    <height>715</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;
+}
+QLabel {
+    padding: 5px;
+    margin: 0px;
+    font-size: 16px;
+	font-weight: bold;
+	color:black;
+    qproperty-alignment: AlignVCenter; /* 세로 중앙 정렬 */
+}
+
+
+
+/* 버튼 (중복 확인, 회원가입, 로그인, 나가기 등) */
+QPushButton {
+    background-color: #3498db; /* 파란색 */
+    color: white;
+    border: 2px solid #2980b9;
+    border-radius: 10px;
+    padding: 8px 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #2980b9; /* 마우스를 올렸을 때 더 짙은 파란색 */
+}
+
+QPushButton:pressed {
+    background-color: #1f618d; /* 클릭했을 때 더 어두운 파란색 */
+    border: 2px solid #1f618d;
+}
+
+/* 입력 필드 (ID, 비밀번호, 휴대폰 번호, 이메일) */
+QLineEdit {
+    background-color: #ffffff;
+    color: black;
+    border: 2px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border-color: #3498db; /* 포커스 시 파란색 테두리 */
+    outline: none;
+}
+
+/* 프레임 테두리 */
+QFrame {
+    border: 3px solid black;
+    border-radius: 12px;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+/* QLineEdit의 Placeholder 텍스트 */
+QLineEdit[placeholderText] {
+    color: #a0a0a0;
+    font-style: italic;
+}
+
+/* 나가기 버튼 */
+QPushButton#backBtn {
+    background-color: #e74c3c; /* 빨간색 */
+    border: 2px solid #c0392b;
+}
+
+QPushButton#backBtn_2{
+    background-color: #e74c3c; /* 빨간색 */
+    border: 2px solid #c0392b;
+}
+
+QPushButton#backBtn_3 {
+    background-color: #e74c3c; /* 빨간색 */
+    border: 2px solid #c0392b;
+}
+
+QPushButton#exitButton:hover {
+    background-color: #c0392b;
+}
+
+QPushButton#exitButton:pressed {
+    background-color: #96281b;
+}
+</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="login">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -86,7 +182,8 @@
               <widget class="QLabel" name="label_2">
                <property name="font">
                 <font>
-                 <pointsize>14</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -131,7 +228,8 @@
               <widget class="QLabel" name="label_3">
                <property name="font">
                 <font>
-                 <pointsize>14</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -197,16 +295,24 @@
          <property name="frameShadow">
           <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="0" column="0">
            <widget class="QLabel" name="label">
             <property name="font">
              <font>
-              <pointsize>30</pointsize>
+              <pointsize>-1</pointsize>
+              <bold>true</bold>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+	font-size: 60px;
+	qproperty-alignment: 'AlignCenter';
+}
+</string>
+            </property>
             <property name="text">
-             <string>민석이의 비밀 서랍장</string>
+             <string>T_T OON</string>
             </property>
             <property name="textFormat">
              <enum>Qt::TextFormat::AutoText</enum>
@@ -245,14 +351,15 @@
            <widget class="QLabel" name="label_4">
             <property name="font">
              <font>
-              <pointsize>15</pointsize>
+              <pointsize>-1</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
              <string>회원 가입</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -298,14 +405,15 @@
               <widget class="QLabel" name="label_8">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>이메일 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -336,14 +444,15 @@
               <widget class="QLabel" name="label_5">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>아이디 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -365,14 +474,15 @@
               <widget class="QLabel" name="label_6">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string> 비밀번호 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -390,14 +500,15 @@
               <widget class="QLabel" name="label_7">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>휴대폰 번호 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -522,14 +633,15 @@
            <widget class="QLabel" name="label_9">
             <property name="font">
              <font>
-              <pointsize>15</pointsize>
+              <pointsize>-1</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
              <string>아이디 찾기</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -637,14 +749,15 @@
               <widget class="QLabel" name="label_10">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>휴대폰 번호</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -677,7 +790,7 @@
                 <string/>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -772,14 +885,15 @@
            <widget class="QLabel" name="label_12">
             <property name="font">
              <font>
-              <pointsize>15</pointsize>
+              <pointsize>-1</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
              <string>비밀번호 찾기</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -841,14 +955,15 @@
               <widget class="QLabel" name="label_14">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>이메일</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -876,14 +991,15 @@
               <widget class="QLabel" name="label_13">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>휴대폰 번호</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -891,14 +1007,15 @@
               <widget class="QLabel" name="label_15">
                <property name="font">
                 <font>
-                 <pointsize>13</pointsize>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
                 <string>아이디 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -937,7 +1054,7 @@
                 <string/>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignCenter</set>
+                <set>Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
