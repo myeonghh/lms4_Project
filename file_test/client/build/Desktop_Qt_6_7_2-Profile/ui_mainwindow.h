@@ -431,6 +431,7 @@ public:
         gridLayout_14->setObjectName("gridLayout_14");
         epiList_tableView = new QTableView(frame);
         epiList_tableView->setObjectName("epiList_tableView");
+        epiList_tableView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 
         gridLayout_14->addWidget(epiList_tableView, 0, 0, 1, 1);
 
@@ -609,7 +610,7 @@ public:
         retranslateUi(MainWindow);
         QObject::connect(toonSearchText, &QLineEdit::returnPressed, searchButton, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(1);
         mainTabWidget->setCurrentIndex(1);
         dayTabWidget->setCurrentIndex(0);
 
