@@ -72,7 +72,8 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "on_backList_btn_clicked",
     "bookmark_control",
     "like_control",
-    "get_login_user_info"
+    "get_login_user_info",
+    "on_pushButton_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -85,7 +86,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      24,   14, // methods
+      25,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -93,32 +94,33 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,  158,    2, 0x06,    1 /* Public */,
-       3,    1,  161,    2, 0x06,    3 /* Public */,
-       5,    1,  164,    2, 0x06,    5 /* Public */,
-       6,    1,  167,    2, 0x06,    7 /* Public */,
-       7,    1,  170,    2, 0x06,    9 /* Public */,
+       1,    1,  164,    2, 0x06,    1 /* Public */,
+       3,    1,  167,    2, 0x06,    3 /* Public */,
+       5,    1,  170,    2, 0x06,    5 /* Public */,
+       6,    1,  173,    2, 0x06,    7 /* Public */,
+       7,    1,  176,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    0,  173,    2, 0x08,   11 /* Private */,
-       9,    1,  174,    2, 0x08,   12 /* Private */,
-      12,    0,  177,    2, 0x08,   14 /* Private */,
-      13,    0,  178,    2, 0x08,   15 /* Private */,
-      14,    0,  179,    2, 0x08,   16 /* Private */,
-      15,    1,  180,    2, 0x08,   17 /* Private */,
-      17,    2,  183,    2, 0x08,   19 /* Private */,
-      17,    1,  188,    2, 0x28,   22 /* Private | MethodCloned */,
-      19,    5,  191,    2, 0x08,   24 /* Private */,
-      24,    1,  202,    2, 0x08,   30 /* Private */,
-      27,    1,  205,    2, 0x08,   32 /* Private */,
-      28,    1,  208,    2, 0x08,   34 /* Private */,
-      31,    0,  211,    2, 0x08,   36 /* Private */,
-      32,    0,  212,    2, 0x08,   37 /* Private */,
-      33,    1,  213,    2, 0x08,   38 /* Private */,
-      34,    0,  216,    2, 0x08,   40 /* Private */,
-      35,    0,  217,    2, 0x08,   41 /* Private */,
-      36,    0,  218,    2, 0x08,   42 /* Private */,
-      37,    1,  219,    2, 0x08,   43 /* Private */,
+       8,    0,  179,    2, 0x08,   11 /* Private */,
+       9,    1,  180,    2, 0x08,   12 /* Private */,
+      12,    0,  183,    2, 0x08,   14 /* Private */,
+      13,    0,  184,    2, 0x08,   15 /* Private */,
+      14,    0,  185,    2, 0x08,   16 /* Private */,
+      15,    1,  186,    2, 0x08,   17 /* Private */,
+      17,    2,  189,    2, 0x08,   19 /* Private */,
+      17,    1,  194,    2, 0x28,   22 /* Private | MethodCloned */,
+      19,    5,  197,    2, 0x08,   24 /* Private */,
+      24,    1,  208,    2, 0x08,   30 /* Private */,
+      27,    1,  211,    2, 0x08,   32 /* Private */,
+      28,    1,  214,    2, 0x08,   34 /* Private */,
+      31,    0,  217,    2, 0x08,   36 /* Private */,
+      32,    0,  218,    2, 0x08,   37 /* Private */,
+      33,    1,  219,    2, 0x08,   38 /* Private */,
+      34,    0,  222,    2, 0x08,   40 /* Private */,
+      35,    0,  223,    2, 0x08,   41 /* Private */,
+      36,    0,  224,    2, 0x08,   42 /* Private */,
+      37,    1,  225,    2, 0x08,   43 /* Private */,
+      38,    0,  228,    2, 0x08,   45 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,
@@ -147,6 +149,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,   20,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -227,7 +230,9 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'get_login_user_info'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'on_pushButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -262,6 +267,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 21: _t->bookmark_control(); break;
         case 22: _t->like_control(); break;
         case 23: _t->get_login_user_info((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 24: _t->on_pushButton_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -334,13 +340,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 24)
+        if (_id < 25)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 24;
+        _id -= 25;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 24)
+        if (_id < 25)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 24;
+        _id -= 25;
     }
     return _id;
 }

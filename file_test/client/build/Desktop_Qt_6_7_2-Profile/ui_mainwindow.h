@@ -104,7 +104,7 @@ public:
     QPushButton *afterEpi_btn;
     QPushButton *bookmark_add_btn;
     QPushButton *like_btn;
-    QLabel *like_cnt_label;
+    QPushButton *pushButton;
     QWidget *page_2;
     QWidget *layoutWidget;
     QGridLayout *gridLayout;
@@ -488,10 +488,10 @@ public:
 
         gridLayout_17->addWidget(like_btn, 1, 0, 1, 1);
 
-        like_cnt_label = new QLabel(webtoon_page);
-        like_cnt_label->setObjectName("like_cnt_label");
+        pushButton = new QPushButton(webtoon_page);
+        pushButton->setObjectName("pushButton");
 
-        gridLayout_17->addWidget(like_cnt_label, 1, 1, 1, 1);
+        gridLayout_17->addWidget(pushButton, 1, 1, 1, 1);
 
 
         verticalLayout_2->addLayout(gridLayout_17);
@@ -553,8 +553,8 @@ public:
         retranslateUi(MainWindow);
         QObject::connect(toonSearchText, &QLineEdit::returnPressed, searchButton, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(2);
-        mainTabWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(0);
+        mainTabWidget->setCurrentIndex(3);
         dayTabWidget->setCurrentIndex(0);
 
 
@@ -586,7 +586,7 @@ public:
         afterEpi_btn->setText(QCoreApplication::translate("MainWindow", "\353\213\244\354\235\214\355\231\224>>", nullptr));
         bookmark_add_btn->setText(QCoreApplication::translate("MainWindow", "\354\246\220\352\262\250\354\260\276\352\270\260 \354\266\224\352\260\200", nullptr));
         like_btn->setText(QCoreApplication::translate("MainWindow", "\354\242\213\354\225\204\354\232\224", nullptr));
-        like_cnt_label->setText(QString());
+        pushButton->setText(QCoreApplication::translate("MainWindow", "\354\246\220\352\262\250\354\260\276\352\270\260 \353\252\251\353\241\235\354\234\274\353\241\234 \354\235\264\353\217\231", nullptr));
         pushButton_sendMessage->setText(QCoreApplication::translate("MainWindow", "Send Message", nullptr));
         pushButton_sendAttachment->setText(QCoreApplication::translate("MainWindow", "Send Attachment", nullptr));
     } // retranslateUi

@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::pwSearch_info_signal, loginWidget, &Login::pwSearch_operate);
     connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::toon_search);
     connect(ui->epiList_tableView, &QTableView::doubleClicked, this, &MainWindow::epi_view_double_clicked);
+    connect(ui->b_tableView, &QTableView::doubleClicked, this, &MainWindow::epi_view_double_clicked);
     connect(ui->bookmark_add_btn, &QPushButton::clicked, this, &MainWindow::bookmark_control);
     connect(ui->like_btn, &QPushButton::clicked, this, &MainWindow::like_control);
 
@@ -75,9 +76,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // 이 객체의(MainWindow) slot_displayError 슬롯 함수 실행하여 처리
     connect(m_socket, &QAbstractSocket::errorOccurred,
             this,     &MainWindow::slot_displayError);
-
-
-    model123 = new QStandardItemModel();
 
 }
 
@@ -188,11 +186,11 @@ void MainWindow::slot_readSocket()
             {
                 emit login_info_signal("login success");
                 send_toon_info(TOONINFO); // 툰 정보 모델 생성위해 서버에 메시지 전송
+                send_toon_info(BOOKMARKLIST, login_user_id);
 
                 loginWidget->hide();
                 this->window()->show();
                 ui->stackedWidget->setCurrentWidget(ui->main_page);
-
 
             }
             else if (msg == "login fail")
@@ -237,6 +235,14 @@ void MainWindow::slot_readSocket()
         else if (fileType == "toonimage")
         {
             toon_img_show(buffer);
+        }
+        else if (fileType == "bookmark")
+        {
+            bookmark_ui_operate(msg);
+        }
+        else if (fileType == "bookmarklist")
+        {
+            create_bookmark_model(msg);
         }
 
         // fileType이 attachment 라면 파일 수신 로직을 실행하고
@@ -289,6 +295,88 @@ void MainWindow::slot_readSocket()
     }
 }
 
+void MainWindow::bookmark_ui_operate(QString msg)
+{
+    if (msg == "bookmarkDel")
+    {
+        send_toon_info(BOOKMARKLIST, login_user_id);
+        ui->bookmark_add_btn->setStyleSheet("background-color: #87CEFA; color: black; font-weight: bold;");
+        ui->bookmark_add_btn->setText("즐겨찾기 추가 ☆");
+        QMessageBox::information(this, "정보", "즐겨찾기에서 삭제되었습니다.");
+    }
+    else if (msg == "bookmarkAdd")
+    {
+        send_toon_info(BOOKMARKLIST, login_user_id);
+        ui->bookmark_add_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
+        ui->bookmark_add_btn->setText("즐겨찾기 삭제 ★");
+        QMessageBox::information(this, "정보", "즐겨찾기에서 추가되었습니다.");
+    }
+    else if (msg == "bookmarkTrue")
+    {
+        ui->bookmark_add_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
+        ui->bookmark_add_btn->setText("즐겨찾기 삭제 ★");
+    }
+    else if (msg == "bookmarkFalse")
+    {
+        ui->bookmark_add_btn->setStyleSheet("background-color: #87CEFA; color: black; font-weight: bold;");
+        ui->bookmark_add_btn->setText("즐겨찾기 추가 ☆");
+    }
+}
+
+
+void MainWindow::create_bookmark_model(QString &toonlist)
+{
+    QStringList str_list = toonlist.split("\n");
+    QStandardItem *epi_id, *t_id, *t_title, *epi_title, *t_author, *t_day, *epi_num, *view_num, *like_num;
+
+    bookmarkList_model = new QStandardItemModel();
+    bookmarkList_model->setColumnCount(9);
+    bookmarkList_model->setHorizontalHeaderLabels(QStringList()<<"일련번호"<<"종류번호"<<"웹툰제목"<<"회차제목"<<"작가"<<"회차"<<"요일"<<"조회수"<<"좋아요수");
+
+    for (const QString &row: str_list)
+    {
+        QStringList columns = row.split("/");
+        if (columns.size() == 9)
+        {
+            epi_id = new QStandardItem(columns[0].trimmed());
+            t_id = new QStandardItem(columns[1].trimmed());
+            t_title = new QStandardItem(columns[2].trimmed());
+            epi_title = new QStandardItem(columns[3].trimmed());
+            t_author = new QStandardItem(columns[4].trimmed());
+            t_day = new QStandardItem(columns[5].trimmed());
+            epi_num = new QStandardItem(columns[6].trimmed());
+            view_num = new QStandardItem(columns[7].trimmed());
+            like_num = new QStandardItem(columns[8].trimmed());
+
+            t_title->setTextAlignment(Qt::AlignCenter);
+            epi_title->setTextAlignment(Qt::AlignCenter);
+            t_author->setTextAlignment(Qt::AlignCenter);
+            t_day->setTextAlignment(Qt::AlignCenter);
+            epi_num->setTextAlignment(Qt::AlignCenter);
+            view_num->setTextAlignment(Qt::AlignCenter);
+            like_num->setTextAlignment(Qt::AlignCenter);
+
+            QList<QStandardItem*> items;
+            items << epi_id
+                  << t_id
+                  << t_title
+                  << epi_title
+                  << t_author
+                  << epi_num
+                  << t_day
+                  << view_num
+                  << like_num;
+
+            bookmarkList_model->appendRow(items);
+        }
+    }
+    ui->b_tableView->setModel(bookmarkList_model);
+    ui->b_tableView->resizeColumnsToContents();
+    ui->b_tableView->hideColumn(0);
+    ui->b_tableView->hideColumn(1);
+    ui->b_tableView->show();
+}
+
 void MainWindow::get_login_user_info(QString id)
 {
     login_user_id = id;
@@ -297,9 +385,7 @@ void MainWindow::get_login_user_info(QString id)
 
 void MainWindow::bookmark_control()
 {
-
-    send_toon_info(BOOKMARK, login_user_id+","+present_toon_id );
-
+    send_toon_info(BOOKMARK, login_user_id+","+present_toon_id+",control");
 }
 
 void MainWindow::like_control()
@@ -326,6 +412,7 @@ void MainWindow::toon_img_show(QByteArray &img_buf)
     imgLabel_list.append(imageLabel);
     imageLabel->setPixmap(image);
     ui->toon_scrollArea_contents->layout()->addWidget(imageLabel);
+    send_toon_info(BOOKMARK, login_user_id+","+present_toon_id+",check");
 }
 
 void MainWindow::toon_search()
@@ -534,6 +621,9 @@ void MainWindow::send_toon_info(int type, QString str)
             case BOOKMARK:
                 header.prepend(QString("fileType:bookmark,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
                 break;
+            case BOOKMARKLIST:
+                header.prepend(QString("fileType:bookmarklist,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
             default:
                 break;
             }
@@ -724,5 +814,12 @@ void MainWindow::on_backList_btn_clicked()
         delete imgLabel;
     }
     imgLabel_list.clear(); // 리스트 요소 클리어
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->main_page);
+    ui->mainTabWidget->setCurrentIndex(3);
 }
 

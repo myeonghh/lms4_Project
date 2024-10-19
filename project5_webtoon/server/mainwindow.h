@@ -39,7 +39,7 @@ private:
     QSet<QTcpSocket*> qset_connectedSKT;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
-    enum TYPE {SIGNUPINFO = 0, LOGININFO, IDINFO, PWINFO, TOONINFO, TOONLIST, TOONIMAGE};
+    enum TYPE {SIGNUPINFO = 0, LOGININFO, IDINFO, PWINFO, TOONINFO, TOONLIST, TOONIMAGE, BOOKMARK, BOOKMARKLIST};
 
     bool initializeDataBase();
     void appendToSocketList(QTcpSocket* socket);

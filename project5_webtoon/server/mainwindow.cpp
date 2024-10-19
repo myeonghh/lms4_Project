@@ -487,21 +487,83 @@ void MainWindow::slot_readSocket()
             msgParts = msg.split(",");
             QString user_id = msgParts[0];
             QString epi_id = msgParts[1];
+            QString check = msgParts[2];
 
             qry.prepare("SELECT * FROM BOOKMARK WHERE ID = :id AND EPI_ID = :epi_id");
             qry.bindValue(":id", user_id);
             qry.bindValue(":epi_id", epi_id);
             qry.exec();
 
-            if (qry.next()) // 북마크 있을때
+            if (check == "control") // 즐겨찾기 버튼 클릭시
             {
-                sendMessage(socket, LOGININFO, "login success");
+                if (qry.next()) // 북마크 있을때
+                {
+                    qry.prepare("DELETE FROM BOOKMARK WHERE ID = :id AND EPI_ID = :epi_id");
+                    qry.bindValue(":id", user_id);
+                    qry.bindValue(":epi_id", epi_id);
+                    if (qry.exec())
+                        sendMessage(socket, BOOKMARK, "bookmarkDel");
+                }
+                else // 북마크 없을때
+                {
+                    qry.prepare("INSERT INTO BOOKMARK "
+                                "(ID, EPI_ID) "
+                                "VALUES "
+                                "(:id, :epi_id)");
+                    qry.bindValue(":id", user_id);
+                    qry.bindValue(":epi_id", epi_id);
+                    if(qry.exec())
+                        sendMessage(socket, BOOKMARK, "bookmarkAdd");
+                }
             }
-            else // 북마크 없을때
+            else // 즐겨찾기 체크
             {
-                sendMessage(socket, LOGININFO, "login fail");
+                if (qry.next()) // 북마크 있을때
+                {
+                    sendMessage(socket, BOOKMARK, "bookmarkTrue");
+                }
+                else // 북마크 없을때
+                {
+                    sendMessage(socket, BOOKMARK, "bookmarkFalse");
+                }
             }
         }
+        else if (fileType == "bookmarklist")
+        {
+            QStringList toon_list;
+            QString toon_list_str;
+            QString user_id = msg;
+            qry.prepare("SELECT E.*, I.* FROM WEBTOON.BOOKMARK B "
+                        "JOIN WEBTOON.TOON_EPI E ON B.EPI_ID = E.EPI_ID "
+                        "JOIN WEBTOON.TOON_INFO I ON E.TOON_ID = I.TOON_ID "
+                        "WHERE B.ID = :user_id");
+            qry.bindValue(":user_id", user_id);
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString epi_id = qry.value(0).toString();
+                    QString t_id = qry.value(1).toString();
+                    QString epi_num = qry.value(2).toString();
+                    QString like_num = qry.value(3).toString();
+                    QString view_num = qry.value(4).toString();
+                    QString epi_title = qry.value(5).toString();
+                    QString t_title = qry.value(7).toString();
+                    QString t_author = qry.value(8).toString();
+                    QString t_day = qry.value(9).toString();
+
+                    toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9").arg(epi_id).arg(t_id).arg(t_title).arg(epi_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
+                }
+                toon_list_str = toon_list.join("\n");
+                sendMessage(socket, BOOKMARKLIST, toon_list_str);
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+
 
 
         // [ex.02.7.5]
@@ -667,6 +729,14 @@ void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
             else if (type == TOONIMAGE)
             {
                 header.prepend(QString("fileType:toonimage,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == BOOKMARK)
+            {
+                header.prepend(QString("fileType:bookmark,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == BOOKMARKLIST)
+            {
+                header.prepend(QString("fileType:bookmarklist,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
             }
 
             header.resize(128);

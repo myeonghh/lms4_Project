@@ -21,7 +21,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="main_page">
        <layout class="QGridLayout" name="gridLayout_3">
@@ -59,7 +59,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="entireListTab">
            <attribute name="title">
@@ -458,9 +458,9 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLabel" name="like_cnt_label">
+           <widget class="QPushButton" name="pushButton">
             <property name="text">
-             <string> </string>
+             <string>즐겨찾기 목록으로 이동</string>
             </property>
            </widget>
           </item>

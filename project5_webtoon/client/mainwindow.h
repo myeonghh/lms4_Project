@@ -34,15 +34,18 @@ public:
 
 private:
     enum USERTYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
-    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE, BOOKMARK};
+    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE, BOOKMARK, BOOKMARKLIST};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
     QStandardItemModel *toonInfo_model;
     QStandardItemModel *toonList_model;
+    QStandardItemModel *bookmarkList_model;
     void create_day_view();
     void toon_img_show(QByteArray &img_buf);
     void thumbnail_to_item(QByteArray &img_buf);
+    void bookmark_ui_operate(QString msg);
+    void create_bookmark_model(QString &toonlist);
     QList<QLabel*> imgLabel_list;
     QString toonInfo_data;
     QList<QPixmap> thumbnail_list;
@@ -77,6 +80,7 @@ private slots:
     void bookmark_control();
     void like_control();
     void get_login_user_info(QString id);
+    void on_pushButton_clicked();
 };
 
 #endif // MAINWINDOW_H
