@@ -46,7 +46,7 @@ QPushButton:hover {
     <item row="3" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="main_page">
        <layout class="QGridLayout" name="gridLayout_3">
@@ -363,7 +363,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
           </property>
           <layout class="QGridLayout" name="gridLayout_14">
            <item row="0" column="0">
-            <widget class="QTableView" name="epiList_tableView"/>
+            <widget class="QTableView" name="epiList_tableView">
+             <property name="editTriggers">
+              <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
