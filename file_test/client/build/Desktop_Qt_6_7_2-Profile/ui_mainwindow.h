@@ -112,6 +112,10 @@ public:
     QPushButton *pushButton_sendAttachment;
     QLineEdit *lineEdit_message;
     QTextBrowser *textBrowser_receivedMessages;
+    QFrame *frame_3;
+    QHBoxLayout *horizontalLayout_2;
+    QSpacerItem *horizontalSpacer_4;
+    QPushButton *logout_btn;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -120,7 +124,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(802, 663);
+        MainWindow->resize(895, 701);
         MainWindow->setStyleSheet(QString::fromUtf8(""));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName("centralWidget");
@@ -448,7 +452,7 @@ public:
         toon_scrollArea->setWidgetResizable(true);
         toon_scrollArea_contents = new QWidget();
         toon_scrollArea_contents->setObjectName("toon_scrollArea_contents");
-        toon_scrollArea_contents->setGeometry(QRect(0, 0, 762, 488));
+        toon_scrollArea_contents->setGeometry(QRect(0, 0, 762, 457));
         verticalLayout_4 = new QVBoxLayout(toon_scrollArea_contents);
         verticalLayout_4->setSpacing(6);
         verticalLayout_4->setContentsMargins(11, 11, 11, 11);
@@ -536,12 +540,39 @@ public:
         textBrowser_receivedMessages->setStyleSheet(QString::fromUtf8(""));
         stackedWidget->addWidget(page_2);
 
-        gridLayout_2->addWidget(stackedWidget, 0, 0, 1, 1);
+        gridLayout_2->addWidget(stackedWidget, 3, 0, 1, 1);
+
+        frame_3 = new QFrame(centralWidget);
+        frame_3->setObjectName("frame_3");
+        frame_3->setMinimumSize(QSize(0, 0));
+        frame_3->setStyleSheet(QString::fromUtf8("QFrame {\n"
+"    border: none;\n"
+"\n"
+"}\n"
+""));
+        frame_3->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_3->setFrameShadow(QFrame::Shadow::Raised);
+        horizontalLayout_2 = new QHBoxLayout(frame_3);
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_2->setObjectName("horizontalLayout_2");
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_4);
+
+        logout_btn = new QPushButton(frame_3);
+        logout_btn->setObjectName("logout_btn");
+        logout_btn->setStyleSheet(QString::fromUtf8(""));
+
+        horizontalLayout_2->addWidget(logout_btn);
+
+
+        gridLayout_2->addWidget(frame_3, 0, 0, 1, 1);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName("menuBar");
-        menuBar->setGeometry(QRect(0, 0, 802, 22));
+        menuBar->setGeometry(QRect(0, 0, 895, 22));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName("mainToolBar");
@@ -554,7 +585,7 @@ public:
         QObject::connect(toonSearchText, &QLineEdit::returnPressed, searchButton, qOverload<>(&QPushButton::click));
 
         stackedWidget->setCurrentIndex(0);
-        mainTabWidget->setCurrentIndex(3);
+        mainTabWidget->setCurrentIndex(1);
         dayTabWidget->setCurrentIndex(0);
 
 
@@ -589,6 +620,7 @@ public:
         pushButton->setText(QCoreApplication::translate("MainWindow", "\354\246\220\352\262\250\354\260\276\352\270\260 \353\252\251\353\241\235\354\234\274\353\241\234 \354\235\264\353\217\231", nullptr));
         pushButton_sendMessage->setText(QCoreApplication::translate("MainWindow", "Send Message", nullptr));
         pushButton_sendAttachment->setText(QCoreApplication::translate("MainWindow", "Send Attachment", nullptr));
+        logout_btn->setText(QCoreApplication::translate("MainWindow", "\353\241\234\352\267\270\354\225\204\354\233\203", nullptr));
     } // retranslateUi
 
 };

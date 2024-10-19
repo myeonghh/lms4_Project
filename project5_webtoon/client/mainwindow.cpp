@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->b_tableView, &QTableView::doubleClicked, this, &MainWindow::epi_view_double_clicked);
     connect(ui->bookmark_add_btn, &QPushButton::clicked, this, &MainWindow::bookmark_control);
     connect(ui->like_btn, &QPushButton::clicked, this, &MainWindow::like_control);
+    connect(ui->beforeEpi_btn, &QPushButton::clicked, this, &MainWindow::to_before_epi);
+    connect(ui->afterEpi_btn, &QPushButton::clicked, this, &MainWindow::to_after_epi);
 
     QList<QTableView*> view_list;
     view_list.append(ui->e_tableView);
@@ -191,6 +193,7 @@ void MainWindow::slot_readSocket()
                 loginWidget->hide();
                 this->window()->show();
                 ui->stackedWidget->setCurrentWidget(ui->main_page);
+                ui->mainTabWidget->setCurrentIndex(0);
 
             }
             else if (msg == "login fail")
@@ -244,6 +247,10 @@ void MainWindow::slot_readSocket()
         {
             create_bookmark_model(msg);
         }
+        else if (fileType == "toonlike")
+        {
+            toonlike_ui_operate(msg);
+        }
 
         // fileType이 attachment 라면 파일 수신 로직을 실행하고
         // fileType이 message 라면 문장 수신 로직을 실핸한다.
@@ -295,6 +302,42 @@ void MainWindow::slot_readSocket()
     }
 }
 
+void MainWindow::to_before_epi()
+{
+    send_toon_info(EPICHANGE, login_user_id+","+present_toon_id+",before");
+}
+
+void MainWindow::to_after_epi()
+{
+    send_toon_info(EPICHANGE, login_user_id+","+present_toon_id+",after");
+}
+
+void MainWindow::toonlike_ui_operate(QString msg)
+{
+    if (msg == "toonlikeDel")
+    {
+        send_toon_info(BOOKMARKLIST, login_user_id);
+        ui->like_btn->setStyleSheet("background-color: #87CEFA; color: black; font-weight: bold;");
+        ui->like_btn->setText("좋아요 🤍");
+    }
+    else if (msg == "toonlikeAdd")
+    {
+        send_toon_info(BOOKMARKLIST, login_user_id);
+        ui->like_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
+        ui->like_btn->setText("좋아요 취소 🩷");
+    }
+    else if (msg == "toonlikeTrue")
+    {
+        ui->like_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
+        ui->like_btn->setText("좋아요 취소 🩷");
+    }
+    else if (msg == "toonlikeFalse")
+    {
+        ui->like_btn->setStyleSheet("background-color: #87CEFA; color: black; font-weight: bold;");
+        ui->like_btn->setText("좋아요 🤍");
+    }
+}
+
 void MainWindow::bookmark_ui_operate(QString msg)
 {
     if (msg == "bookmarkDel")
@@ -308,13 +351,13 @@ void MainWindow::bookmark_ui_operate(QString msg)
     {
         send_toon_info(BOOKMARKLIST, login_user_id);
         ui->bookmark_add_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
-        ui->bookmark_add_btn->setText("즐겨찾기 삭제 ★");
+        ui->bookmark_add_btn->setText("즐겨찾기 삭제 🌟");
         QMessageBox::information(this, "정보", "즐겨찾기에서 추가되었습니다.");
     }
     else if (msg == "bookmarkTrue")
     {
         ui->bookmark_add_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
-        ui->bookmark_add_btn->setText("즐겨찾기 삭제 ★");
+        ui->bookmark_add_btn->setText("즐겨찾기 삭제 🌟");
     }
     else if (msg == "bookmarkFalse")
     {
@@ -390,7 +433,7 @@ void MainWindow::bookmark_control()
 
 void MainWindow::like_control()
 {
-    ui->like_btn->setStyleSheet("backgrond-color: hotpink;");
+    send_toon_info(TOONLIKE, login_user_id+","+present_toon_id+",control");
 }
 
 void MainWindow::epi_view_double_clicked(const QModelIndex &index)
@@ -413,6 +456,7 @@ void MainWindow::toon_img_show(QByteArray &img_buf)
     imageLabel->setPixmap(image);
     ui->toon_scrollArea_contents->layout()->addWidget(imageLabel);
     send_toon_info(BOOKMARK, login_user_id+","+present_toon_id+",check");
+    send_toon_info(TOONLIKE, login_user_id+","+present_toon_id+",check");
 }
 
 void MainWindow::toon_search()
@@ -624,6 +668,12 @@ void MainWindow::send_toon_info(int type, QString str)
             case BOOKMARKLIST:
                 header.prepend(QString("fileType:bookmarklist,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
                 break;
+            case TOONLIKE:
+                header.prepend(QString("fileType:toonlike,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
+            case EPICHANGE:
+                header.prepend(QString("fileType:epichange,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
             default:
                 break;
             }
@@ -821,5 +871,12 @@ void MainWindow::on_pushButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->main_page);
     ui->mainTabWidget->setCurrentIndex(3);
+}
+
+
+void MainWindow::on_logout_btn_clicked()
+{
+    this->window()->hide();
+    loginWidget->show();
 }
 

@@ -175,7 +175,6 @@ void Login::login() // 로그인 버튼 클릭시 로그인 로직
     }
     else
     {
-        QMessageBox::information(this, "정보", "로그인 성공");
         emit user_info_signal(LOGIN, id, pw);
     }
 }

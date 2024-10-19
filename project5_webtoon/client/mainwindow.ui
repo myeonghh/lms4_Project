@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>663</height>
+    <width>895</width>
+    <height>701</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+    <item row="3" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -59,7 +59,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }</string>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="entireListTab">
            <attribute name="title">
@@ -411,7 +411,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                <x>0</x>
                <y>0</y>
                <width>762</width>
-               <height>488</height>
+               <height>457</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4"/>
@@ -530,6 +530,54 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
       </widget>
      </widget>
     </item>
+    <item row="0" column="0">
+     <widget class="QFrame" name="frame_3">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QFrame {
+    border: none;
+
+}
+</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="logout_btn">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>로그아웃</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -537,7 +585,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>802</width>
+     <width>895</width>
      <height>22</height>
     </rect>
    </property>

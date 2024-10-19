@@ -223,6 +223,7 @@ void MainWindow::slot_readSocket()
         QString msg = buffer;
         QString id, pw, phone_num, email;
         QSqlQuery qry;
+        QSqlQuery qry2;
         QStringList msgParts;
 
 
@@ -363,7 +364,6 @@ void MainWindow::slot_readSocket()
             QString toon_info_str;
             QStringList imagePaths;
 
-            qDebug() << "여기야11";
             qry.prepare("SELECT * FROM TOON_INFO");
 
             if (qry.exec())
@@ -481,6 +481,24 @@ void MainWindow::slot_readSocket()
             {
                 qDebug() << "조회수 업데이트 오류";
             }
+            // // 클릭한 회차의 웹툰번호, 웹툰회차 전송
+            // query.prepare("SELECT E.TOON_ID, E.EPI_NUM FROM TOON_EPI E "
+            //               "JOIN TOON_IMG I ON E.EPI_ID = I.EPI_ID"
+            //               "WHERE E.EPI_ID = :epi_id");
+            // query.bindValue(":epi_id", epi_id);
+            // query.exec();
+
+            // if (query.next())
+            // {
+            //     QString t_id = qry.value(0).toString();
+            //     QString epi_num = qry.value(1).toString();
+            //     sendMessage(socket, PWEBTOONINFO, t_id+"/"+epi_num);
+            // }
+            // else
+            // {
+            //     qDebug() << "조회 오류";
+            // }
+
         }
         else if (fileType == "bookmark")
         {
@@ -563,6 +581,115 @@ void MainWindow::slot_readSocket()
                 qDebug() << "쿼리실행 실패" << qry.lastError().text();
             }
         }
+        else if (fileType == "toonlike")
+        {
+            msgParts = msg.split(",");
+            QString user_id = msgParts[0];
+            QString epi_id = msgParts[1];
+            QString check = msgParts[2];
+
+            qry.prepare("SELECT * FROM TOON_LIKE WHERE ID = :id AND EPI_ID = :epi_id");
+            qry.bindValue(":id", user_id);
+            qry.bindValue(":epi_id", epi_id);
+            qry.exec();
+
+            if (check == "control") // 좋아요 버튼 클릭시
+            {
+                if (qry.next()) // 이미 좋아요 했을때
+                {
+                    qry.prepare("DELETE FROM TOON_LIKE WHERE ID = :id AND EPI_ID = :epi_id");
+                    qry.bindValue(":id", user_id);
+                    qry.bindValue(":epi_id", epi_id);
+
+                    qry2.prepare("UPDATE TOON_EPI SET LIKE_NUM = LIKE_NUM-1 WHERE EPI_ID = :epi_id");
+                    qry2.bindValue(":epi_id", epi_id);
+
+                    if (qry.exec() && qry2.exec())
+                        sendMessage(socket, TOONLIKE, "toonlikeDel");
+                }
+                else // 좋아요 안했을때
+                {
+                    qry.prepare("INSERT INTO TOON_LIKE "
+                                "(EPI_ID, ID) "
+                                "VALUES "
+                                "(:epi_id, :id)");
+                    qry.bindValue(":epi_id", epi_id);
+                    qry.bindValue(":id", user_id);
+
+                    qry2.prepare("UPDATE TOON_EPI SET LIKE_NUM = LIKE_NUM+1 WHERE EPI_ID = :epi_id");
+                    qry2.bindValue(":epi_id", epi_id);
+
+                    if(qry.exec() && qry2.exec())
+                        sendMessage(socket, TOONLIKE, "toonlikeAdd");
+                }
+            }
+            else // 좋아요 체크
+            {
+                if (qry.next()) // 좋아요 이미 했을때
+                {
+                    sendMessage(socket, TOONLIKE, "toonlikeTrue");
+                }
+                else // 좋아요 안했을때
+                {
+                    sendMessage(socket, TOONLIKE, "toonlikeFalse");
+                }
+            }
+        }
+        // else if (fileType == "epichange")
+        // {
+        //     msgParts = msg.split(",");
+        //     QString user_id = msgParts[0];
+        //     QString epi_id = msgParts[1];
+        //     QString check = msgParts[2];
+
+        //     if (check == "before")
+        //     {
+        //         QStringList imagePaths;
+
+        //         QString epi_id = msg;
+        //         qry.prepare("SELECT IMG_SRC FROM TOON_IMG WHERE EPI_ID = :epi_id");
+        //         qry.bindValue(":epi_id", epi_id+"-1");
+
+        //         if (qry.exec())
+        //         {
+        //             while (qry.next())
+        //             {
+        //                 imagePaths.append(qry.value(0).toString());
+        //             }
+        //         }
+
+        //         for (const QString &imagePath : imagePaths)
+        //         {
+        //             QFile file(imagePath); // 이미지 파일 열기
+        //             if (file.open(QIODevice::ReadOnly))
+        //             {
+        //                 QByteArray imageData = file.readAll();
+        //                 QByteArray header;
+        //                 header.prepend(QString("fileType:toonimage,fileName:null,fileSize:null;").toUtf8());
+        //                 header.resize(128);
+        //                 // 헤더와 이미지 데이터 합치기
+        //                 QByteArray image_info = header + imageData;
+        //                 socketStream << image_info;
+        //             }
+        //             else
+        //             {
+        //                 // 파일을 열 수 없는 경우 에러 처리
+        //                 qDebug() << "파일 오픈 실패:" << imagePath;
+        //             }
+        //         }
+        //         // 조회수 증가 로직
+        //         query.prepare("UPDATE TOON_EPI SET VIEW_NUM = VIEW_NUM+1 WHERE EPI_ID = :epi_id");
+        //         query.bindValue(":epi_id", epi_id);
+        //         if (!query.exec())
+        //         {
+        //             qDebug() << "조회수 업데이트 오류";
+        //         }
+        //     }
+        //     else
+        //     {
+
+        //     }
+        // }
 
 
 
@@ -737,6 +864,10 @@ void MainWindow::sendMessage(QTcpSocket* socket, int type, QString msg = "")
             else if (type == BOOKMARKLIST)
             {
                 header.prepend(QString("fileType:bookmarklist,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
+            }
+            else if (type == TOONLIKE)
+            {
+                header.prepend(QString("fileType:toonlike,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
             }
 
             header.resize(128);
