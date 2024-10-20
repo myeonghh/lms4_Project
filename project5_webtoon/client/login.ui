@@ -14,16 +14,11 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton {
-    background-color: #3498db;
-    color: white;
-    border-radius: 5px;
-    padding: 5px 10px;
+   <string notr="true">QWidget{
+	font-family: 'Roboto';
 }
 
-QPushButton:hover {
-    background-color: #2980b9;
-}
+
 QLabel {
     padding: 5px;
     margin: 0px;
@@ -58,11 +53,12 @@ QPushButton:pressed {
 /* 입력 필드 (ID, 비밀번호, 휴대폰 번호, 이메일) */
 QLineEdit {
     background-color: #ffffff;
-    color: black;
     border: 2px solid #dcdcdc;
     border-radius: 8px;
     padding: 6px 10px;
     font-size: 14px;
+	color: black;
+	font-weight: bold;
 }
 
 QLineEdit:focus {
@@ -76,13 +72,10 @@ QFrame {
     border-radius: 12px;
     padding: 10px;
     background-color: #ffffff;
+	border-color: #1f618d;
 }
 
-/* QLineEdit의 Placeholder 텍스트 */
-QLineEdit[placeholderText] {
-    color: #a0a0a0;
-    font-style: italic;
-}
+
 
 /* 나가기 버튼 */
 QPushButton#backBtn {
@@ -100,20 +93,66 @@ QPushButton#backBtn_3 {
     border: 2px solid #c0392b;
 }
 
-QPushButton#exitButton:hover {
+QPushButton#backBtn:hover {
     background-color: #c0392b;
 }
 
-QPushButton#exitButton:pressed {
+QPushButton#backBtn:pressed {
     background-color: #96281b;
+}
+
+QPushButton#backBtn_2:hover {
+    background-color: #c0392b;
+}
+
+QPushButton#backBtn_2:pressed {
+    background-color: #96281b;
+}
+
+QPushButton#backBtn_3:hover {
+    background-color: #c0392b;
+}
+
+QPushButton#backBtn_3:pressed {
+    background-color: #96281b;
+}
+
+QMessageBox {
+    background-color: #ffffff;           /* 팝업 배경을 흰색으로 */
+    border: 2px solid #3b75b5;           /* 파란색 테두리 */
+    border-radius: 10px;                 /* 둥근 모서리 */
+}
+
+QMessageBox QLabel {
+    color: #000000;                      /* 메시지 텍스트 색상 (검정) */
+    font-family: &quot;맑은 고딕&quot;;              /* 한글 폰트 적용 */
+    font-size: 14pt;                     /* 텍스트 크기 */
+    font-weight: bold;                   /* 텍스트 굵게 */
+}
+
+QMessageBox QPushButton {
+    background-color: #3b75b5;           /* 버튼 배경색 (파란색) */
+    color: white;                        /* 버튼 텍스트 색상 (흰색) */
+    font-family: &quot;맑은 고딕&quot;;              /* 버튼 폰트 설정 */
+    font-size: 12pt;                     /* 버튼 텍스트 크기 */
+    border-radius: 5px;                  /* 버튼 모서리를 둥글게 */
+    padding: 5px 15px;                   /* 버튼 내부 여백 */
+}
+
+QMessageBox QPushButton:hover {
+    background-color: #619edc;           /* 버튼에 마우스를 올렸을 때 배경색 */
+}
+
+QMessageBox QPushButton:pressed {
+    background-color: #2a5a84;           /* 버튼을 눌렀을 때 배경색 */
 }
 </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="1">
+   <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="login">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -126,7 +165,10 @@ QPushButton#exitButton:pressed {
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true"/>
+          <string notr="true">QFrame {
+    border: none;
+}
+</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -146,6 +188,10 @@ QPushButton#exitButton:pressed {
             <property name="styleSheet">
              <string notr="true">QFrame {
     border: none;
+}
+
+QLabel{
+	qproperty-alignment: 'AlignRight';
 }</string>
             </property>
             <property name="frameShape">
@@ -176,15 +222,22 @@ QPushButton#exitButton:pressed {
                  <height>0</height>
                 </size>
                </property>
+               <property name="text">
+                <string/>
+               </property>
               </widget>
              </item>
              <item row="0" column="1">
               <widget class="QLabel" name="label_2">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>-1</pointsize>
                  <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
                </property>
                <property name="text">
                 <string>아이디</string>
@@ -228,9 +281,13 @@ QPushButton#exitButton:pressed {
               <widget class="QLabel" name="label_3">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>-1</pointsize>
                  <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
                </property>
                <property name="text">
                 <string>비밀번호</string>
@@ -289,6 +346,9 @@ QPushButton#exitButton:pressed {
            <height>250</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
          </property>
@@ -300,6 +360,7 @@ QPushButton#exitButton:pressed {
            <widget class="QLabel" name="label">
             <property name="font">
              <font>
+              <family>Roboto</family>
               <pointsize>-1</pointsize>
               <bold>true</bold>
              </font>
@@ -308,6 +369,7 @@ QPushButton#exitButton:pressed {
              <string notr="true">QLabel{
 	font-size: 60px;
 	qproperty-alignment: 'AlignCenter';
+	border: none;
 }
 </string>
             </property>
@@ -351,15 +413,23 @@ QPushButton#exitButton:pressed {
            <widget class="QLabel" name="label_4">
             <property name="font">
              <font>
+              <family>Roboto</family>
               <pointsize>-1</pointsize>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+	font-size: 30px;
+	qproperty-alignment: 'AlignCenter';
+	border: none;
+}</string>
             </property>
             <property name="text">
              <string>회원 가입</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignVCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -373,6 +443,13 @@ QPushButton#exitButton:pressed {
            <width>0</width>
            <height>450</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QFrame {
+	border: none;
+	padding-left: 0px;
+	padding-right: 0px;
+}</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -392,6 +469,9 @@ QPushButton#exitButton:pressed {
             <property name="styleSheet">
              <string notr="true">QFrame {
     border: none;
+}
+QLabel{
+	qproperty-alignment: 'AlignRight';
 }</string>
             </property>
             <property name="frameShape">
@@ -401,10 +481,11 @@ QPushButton#exitButton:pressed {
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="3" column="1">
+             <item row="3" column="2">
               <widget class="QLabel" name="label_8">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>-1</pointsize>
                  <bold>true</bold>
                 </font>
@@ -413,37 +494,15 @@ QPushButton#exitButton:pressed {
                 <string>이메일 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignRight</set>
                </property>
               </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLineEdit" name="s_pwText"/>
              </item>
              <item row="0" column="2">
-              <widget class="QLineEdit" name="s_idText">
-               <property name="minimumSize">
-                <size>
-                 <width>180</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
-              <widget class="QPushButton" name="pnumDupChkBtn">
-               <property name="text">
-                <string>중복 확인</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
               <widget class="QLabel" name="label_5">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>-1</pointsize>
                  <bold>true</bold>
                 </font>
@@ -452,54 +511,15 @@ QPushButton#exitButton:pressed {
                 <string>아이디 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="4">
-              <widget class="QLabel" name="pnumDupChkText">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QPushButton" name="idDupChkBtn">
-               <property name="text">
-                <string>중복 확인</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="label_6">
-               <property name="font">
-                <font>
-                 <pointsize>-1</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string> 비밀번호 </string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignRight</set>
                </property>
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QLineEdit" name="s_pNumText"/>
-             </item>
-             <item row="4" column="2">
-              <widget class="QPushButton" name="signUpBtn">
-               <property name="text">
-                <string>회원가입</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
               <widget class="QLabel" name="label_7">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>-1</pointsize>
                  <bold>true</bold>
                 </font>
@@ -508,11 +528,114 @@ QPushButton#exitButton:pressed {
                 <string>휴대폰 번호 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignRight</set>
                </property>
               </widget>
              </item>
-             <item row="3" column="4">
+             <item row="2" column="6">
+              <widget class="QLabel" name="pnumDupChkText">
+               <property name="styleSheet">
+                <string notr="true">QLabel{
+	padding-left: 0px; 
+    padding-right: 0px; 
+	margin-left: 0px;
+	margin-right: 0px;
+}</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="3">
+              <widget class="QPushButton" name="signUpBtn">
+               <property name="text">
+                <string>회원가입</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QPushButton" name="idDupChkBtn">
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
+font-size: 13px;
+margin:1px;
+}
+</string>
+               </property>
+               <property name="text">
+                <string>중복 확인</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QLineEdit" name="s_emailText"/>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_6">
+               <property name="font">
+                <font>
+                 <family>Roboto</family>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string> 비밀번호 </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QLineEdit" name="s_pNumText"/>
+             </item>
+             <item row="0" column="6">
+              <widget class="QLabel" name="idDupChkText">
+               <property name="minimumSize">
+                <size>
+                 <width>150</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel{
+	padding-left: 0px; 
+    padding-right: 0px; 
+	margin-left: 0px;
+	margin-right: 0px;
+}</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="4">
+              <widget class="QPushButton" name="pnumDupChkBtn">
+               <property name="text">
+                <string>중복 확인</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLineEdit" name="s_idText">
+               <property name="minimumSize">
+                <size>
+                 <width>190</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QLineEdit" name="s_pwText"/>
+             </item>
+             <item row="4" column="6">
               <spacer name="horizontalSpacer_6">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
@@ -525,10 +648,7 @@ QPushButton#exitButton:pressed {
                </property>
               </spacer>
              </item>
-             <item row="3" column="2">
-              <widget class="QLineEdit" name="s_emailText"/>
-             </item>
-             <item row="2" column="0">
+             <item row="2" column="1">
               <spacer name="horizontalSpacer_5">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
@@ -540,13 +660,6 @@ QPushButton#exitButton:pressed {
                 </size>
                </property>
               </spacer>
-             </item>
-             <item row="0" column="4">
-              <widget class="QLabel" name="idDupChkText">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
              </item>
             </layout>
            </widget>
@@ -619,7 +732,7 @@ QPushButton#exitButton:pressed {
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>100</height>
+           <height>197</height>
           </size>
          </property>
          <property name="frameShape">
@@ -633,15 +746,23 @@ QPushButton#exitButton:pressed {
            <widget class="QLabel" name="label_9">
             <property name="font">
              <font>
+              <family>Roboto</family>
               <pointsize>-1</pointsize>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+	font-size: 30px;
+	qproperty-alignment: 'AlignCenter';
+	border: none;
+}</string>
             </property>
             <property name="text">
              <string>아이디 찾기</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignVCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -655,6 +776,11 @@ QPushButton#exitButton:pressed {
            <width>0</width>
            <height>450</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QFrame {
+	border: none;
+}</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -683,6 +809,64 @@ QPushButton#exitButton:pressed {
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
+             <item row="3" column="1">
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="idSearchBtn">
+               <property name="text">
+                <string>아이디 찾기</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="font">
+                <font>
+                 <family>Roboto</family>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel{
+	qproperty-alignment: 'AlignRight';
+}</string>
+               </property>
+               <property name="text">
+                <string>휴대폰 번호</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="i_pNumText"/>
+             </item>
              <item row="0" column="1">
               <spacer name="verticalSpacer">
                <property name="orientation">
@@ -708,58 +892,6 @@ QPushButton#exitButton:pressed {
                 </size>
                </property>
               </spacer>
-             </item>
-             <item row="2" column="1">
-              <widget class="QPushButton" name="idSearchBtn">
-               <property name="text">
-                <string>아이디 찾기</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <spacer name="verticalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="2" column="0">
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="i_pNumText"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="font">
-                <font>
-                 <pointsize>-1</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>휴대폰 번호</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
              </item>
             </layout>
            </widget>
@@ -790,7 +922,7 @@ QPushButton#exitButton:pressed {
                 <string/>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -871,7 +1003,7 @@ QPushButton#exitButton:pressed {
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>0</height>
+           <height>197</height>
           </size>
          </property>
          <property name="frameShape">
@@ -885,15 +1017,23 @@ QPushButton#exitButton:pressed {
            <widget class="QLabel" name="label_12">
             <property name="font">
              <font>
+              <family>Roboto</family>
               <pointsize>-1</pointsize>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+	font-size: 30px;
+	qproperty-alignment: 'AlignCenter';
+	border: none;
+}</string>
             </property>
             <property name="text">
              <string>비밀번호 찾기</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignVCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -907,6 +1047,11 @@ QPushButton#exitButton:pressed {
            <width>0</width>
            <height>450</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QFrame {
+	border: none;
+}</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -926,6 +1071,10 @@ QPushButton#exitButton:pressed {
             <property name="styleSheet">
              <string notr="true">QFrame {
     border: none;
+}
+
+QLabel{
+	qproperty-alignment: 'AlignRight';
 }</string>
             </property>
             <property name="frameShape">
@@ -935,35 +1084,20 @@ QPushButton#exitButton:pressed {
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_6">
-             <item row="1" column="3">
-              <spacer name="horizontalSpacer_7">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="2" column="2">
-              <widget class="QLineEdit" name="p_emailText"/>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="label_14">
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_15">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>-1</pointsize>
                  <bold>true</bold>
                 </font>
                </property>
                <property name="text">
-                <string>이메일</string>
+                <string>아이디 </string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignRight</set>
                </property>
               </widget>
              </item>
@@ -974,7 +1108,53 @@ QPushButton#exitButton:pressed {
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
+             <item row="2" column="2">
+              <widget class="QLineEdit" name="p_emailText"/>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLineEdit" name="p_pNumText"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLineEdit" name="p_idText"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="label_13">
+               <property name="font">
+                <font>
+                 <family>Roboto</family>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string>휴대폰 번호</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="label_14">
+               <property name="font">
+                <font>
+                 <family>Roboto</family>
+                 <pointsize>-1</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>이메일</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
               <spacer name="horizontalSpacer_8">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
@@ -987,43 +1167,18 @@ QPushButton#exitButton:pressed {
                </property>
               </spacer>
              </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="label_13">
-               <property name="font">
-                <font>
-                 <pointsize>-1</pointsize>
-                 <bold>true</bold>
-                </font>
+             <item row="3" column="3">
+              <spacer name="horizontalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
-               <property name="text">
-                <string>휴대폰 번호</string>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_15">
-               <property name="font">
-                <font>
-                 <pointsize>-1</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>아이디 </string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLineEdit" name="p_pNumText"/>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLineEdit" name="p_idText"/>
+              </spacer>
              </item>
             </layout>
            </widget>
@@ -1039,6 +1194,7 @@ QPushButton#exitButton:pressed {
             <property name="styleSheet">
              <string notr="true">QFrame {
     border: none;
+	padding: 0;
 }</string>
             </property>
             <property name="frameShape">
@@ -1050,11 +1206,16 @@ QPushButton#exitButton:pressed {
             <layout class="QGridLayout" name="gridLayout_8">
              <item row="0" column="0">
               <widget class="QLabel" name="pwShowText">
+               <property name="styleSheet">
+                <string notr="true">QLabel {
+	padding: 0;
+}</string>
+               </property>
                <property name="text">
                 <string/>
                </property>
                <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -1135,34 +1296,18 @@ QPushButton#exitButton:pressed {
  <resources/>
  <connections>
   <connection>
-   <sender>l_pwText</sender>
-   <signal>editingFinished()</signal>
-   <receiver>loginBtn</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>337</x>
-     <y>374</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>341</x>
-     <y>425</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>s_emailText</sender>
    <signal>returnPressed()</signal>
    <receiver>signUpBtn</receiver>
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>354</x>
-     <y>343</y>
+     <x>108</x>
+     <y>38</y>
     </hint>
     <hint type="destinationlabel">
-     <x>351</x>
-     <y>387</y>
+     <x>108</x>
+     <y>38</y>
     </hint>
    </hints>
   </connection>
@@ -1173,12 +1318,12 @@ QPushButton#exitButton:pressed {
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>334</x>
-     <y>231</y>
+     <x>108</x>
+     <y>38</y>
     </hint>
     <hint type="destinationlabel">
-     <x>334</x>
-     <y>254</y>
+     <x>108</x>
+     <y>38</y>
     </hint>
    </hints>
   </connection>
@@ -1189,12 +1334,28 @@ QPushButton#exitButton:pressed {
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>399</x>
-     <y>265</y>
+     <x>108</x>
+     <y>38</y>
     </hint>
     <hint type="destinationlabel">
-     <x>390</x>
-     <y>309</y>
+     <x>108</x>
+     <y>38</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>l_pwText</sender>
+   <signal>returnPressed()</signal>
+   <receiver>loginBtn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>471</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>453</x>
+     <y>529</y>
     </hint>
    </hints>
   </connection>

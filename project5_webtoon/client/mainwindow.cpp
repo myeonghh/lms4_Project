@@ -246,65 +246,72 @@ void MainWindow::slot_readSocket()
         {
             toonlike_ui_operate(msg);
         }
-
-        // fileType이 attachment 라면 파일 수신 로직을 실행하고
-        // fileType이 message 라면 문장 수신 로직을 실핸한다.
-        if(fileType=="attachment")
+        else if (fileType == "epichange")
         {
-            // 파일 전송은, 1)저장될 파일 이름, 2) 파일 확장자 3) 파일 크기 정보가 필요하다.
-            QString fileName = header.split(",")[1].split(":")[1];
-            QString ext = fileName.split(".")[1];
-            QString size = header.split(",")[2].split(":")[1].split(";")[0];
-
-            QStandardItemModel *model = new QStandardItemModel;
-
-
-            // 파일 전송 메시지를 받으면, 메시지 박스를 띄워서 전송 받을 것인지 확인한다.
-            // 메시지 박스에서 yes를 선택하면 파일을 읽는다.
-            if (QMessageBox::Yes == QMessageBox::question(this, "QTCPServer", QString("You are receiving an attachment from sd:%1 of size: %2 bytes, called %3. Do you want to accept it?").arg(m_socket->socketDescriptor()).arg(size).arg(fileName)))
-            {
-                // 저장될 파일의 경로를 설정하고, 파일 이름과, 확장자를 설정한다.
-                QString filePath = QFileDialog::getSaveFileName(this, tr("Save File"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)+"/"+fileName, QString("File (*.%1)").arg(ext));
-
-                // file 객체를 위에서 설정한 경로를 기반으로 연결하고
-                QFile file(filePath);
-
-                // file 객체를 열고, buffer에 들어있는 byte를 쓴다(내보낸다. 통신이랑 같다).
-                if(file.open(QIODevice::WriteOnly))
-                {
-                    file.write(buffer);
-
-                    // 파일이 저장되는 것에 대한 메시지를 ui에 출력한다.
-                    QString message = QString("INFO :: Attachment from sd:%1 successfully stored on disk under the path %2").arg(m_socket->socketDescriptor()).arg(QString(filePath));
-                    emit signal_newMessage(message);
-                }
-                else
-                    QMessageBox::critical(this,"QTCPServer", "An error occurred while trying to write the attachment.");
-            }
-            else
-            {
-                // 메시지 박스에서 No 전송 거부시 메시지를 출력한다.
-                QString message = QString("INFO :: Attachment from sd:%1 discarded").arg(m_socket->socketDescriptor());
-                emit signal_newMessage(message);
-            }
+            epi_move_denied_alarm(msg);
         }
-        else if(fileType=="message")
+        else if (fileType == "tooninfotext")
         {
-            // 전송된 메시지를 출력한다.
-            QString message = QString("%1 :: %2").arg(m_socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
-            emit signal_newMessage(message);
+            toon_info_text_show(msg);
         }
+
+    }
+}
+
+
+void MainWindow::toon_info_text_show(QString msg)
+{
+    QStringList msgParts;
+    msgParts = msg.split("/");
+    QString toon_title = msgParts[0];
+    QString epi_num = msgParts[1];
+    QString epi_title = msgParts[2];
+
+    ui->toon_info_text_label->setText("   ["+toon_title+"]  "+epi_num+"화 - '"+epi_title+"'");
+}
+
+void MainWindow::epi_move_denied_alarm(QString msg)
+{
+    if (msg == "firstepi")
+    {
+        QMessageBox::information(this, "정보", "현재 페이지는 첫번째화 입니다.");
+        toonEpiNum_data = QString::number(toonEpiNum_data.toInt() + 1);
+        present_toon_id = QString::number(present_toon_id.toInt() + 1);
+        send_toon_info(TOONIMAGE, present_toon_id);
+    }
+    else
+    {
+        QMessageBox::information(this, "정보", "현재 페이지는 마지막화 입니다.");
+        toonEpiNum_data = QString::number(toonEpiNum_data.toInt() - 1);
+        present_toon_id = QString::number(present_toon_id.toInt() - 1);
+        send_toon_info(TOONIMAGE, present_toon_id);
     }
 }
 
 void MainWindow::to_before_epi()
 {
-    send_toon_info(EPICHANGE, login_user_id+","+present_toon_id+",before");
+    // 동적으로 만든 imglabel 해제
+    for (QLabel *imgLabel : imgLabel_list)
+    {
+        delete imgLabel;
+    }
+    imgLabel_list.clear(); // 리스트 요소 클리어
+    send_toon_info(EPICHANGE, toonInfo_data+","+toonEpiNum_data+",before");
+    toonEpiNum_data = QString::number(toonEpiNum_data.toInt() - 1);
+    present_toon_id = QString::number(present_toon_id.toInt() - 1);
 }
 
 void MainWindow::to_after_epi()
 {
-    send_toon_info(EPICHANGE, login_user_id+","+present_toon_id+",after");
+    // 동적으로 만든 imglabel 해제
+    for (QLabel *imgLabel : imgLabel_list)
+    {
+        delete imgLabel;
+    }
+    imgLabel_list.clear(); // 리스트 요소 클리어
+    send_toon_info(EPICHANGE, toonInfo_data+","+toonEpiNum_data+",after");
+    toonEpiNum_data = QString::number(toonEpiNum_data.toInt() + 1);
+    present_toon_id = QString::number(present_toon_id.toInt() + 1);
 }
 
 void MainWindow::toonlike_ui_operate(QString msg)
@@ -347,7 +354,7 @@ void MainWindow::bookmark_ui_operate(QString msg)
         send_toon_info(BOOKMARKLIST, login_user_id);
         ui->bookmark_add_btn->setStyleSheet("background-color: #FF6347; color: white; font-weight: bold;");
         ui->bookmark_add_btn->setText("즐겨찾기 삭제 🌟");
-        QMessageBox::information(this, "정보", "즐겨찾기에서 추가되었습니다.");
+        QMessageBox::information(this, "정보", "즐겨찾기에 추가되었습니다.");
     }
     else if (msg == "bookmarkTrue")
     {
@@ -437,14 +444,20 @@ void MainWindow::epi_view_double_clicked(const QModelIndex &index)
 {
     int return_column = 0; // 웹툰 에피소드 일련번호 컬럼 인덱스번호
     int clicked_row = index.row();
+
+    toonInfo_data = index.sibling(clicked_row, 1).data().toString(); // 현재 보고있는 웹툰 일련번호 저장
+    toonEpiNum_data = index.sibling(clicked_row, 5).data().toString(); // 현재 보고있는 웹툰 회차 저장
     // 어떤 칸을 클릭해도 해당 열의 웹툰 에피소드 일련번호가 리턴됨
     QString data = index.sibling(clicked_row, return_column).data().toString();
     present_toon_id = data;
-    send_toon_info(TOONIMAGE, data);
+    send_toon_info(TOONIMAGE, present_toon_id);
 }
 
 void MainWindow::toon_img_show(QByteArray &img_buf)
 {
+    send_toon_info(TOONINFOTEXT, present_toon_id);
+    send_toon_info(BOOKMARK, login_user_id+","+present_toon_id+",check");
+    send_toon_info(TOONLIKE, login_user_id+","+present_toon_id+",check");
     ui->stackedWidget->setCurrentWidget(ui->webtoon_page);
     QPixmap image;
     image.loadFromData(img_buf);
@@ -452,8 +465,6 @@ void MainWindow::toon_img_show(QByteArray &img_buf)
     imgLabel_list.append(imageLabel);
     imageLabel->setPixmap(image);
     ui->toon_scrollArea_contents->layout()->addWidget(imageLabel);
-    send_toon_info(BOOKMARK, login_user_id+","+present_toon_id+",check");
-    send_toon_info(TOONLIKE, login_user_id+","+present_toon_id+",check");
 }
 
 void MainWindow::toon_search()
@@ -584,7 +595,11 @@ void MainWindow::create_toonList_model(QString &toonlist)
     ui->epiList_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     ui->epiList_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->epiList_tableView->show();
-    ui->stackedWidget->setCurrentWidget(ui->toonList_page);
+    if(!(bmark_back_btn_clicked))
+    {
+        ui->stackedWidget->setCurrentWidget(ui->toonList_page);
+    }
+    bmark_back_btn_clicked = false;
 }
 
 void MainWindow::thumbnail_to_item(QByteArray &img_buf)
@@ -679,6 +694,9 @@ void MainWindow::send_toon_info(int type, QString str)
             case EPICHANGE:
                 header.prepend(QString("fileType:epichange,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
                 break;
+            case TOONINFOTEXT:
+                header.prepend(QString("fileType:tooninfotext,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
+                break;
             default:
                 break;
             }
@@ -698,10 +716,6 @@ void MainWindow::send_toon_info(int type, QString str)
     else
         QMessageBox::critical(this,"QTCPClient","Not connected");
 }
-
-
-
-
 
 //============================== 회원 정보 메시지 서버에 전송 함수  ===================================
 void MainWindow::send_user_info(int type, QString id = "", QString pw = "", QString phone_num = "", QString email= "")
@@ -761,93 +775,6 @@ void MainWindow::send_user_info(int type, QString id = "", QString pw = "", QStr
 //============================================================================================================
 
 
-// [ex.02.5]
-// 메시지를 보냄
-void MainWindow::on_pushButton_sendMessage_clicked()
-{
-    if(m_socket)
-    {
-        if(m_socket->isOpen())
-        {
-            // ui에서 입력할 message를 가져와
-            QString str = ui->lineEdit_message->text();
-
-            // stream으로 보내는데
-            QDataStream socketStream(m_socket);
-            socketStream.setVersion(QDataStream::Qt_5_15);
-
-            // 헤더 부분에 fileType을 message로 설정한다.
-            QByteArray header;
-            header.prepend(QString("fileType:message,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
-            header.resize(128);
-
-            // message 인코딩 설정하고, QByteArray에 할당하고
-            QByteArray byteArray = str.toUtf8();
-            // header 정보를 앞에 넣어준다.
-            byteArray.prepend(header);
-
-            // stream으로 byteArray 정보 전송
-            socketStream << byteArray;
-
-            // 메시지 입력창 리셋
-            ui->lineEdit_message->clear();
-        }
-        else
-            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
-    }
-    else
-        QMessageBox::critical(this,"QTCPClient","Not connected");
-}
-
-void MainWindow::on_pushButton_sendAttachment_clicked()
-{
-    if(m_socket)
-    {
-        if(m_socket->isOpen())
-        {
-            // 파일 경로 가져오고, 경로 문제시 경고 출력
-            QString filePath = QFileDialog::getOpenFileName(this, ("Select an attachment"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), ("File (*.json *.txt *.png *.jpg *.jpeg)"));
-            if(filePath.isEmpty())
-            {
-                QMessageBox::critical(this,"QTCPClient","You haven't selected any attachment!");
-                return;
-            }
-
-            // 전송 할 file 객체를 경로 지정해서 열고
-            QFile m_file(filePath);
-            if(m_file.open(QIODevice::ReadOnly))
-            {
-                // file 이름을 가져오고
-                QFileInfo fileInfo(m_file.fileName());
-                QString fileName(fileInfo.fileName());
-
-                // stream으로 보내는데
-                QDataStream socketStream(m_socket);
-                socketStream.setVersion(QDataStream::Qt_5_15);
-
-                // 헤더 부분에 fileType을 attachment로 설정한다.
-                QByteArray header;
-                header.prepend(QString("fileType:attachment,fileName:%1,fileSize:%2;").arg(fileName).arg(m_file.size()).toUtf8());
-                header.resize(128);
-
-                // QByteArray에 file을 byte로 할당하고
-                QByteArray byteArray = m_file.readAll();
-                // header 정보를 앞에 넣어준다.
-                byteArray.prepend(header);
-
-                // stream으로 byteArray 정보 전송
-                socketStream << byteArray;
-            }
-            else
-                QMessageBox::critical(this,"QTCPClient","Attachment is not readable!");
-        }
-        else
-            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
-    }
-    else
-        QMessageBox::critical(this,"QTCPClient","Not connected");
-}
-
 // [ex.02.12]
 void MainWindow::slot_displayMessage(const QString& str)
 {
@@ -869,19 +796,39 @@ void MainWindow::on_backList_btn_clicked()
         delete imgLabel;
     }
     imgLabel_list.clear(); // 리스트 요소 클리어
+    ui->toon_info_text_label->setText("");
 }
-
-
-void MainWindow::on_pushButton_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->main_page);
-    ui->mainTabWidget->setCurrentIndex(3);
-}
-
 
 void MainWindow::on_logout_btn_clicked()
 {
-    this->window()->hide();
-    loginWidget->show();
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("로그아웃");
+    msgBox.setText("로그아웃 하시겠습니까?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No); // 기본 선택은 '아니오'
+
+    // 사용자 응답 처리
+    if (msgBox.exec() == QMessageBox::Yes) {
+        // 예를 선택하면 로그아웃 처리
+        ui->toon_info_text_label->setText("");
+        this->window()->hide();
+        loginWidget->show();
+    }
+
+}
+
+void MainWindow::on_bListMove_btn_clicked()
+{
+    bmark_back_btn_clicked = true;
+    send_toon_info(TOONLIST, toonInfo_data);
+    // 동적으로 만든 imglabel 해제
+    for (QLabel *imgLabel : imgLabel_list)
+    {
+        delete imgLabel;
+    }
+    imgLabel_list.clear(); // 리스트 요소 클리어
+    ui->toon_info_text_label->setText("");
+    ui->stackedWidget->setCurrentWidget(ui->main_page);
+    ui->mainTabWidget->setCurrentIndex(3);
 }
 

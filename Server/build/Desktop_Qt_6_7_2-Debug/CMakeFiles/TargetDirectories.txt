@@ -1,9 +1,0 @@
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/00_ChatServer.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/edit_cache.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/rebuild_cache.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/list_install_components.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/install.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/install/local.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/install/strip.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/00_ChatServer_autogen_timestamp_deps.dir
-/home/lms105/project/lms4_project/Server/build/Desktop_Qt_6_7_2-Debug/CMakeFiles/00_ChatServer_autogen.dir

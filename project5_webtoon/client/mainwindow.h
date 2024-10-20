@@ -34,7 +34,7 @@ public:
 
 private:
     enum USERTYPE {LOGIN = 0, SIGNUP, IDSEARCH, PWSEARCH, IDDUPCHK, PNUMDUPCHK};
-    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE, BOOKMARK, BOOKMARKLIST, TOONLIKE, EPICHANGE};
+    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE, BOOKMARK, BOOKMARKLIST, TOONLIKE, EPICHANGE, TOONINFOTEXT};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
@@ -47,6 +47,8 @@ private:
     void bookmark_ui_operate(QString msg);
     void create_bookmark_model(QString &toonlist);
     void toonlike_ui_operate(QString msg);
+    void epi_move_denied_alarm(QString msg);
+    void toon_info_text_show(QString msg);
     QList<QLabel*> imgLabel_list;
     QString toonInfo_data;
     QList<QPixmap> thumbnail_list;
@@ -54,6 +56,8 @@ private:
     int rowIndex = 0;
     QString login_user_id;
     QString present_toon_id;
+    QString toonEpiNum_data;
+    bool bmark_back_btn_clicked = false;
 
 signals:
     void signal_newMessage(QString);
@@ -66,8 +70,6 @@ private slots:
     void slot_discardSocket();
     void slot_displayError(QAbstractSocket::SocketError socketError);
     void slot_readSocket();
-    void on_pushButton_sendMessage_clicked();
-    void on_pushButton_sendAttachment_clicked();
     void slot_displayMessage(const QString &str);
     void send_toon_info(int type, QString str="");
     void send_user_info(int type, QString id, QString pw, QString phone_num, QString email);
@@ -81,10 +83,10 @@ private slots:
     void bookmark_control();
     void like_control();
     void get_login_user_info(QString id);
-    void on_pushButton_clicked();
     void to_before_epi();
     void to_after_epi();
     void on_logout_btn_clicked();
+    void on_bListMove_btn_clicked();
 };
 
 #endif // MAINWINDOW_H

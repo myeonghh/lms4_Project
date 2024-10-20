@@ -74,25 +74,25 @@ void Login::signUp_operate(QString info)
     else if (info == "signUp idDup") // 아이디 중복
     {
         ui->idDupChkText->setText("이미 가입된 아이디입니다");
-        ui->idDupChkText->setStyleSheet("color: red; font-size: 13px; font-weight: bold;");
+        ui->idDupChkText->setStyleSheet("color: red; font-size: 12px; font-weight: bold;");
         id_dup_chk = false;
     }
     else if (info == "signUp !idDup") // 아이디 중복 아님
     {
         ui->idDupChkText->setText("사용 가능한 아이디입니다");
-        ui->idDupChkText->setStyleSheet("color: green; font-size: 13px; font-weight: bold;");
+        ui->idDupChkText->setStyleSheet("color: green; font-size: 12px; font-weight: bold;");
         id_dup_chk = true;
     }
     else if (info == "signUp phoneNumDup") // 핸드폰 번호 중복
     {
         ui->pnumDupChkText->setText("이미 가입된 번호입니다");
-        ui->pnumDupChkText->setStyleSheet("color: red; font-size: 13px; font-weight: bold;");
+        ui->pnumDupChkText->setStyleSheet("color: red; font-size: 12px; font-weight: bold;");
         pNum_dup_chk = false;
     }
     else if (info == "signUp !phoneNumDup") // 핸드폰 번호 중복 아님
     {
         ui->pnumDupChkText->setText("사용 가능한 번호입니다");
-        ui->pnumDupChkText->setStyleSheet("color: green; font-size: 13px; font-weight: bold;");
+        ui->pnumDupChkText->setStyleSheet("color: green; font-size: 12px; font-weight: bold;");
         pNum_dup_chk = true;
     }
 }
