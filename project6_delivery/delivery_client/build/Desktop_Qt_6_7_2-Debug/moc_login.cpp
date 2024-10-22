@@ -44,7 +44,6 @@ constexpr auto qt_meta_stringdata_CLASSLoginENDCLASS = QtMocHelpers::stringData(
     "pw",
     "phone_num",
     "login_success_signal",
-    "login_user_id",
     "signUp_operate",
     "info",
     "login_operate",
@@ -56,7 +55,7 @@ constexpr auto qt_meta_stringdata_CLASSLoginENDCLASS = QtMocHelpers::stringData(
     "signUp",
     "idText_change",
     "pNumText_change",
-    "choice_shop_change",
+    "choice_client_change",
     "index"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -85,35 +84,35 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSLoginENDCLASS[] = {
        8,    1,  136,    2, 0x06,   19 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-      10,    1,  139,    2, 0x0a,   21 /* Public */,
-      12,    1,  142,    2, 0x0a,   23 /* Public */,
-      13,    1,  145,    2, 0x08,   25 /* Private */,
-      15,    0,  148,    2, 0x08,   27 /* Private */,
-      16,    0,  149,    2, 0x08,   28 /* Private */,
-      17,    0,  150,    2, 0x08,   29 /* Private */,
-      18,    0,  151,    2, 0x08,   30 /* Private */,
-      19,    0,  152,    2, 0x08,   31 /* Private */,
-      20,    0,  153,    2, 0x08,   32 /* Private */,
-      21,    1,  154,    2, 0x08,   33 /* Private */,
+       9,    1,  139,    2, 0x0a,   21 /* Public */,
+      11,    1,  142,    2, 0x0a,   23 /* Public */,
+      12,    1,  145,    2, 0x08,   25 /* Private */,
+      14,    0,  148,    2, 0x08,   27 /* Private */,
+      15,    0,  149,    2, 0x08,   28 /* Private */,
+      16,    0,  150,    2, 0x08,   29 /* Private */,
+      17,    0,  151,    2, 0x08,   30 /* Private */,
+      18,    0,  152,    2, 0x08,   31 /* Private */,
+      19,    0,  153,    2, 0x08,   32 /* Private */,
+      20,    1,  154,    2, 0x08,   33 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString,    3,    4,    5,    6,    7,
     QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::QString, QMetaType::QString,    3,    4,    5,    6,
     QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::QString,    3,    4,    5,
     QMetaType::Void, QMetaType::Int, QMetaType::Int,    3,    4,
-    QMetaType::Void, QMetaType::QString,    9,
+    QMetaType::Void, QMetaType::QString,    5,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::QString,   11,
-    QMetaType::Void, QMetaType::QString,   11,
-    QMetaType::Void, QMetaType::Int,   14,
+    QMetaType::Void, QMetaType::QString,   10,
+    QMetaType::Void, QMetaType::QString,   10,
+    QMetaType::Void, QMetaType::Int,   13,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   22,
+    QMetaType::Void, QMetaType::Int,   21,
 
        0        // eod
 };
@@ -173,7 +172,7 @@ Q_CONSTINIT const QMetaObject Login::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'pNumText_change'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'choice_shop_change'
+        // method 'choice_client_change'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>
     >,
@@ -200,7 +199,7 @@ void Login::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         case 11: _t->signUp(); break;
         case 12: _t->idText_change(); break;
         case 13: _t->pNumText_change(); break;
-        case 14: _t->choice_shop_change((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 14: _t->choice_client_change((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {

@@ -49,7 +49,7 @@ public:
     QPushButton *toSignUpBtn;
     QFrame *frame;
     QVBoxLayout *verticalLayout_2;
-    QLabel *label;
+    QLabel *title_label;
     QWidget *signup;
     QVBoxLayout *verticalLayout_3;
     QFrame *frame_5;
@@ -189,16 +189,16 @@ public:
         frame->setFrameShadow(QFrame::Shadow::Raised);
         verticalLayout_2 = new QVBoxLayout(frame);
         verticalLayout_2->setObjectName("verticalLayout_2");
-        label = new QLabel(frame);
-        label->setObjectName("label");
+        title_label = new QLabel(frame);
+        title_label->setObjectName("title_label");
         QFont font1;
         font1.setPointSize(30);
-        label->setFont(font1);
-        label->setTextFormat(Qt::TextFormat::AutoText);
-        label->setScaledContents(false);
-        label->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        title_label->setFont(font1);
+        title_label->setTextFormat(Qt::TextFormat::AutoText);
+        title_label->setScaledContents(false);
+        title_label->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
-        verticalLayout_2->addWidget(label);
+        verticalLayout_2->addWidget(title_label);
 
 
         gridLayout_2->addWidget(frame, 0, 0, 1, 1);
@@ -382,7 +382,7 @@ public:
         login_client_choice->setItemText(2, QCoreApplication::translate("Login", "\353\235\274\354\235\264\353\215\224", nullptr));
 
         toSignUpBtn->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220\352\260\200\354\236\205", nullptr));
-        label->setText(QCoreApplication::translate("Login", "\352\261\260\352\270\260\354\232\224", nullptr));
+        title_label->setText(QCoreApplication::translate("Login", "\352\261\260\352\270\260\354\232\224", nullptr));
         label_4->setText(QCoreApplication::translate("Login", "\355\232\214\354\233\220 \352\260\200\354\236\205", nullptr));
         pnumDupChkBtn->setText(QCoreApplication::translate("Login", "\354\244\221\353\263\265 \355\231\225\354\235\270", nullptr));
         label_7->setText(QCoreApplication::translate("Login", "\355\234\264\353\214\200\355\217\260 \353\262\210\355\230\270 ", nullptr));

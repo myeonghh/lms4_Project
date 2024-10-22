@@ -33,9 +33,9 @@ public:
     ~MainWindow();
 
 private:
-    enum LOGINACTTYPE {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
-    enum TOONTYPE {TOONINFO = 0, TOONLIST, TOONIMAGE, BOOKMARK};
+    enum ACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
     enum CLIENT {USER= 0, SHOP, RIDER};
+    enum FOOD {CHICKEN = 0, PIZZA, KFOOD, JFOOD, CFOOD, CAFE};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
@@ -49,9 +49,11 @@ private:
     QList<QPixmap> thumbnail_list;
     QStandardItemModel *model123;
     int rowIndex = 0;
-    QString login_user_id;
     QString present_toon_id;
+
     QString client_type_to_string(int client_type);
+    struct PresentClnt {int type; int clnt_num; QString clnt_id;};
+    PresentClnt present_clnt;
 
 signals:
     void signal_newMessage(QString);
@@ -64,23 +66,21 @@ private slots:
     void slot_discardSocket();
     void slot_displayError(QAbstractSocket::SocketError socketError);
     void slot_readSocket();
-    void on_pushButton_sendMessage_clicked();
-    void on_pushButton_sendAttachment_clicked();
-    void slot_displayMessage(const QString &str);
-    void send_toon_info(int type, QString str="");
     void send_user_info(int act_type, int client_type, QString id, QString pw, QString phone_num);
+    void to_shop_list_view(int foodType);
 
 
-    void create_toonInfo_model(QString &toonlist);
-    void create_toonList_model(QString &toonlist);
-    void view_double_clicked(const QModelIndex &index);
-    void toon_search();
-    void on_toList_backBtn_clicked();
-    void epi_view_double_clicked(const QModelIndex &index);
-    void on_backList_btn_clicked();
-    void bookmark_control();
-    void like_control();
-    void get_login_user_info(QString id);
+    // void create_toonInfo_model(QString &toonlist);
+    // void create_toonList_model(QString &toonlist);
+    // void view_double_clicked(const QModelIndex &index);
+    // void toon_search();
+    // void on_toList_backBtn_clicked();
+    // void epi_view_double_clicked(const QModelIndex &index);
+    // void on_backList_btn_clicked();
+    // void bookmark_control();
+    // void like_control();
+    void get_login_user_id(QString id);
+    void on_logout_btn_clicked();
 };
 
 #endif // MAINWINDOW_H

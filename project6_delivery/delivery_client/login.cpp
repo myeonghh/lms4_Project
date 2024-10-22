@@ -25,7 +25,7 @@ Login::Login(QWidget *parent)
 
     connect(ui->s_idText, &QLineEdit::textChanged, this, &Login::idText_change);
     connect(ui->s_pNumText, &QLineEdit::textChanged, this, &Login::pNumText_change);
-    connect(ui->login_client_choice, &QComboBox::currentIndexChanged, this, [this](int index){choice_shop_change(index);});
+    connect(ui->login_client_choice, &QComboBox::currentIndexChanged, this, [this](int index){choice_client_change(index);});
 
 }
 
@@ -34,16 +34,24 @@ Login::~Login()
     delete ui;
 }
 
-void Login::choice_shop_change(int index)
+void Login::choice_client_change(int index)
 {
-    if (index == CLIENT::SHOP)
-    {
-        ui->toSignUpBtn->hide();
-    }
-    else
-    {
+    switch (index) {
+    case CLIENT::USER:
         ui->toSignUpBtn->show();
+        break;
+    case CLIENT::SHOP:
+        ui->toSignUpBtn->hide();
+        ui->title_label->setText("거기요 매장");
+        break;
+    case CLIENT::RIDER:
+        ui->toSignUpBtn->show();
+        ui->title_label->setText("거기요 라이더");
+        break;
+    default:
+        break;
     }
+
 }
 
 void Login::idText_change()
@@ -103,9 +111,9 @@ void Login::signUp_operate(QString info)
 
 void Login::login_operate(QString info)
 {
-    if (info == "login success")
+    if (info == "login success") // 로그인 성공
     {
-        emit login_success_signal(ui->l_idText->text());
+        emit login_success_signal(ui->l_idText->text().trimmed());
         ui->l_idText->clear();
         ui->l_pwText->clear();
         id_dup_chk = false;
@@ -151,13 +159,13 @@ void Login::login() // 로그인 버튼 클릭시 로그인 로직
         switch (client_type)
         {
         case CLIENT::USER:
-            emit user_info_signal(CLIENT::USER, ACT::LOGIN, id, pw);
+            emit user_info_signal(ACT::LOGIN, CLIENT::USER, id, pw);
             break;
         case CLIENT::SHOP:
-            emit user_info_signal(CLIENT::SHOP, ACT::LOGIN, id, pw);
+            emit user_info_signal(ACT::LOGIN, CLIENT::SHOP, id, pw);
             break;
         case CLIENT::RIDER:
-            emit user_info_signal(CLIENT::RIDER, ACT::LOGIN, id, pw);
+            emit user_info_signal( ACT::LOGIN, CLIENT::RIDER, id, pw);
             break;
         default:
             break;

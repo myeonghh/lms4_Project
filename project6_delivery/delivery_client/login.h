@@ -19,7 +19,7 @@ public:
 
 signals:
     void user_info_signal(int act_type, int client_type, QString id="", QString pw="", QString phone_num="");
-    void login_success_signal(QString login_user_id);
+    void login_success_signal(QString id);
 
 public slots:
     void signUp_operate(QString info);
@@ -33,7 +33,7 @@ private slots:
     void signUp();
     void idText_change();
     void pNumText_change();
-    void choice_shop_change(int index);
+    void choice_client_change(int index);
 
 private:
     Ui::Login *ui;

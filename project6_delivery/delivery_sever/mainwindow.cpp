@@ -61,6 +61,14 @@ MainWindow::~MainWindow()
     }
     clnt_list.clear();
 
+    QSqlQuery qry;
+    qry.prepare("UPDATE shop SET s_state = :state");
+    qry.bindValue(":state", "영업종료");
+    if(!qry.exec())
+    {
+        qDebug() << "DB 가게 상태 변경 오류";
+    }
+
     delete ui;
 }
 
@@ -236,9 +244,9 @@ void MainWindow::slot_readSocket()
         // 이를 콤마(,)와 콜론(:)으로 분리하여 fileType을 추출.
         QString fileType = header.split(",")[0].split(":")[1];
         QString sender = header.split(",")[1].split(":")[1];
-        QString sender_id = header.split(",")[2].split(":")[1];
+        QString sender_num = header.split(",")[2].split(":")[1];
         QString receiver = header.split(",")[3].split(":")[1];
-        QString receiver_id = header.split(",")[4].split(":")[1];
+        QString receiver_num = header.split(",")[4].split(":")[1];
 
         // 나머지 데이터는 실제 전송된 파일 또는 메시지 데이터
         // 128바이트 이후부터는 실제 파일 혹은 메시지이므로 buffer에서 그 부분만 남김.
@@ -247,6 +255,7 @@ void MainWindow::slot_readSocket()
         QString msg = buffer;
         QString id, pw, phone_num;
         QSqlQuery qry;
+        QSqlQuery qry2;
         QStringList msgParts;
 
 
@@ -258,18 +267,21 @@ void MainWindow::slot_readSocket()
 
             if (sender == "user")
             {
-                qry.prepare("SELECT u_num FROM USERS WHERE u_id = :id AND u_pw = :pw");
+                qry.prepare("SELECT u_num FROM user WHERE u_id = :id AND u_pw = :pw");
                 qry.bindValue(":id", id);
                 qry.bindValue(":pw", pw);
                 qry.exec();
-
+                qDebug() << "여기야2";
                 if (qry.next()) // 아이디 비밀번호 일치
                 {
+                    qDebug() << "여기야3";
                     clnt_list.append(new Client(USER, qry.value(0).toInt(), socket, id));
-                    sendMessage(socket, LOGININFO, "login success", USER);
+                    sendMessage(socket, LOGININFO, "login success", USER, qry.value(0).toInt());
+                    qDebug() << "여기야4";
                 }
                 else // 아이디 or 비밀번호 불일치
                 {
+                    qDebug() << "여기야5";
                     sendMessage(socket, LOGININFO, "login fail");
                 }
 
@@ -284,7 +296,15 @@ void MainWindow::slot_readSocket()
                 if (qry.next()) // 아이디 비밀번호 일치
                 {
                     clnt_list.append(new Client(SHOP, qry.value(0).toInt(), socket, id));
-                    sendMessage(socket, LOGININFO, "login success", SHOP);
+                    sendMessage(socket, LOGININFO, "login success", SHOP, qry.value(0).toInt());
+
+                    qry2.prepare("UPDATE shop SET s_state = :state WHERE s_id = :id");
+                    qry2.bindValue(":state", "영업중");
+                    qry2.bindValue(":id", id);
+                    if(!qry2.exec())
+                    {
+                        qDebug() << "DB 가게 상태 변경 오류";
+                    }
                 }
                 else // 아이디 or 비밀번호 불일치
                 {
@@ -302,7 +322,7 @@ void MainWindow::slot_readSocket()
                 if (qry.next()) // 아이디 비밀번호 일치
                 {
                     clnt_list.append(new Client(RIDER, qry.value(0).toInt(), socket, id));
-                    sendMessage(socket, LOGININFO, "login success", RIDER);
+                    sendMessage(socket, LOGININFO, "login success", RIDER, qry.value(0).toInt());
                 }
                 else // 아이디 or 비밀번호 불일치
                 {
@@ -726,43 +746,12 @@ void MainWindow::sendMessage(QTcpSocket* socket, int act_type, QString msg, int 
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             case LOGININFO:
-                header.prepend(QString("fileType:loginInfo,sender:%1,senderNum:%2,,receiver:%3,recieverNum:%4;")
+                header.prepend(QString("fileType:loginInfo,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
-
             default:
                 break;
             }
-
-            // if (type == SIGNUPINFO)
-            // {
-            //     header.prepend(QString("fileType:signUpInfo,sender:%1,senderid:%2,receiver:null,recieverid:null;").arg(client_type_to_string(client_type), id).toUtf8());
-            // }
-            // else if (type == LOGININFO)
-            // {
-            //     header.prepend(QString("fileType:loginInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
-            // }
-            // else if (type == IDINFO)
-            // {
-            //     header.prepend(QString("fileType:idInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
-            // }
-            // else if (type == PWINFO)
-            // {
-            //     header.prepend(QString("fileType:pwInfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
-            // }
-            // else if (type == TOONINFO)
-            // {
-            //     header.prepend(QString("fileType:tooninfo,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
-            // }
-            // else if (type == TOONLIST)
-            // {
-            //     header.prepend(QString("fileType:toonlist,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
-            // }
-            // else if (type == TOONIMAGE)
-            // {
-            //     header.prepend(QString("fileType:toonimage,fileName:null,fileSize:%1;").arg(msg.size()).toUtf8());
-            // }
-
             header.resize(128);
             // message 인코딩 설정하고, QByteArray에 할당하고
             QByteArray byteArray = msg.toUtf8();
