@@ -48,13 +48,11 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "QAbstractSocket::SocketError",
     "socketError",
     "slot_readSocket",
-    "send_user_info",
-    "act_type",
-    "client_type",
+    "to_shop_list_view",
+    "foodType",
+    "get_login_user_id",
     "id",
-    "pw",
-    "phone_num",
-    "get_login_user_id"
+    "on_logout_btn_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -67,7 +65,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -75,18 +73,19 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   74,    2, 0x06,    1 /* Public */,
-       3,    1,   77,    2, 0x06,    3 /* Public */,
-       5,    1,   80,    2, 0x06,    5 /* Public */,
-       6,    1,   83,    2, 0x06,    7 /* Public */,
-       7,    1,   86,    2, 0x06,    9 /* Public */,
+       1,    1,   80,    2, 0x06,    1 /* Public */,
+       3,    1,   83,    2, 0x06,    3 /* Public */,
+       5,    1,   86,    2, 0x06,    5 /* Public */,
+       6,    1,   89,    2, 0x06,    7 /* Public */,
+       7,    1,   92,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    0,   89,    2, 0x08,   11 /* Private */,
-       9,    1,   90,    2, 0x08,   12 /* Private */,
-      12,    0,   93,    2, 0x08,   14 /* Private */,
-      13,    5,   94,    2, 0x08,   15 /* Private */,
-      19,    1,  105,    2, 0x08,   21 /* Private */,
+       8,    0,   95,    2, 0x08,   11 /* Private */,
+       9,    1,   96,    2, 0x08,   12 /* Private */,
+      12,    0,   99,    2, 0x08,   14 /* Private */,
+      13,    1,  100,    2, 0x08,   15 /* Private */,
+      15,    1,  103,    2, 0x08,   17 /* Private */,
+      17,    0,  106,    2, 0x08,   19 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,
@@ -99,8 +98,9 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 10,   11,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString,   14,   15,   16,   17,   18,
+    QMetaType::Void, QMetaType::Int,   14,
     QMetaType::Void, QMetaType::QString,   16,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -136,16 +136,14 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<QAbstractSocket::SocketError, std::false_type>,
         // method 'slot_readSocket'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'send_user_info'
+        // method 'to_shop_list_view'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         // method 'get_login_user_id'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'on_logout_btn_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -164,8 +162,9 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 5: _t->slot_discardSocket(); break;
         case 6: _t->slot_displayError((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
         case 7: _t->slot_readSocket(); break;
-        case 8: _t->send_user_info((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[5]))); break;
+        case 8: _t->to_shop_list_view((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         case 9: _t->get_login_user_id((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 10: _t->on_logout_btn_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -238,13 +237,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     }
     return _id;
 }

@@ -27,13 +27,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     loginWidget = new Login();
     loginWidget->show();
 
-    connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_user_info); // 회원가입 정보 전송 connect
+    connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_login_func_order); // 회원가입 정보 전송 connect
     connect(loginWidget, &Login::login_success_signal, this, &MainWindow::get_login_user_id);
 
     connect(this, &MainWindow::operate_info_signal, loginWidget, &Login::signUp_operate);
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
 
     connect(ui->chicken_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(CHICKEN);});
+    connect(ui->pizza_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(PIZZA);});
+    connect(ui->kFood_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(KFOOD);});
+    connect(ui->jFood_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(JFOOD);});
+    connect(ui->cFood_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(CFOOD);});
+    connect(ui->cafe_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(CAFE);});
 
 
 
@@ -60,9 +65,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // 이 객체의(MainWindow) slot_displayError 슬롯 함수 실행하여 처리
     connect(m_socket, &QAbstractSocket::errorOccurred,
             this,     &MainWindow::slot_displayError);
-
-
-    model123 = new QStandardItemModel();
 
 }
 
@@ -178,6 +180,7 @@ void MainWindow::slot_readSocket()
                 emit login_info_signal("login success");
                 loginWidget->hide();
                 present_clnt.clnt_num = sender_num.toInt();
+
                 if (sender == "user") // 유저 로그인 성공
                 {
                     present_clnt.type = USER;
@@ -221,27 +224,117 @@ void MainWindow::to_shop_list_view(int foodType)
     switch (foodType)
     {
     case CHICKEN:
-
+        send_delivery_func_order(SHOPLIST, "chicken");
         break;
     case PIZZA:
-
+        send_delivery_func_order(SHOPLIST, "pizza");
         break;
     case KFOOD:
-
+        send_delivery_func_order(SHOPLIST, "kfood");
         break;
     case JFOOD:
-
+        send_delivery_func_order(SHOPLIST, "jfood");
         break;
     case CFOOD:
-
+        send_delivery_func_order(SHOPLIST, "cfood");
         break;
     case CAFE:
-
+        send_delivery_func_order(SHOPLIST, "cafe");
         break;
     default:
         break;
     }
 }
+
+
+void MainWindow::send_delivery_func_order(int act_type, QString msg, int sender, int senderNum, int receiver, int receiverNum)
+{
+    if(m_socket)
+    {
+        if(m_socket->isOpen())
+        {
+            // stream으로 보내는데
+            QDataStream socketStream(m_socket);
+            socketStream.setVersion(QDataStream::Qt_5_15);
+
+            // 헤더 부분에 fileType을 message로 설정한다.
+            QByteArray header;
+
+            switch (act_type)
+            {
+            case SHOPLIST:
+                header.prepend(QString("fileType:shoplist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            default:
+                break;
+            }
+
+            header.resize(128);
+            // message 인코딩 설정하고, QByteArray에 할당하고
+            QByteArray byteArray = msg.toUtf8();
+            // header 정보를 앞에 넣어준다.
+            byteArray.prepend(header);
+            // stream으로 byteArray 정보 전송
+            socketStream << byteArray;
+
+        }
+        else
+            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
+    }
+    else
+        QMessageBox::critical(this,"QTCPClient","Not connected");
+}
+
+//============================== 회원 정보 메시지 서버에 전송 함수  ===================================
+void MainWindow::send_login_func_order(int act_type, int client_type, QString id, QString pw, QString phone_num)
+{
+    if(m_socket)
+    {
+        if(m_socket->isOpen())
+        {
+            // ui에서 입력할 message를 가져와
+            QString msg = id + "," + pw + "," + phone_num;
+
+            // stream으로 보내는데
+            QDataStream socketStream(m_socket);
+            socketStream.setVersion(QDataStream::Qt_5_15);
+
+            // 헤더 부분에 fileType을 message로 설정한다.
+            QByteArray header;
+
+            switch (act_type) {
+            case LOGIN:
+                header.prepend(QString("fileType:login,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
+                break;
+            case SIGNUP:
+                header.prepend(QString("fileType:signUp,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
+                break;
+            case IDDUPCHK:
+                header.prepend(QString("fileType:idDupChk,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
+                break;
+            case PNUMDUPCHK:
+                header.prepend(QString("fileType:pNumDupChk,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
+                break;
+            default:
+                break;
+            }
+            header.resize(128);
+            // message 인코딩 설정하고, QByteArray에 할당하고
+            QByteArray byteArray = msg.toUtf8();
+            // header 정보를 앞에 넣어준다.
+            byteArray.prepend(header);
+
+            // stream으로 byteArray 정보 전송
+            socketStream << byteArray;
+        }
+        else
+            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
+    }
+    else
+        QMessageBox::critical(this,"QTCPClient","Not connected");
+}
+//============================================================================================================
 // void MainWindow::epi_view_double_clicked(const QModelIndex &index)
 // {
 //     int return_column = 0; // 웹툰 에피소드 일련번호 컬럼 인덱스번호
@@ -442,53 +535,6 @@ void MainWindow::to_shop_list_view(int foodType)
 //     create_day_view();
 // }
 
-
-// void MainWindow::send_toon_info(int type, QString str)
-// {
-//     if(m_socket)
-//     {
-//         if(m_socket->isOpen())
-//         {
-//             // stream으로 보내는데
-//             QDataStream socketStream(m_socket);
-//             socketStream.setVersion(QDataStream::Qt_5_15);
-
-//             // 헤더 부분에 fileType을 message로 설정한다.
-//             QByteArray header;
-
-//             switch (type) {
-//             case TOONINFO:
-//                 header.prepend(QString("fileType:tooninfo,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
-//                 break;
-//             case TOONLIST:
-//                 header.prepend(QString("fileType:toonlist,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
-//                 break;
-//             case TOONIMAGE:
-//                 header.prepend(QString("fileType:toonimage,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
-//                 break;
-//             case BOOKMARK:
-//                 header.prepend(QString("fileType:bookmark,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());
-//                 break;
-//             default:
-//                 break;
-//             }
-
-//             header.resize(128);
-//             // message 인코딩 설정하고, QByteArray에 할당하고
-//             QByteArray byteArray = str.toUtf8();
-//             // header 정보를 앞에 넣어준다.
-//             byteArray.prepend(header);
-//             // stream으로 byteArray 정보 전송
-//             socketStream << byteArray;
-
-//         }
-//         else
-//             QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
-//     }
-//     else
-//         QMessageBox::critical(this,"QTCPClient","Not connected");
-// }
-
 QString MainWindow::client_type_to_string(int client_type) // 클라이언트 타입을 문자열로 바꿔주는 함수
 {
     QString client_str;
@@ -508,56 +554,12 @@ QString MainWindow::client_type_to_string(int client_type) // 클라이언트 �
     return client_str;
 }
 
-//============================== 회원 정보 메시지 서버에 전송 함수  ===================================
-void MainWindow::send_user_info(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "")
+void MainWindow::on_logout_btn_clicked()
 {
-    if(m_socket)
-    {
-        if(m_socket->isOpen())
-        {
-            // ui에서 입력할 message를 가져와
-            QString str = id + "," + pw + "," + phone_num;
-
-            // stream으로 보내는데
-            QDataStream socketStream(m_socket);
-            socketStream.setVersion(QDataStream::Qt_5_15);
-
-            // 헤더 부분에 fileType을 message로 설정한다.
-            QByteArray header;
-
-            switch (act_type) {
-            case ACT::LOGIN:
-                header.prepend(QString("fileType:login,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
-                break;
-            case ACT::SIGNUP:
-                header.prepend(QString("fileType:signUp,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
-                break;
-            case ACT::IDDUPCHK:
-                header.prepend(QString("fileType:idDupChk,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
-                break;
-            case ACT::PNUMDUPCHK:
-                header.prepend(QString("fileType:pNumDupChk,sender:%1,senderNum:%2,receiver:null,recieverNum:null;").arg(client_type_to_string(client_type), id).toUtf8());
-                break;
-            default:
-                break;
-            }
-            header.resize(128);
-            // message 인코딩 설정하고, QByteArray에 할당하고
-            QByteArray byteArray = str.toUtf8();
-            // header 정보를 앞에 넣어준다.
-            byteArray.prepend(header);
-
-            // stream으로 byteArray 정보 전송
-            socketStream << byteArray;
-        }
-        else
-            QMessageBox::critical(this,"QTCPClient","Socket doesn't seem to be opened");
-    }
-    else
-        QMessageBox::critical(this,"QTCPClient","Not connected");
+    QMessageBox::information(this, "알림","로그아웃 하였습니다.");
+    this->window()->hide();
+    loginWidget->show();
 }
-//============================================================================================================
-
 
 // [ex.02.5]
 // 메시지를 보냄
@@ -663,10 +665,5 @@ void MainWindow::send_user_info(int act_type, int client_type, QString id = "", 
 // }
 
 
-void MainWindow::on_logout_btn_clicked()
-{
-    this->window()->hide();
-    loginWidget->show();
-    QMessageBox::information(this, "알림","로그아웃 하였습니다.");
-}
+
 

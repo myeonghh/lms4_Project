@@ -64,7 +64,7 @@ private slots:
     void slot_displayError(QAbstractSocket::SocketError socketError);
     void slot_readSocket();
     // void on_pushButton_sendMessage_clicked();
-    void on_pushButton_sendAttachment_clicked();
+    // void on_pushButton_sendAttachment_clicked();
     void slot_displayMessage(const QString& str);
 };
 

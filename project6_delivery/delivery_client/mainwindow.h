@@ -33,25 +33,26 @@ public:
     ~MainWindow();
 
 private:
-    enum ACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
+    enum LOGINACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
+    enum DELIVERYACT {SHOPLIST = 0};
     enum CLIENT {USER= 0, SHOP, RIDER};
     enum FOOD {CHICKEN = 0, PIZZA, KFOOD, JFOOD, CFOOD, CAFE};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
+
     QStandardItemModel *toonInfo_model;
     QStandardItemModel *toonList_model;
-    void create_day_view();
-    void toon_img_show(QByteArray &img_buf);
-    void thumbnail_to_item(QByteArray &img_buf);
+
     QList<QLabel*> imgLabel_list;
     QString toonInfo_data;
     QList<QPixmap> thumbnail_list;
-    QStandardItemModel *model123;
     int rowIndex = 0;
-    QString present_toon_id;
 
+    void send_login_func_order(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "");
+    void send_delivery_func_order(int act_type, QString msg = "", int sender = 0, int senderNum = 0, int receiver = 0, int receiverNum = 0);
     QString client_type_to_string(int client_type);
+
     struct PresentClnt {int type; int clnt_num; QString clnt_id;};
     PresentClnt present_clnt;
 
@@ -66,7 +67,6 @@ private slots:
     void slot_discardSocket();
     void slot_displayError(QAbstractSocket::SocketError socketError);
     void slot_readSocket();
-    void send_user_info(int act_type, int client_type, QString id, QString pw, QString phone_num);
     void to_shop_list_view(int foodType);
 
 

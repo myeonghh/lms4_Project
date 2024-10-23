@@ -457,269 +457,267 @@ void MainWindow::slot_readSocket()
                 }
             }
         }
-        else if (fileType == "tooninfo")
+        else if (fileType == "shoplist")
         {
-            QStringList toon_info_list;
-            QString toon_info_str;
-            QStringList imagePaths;
+            qry.prepare("SELECT * FROM shop WHERE s_type = :type");
 
-            qDebug() << "여기야11";
-            qry.prepare("SELECT * FROM TOON_INFO");
-
-            if (qry.exec())
+            if (msg == "chicken")
             {
-                while(qry.next())
-                {
-                    QString t_id = qry.value(0).toString();
-                    QString t_title = qry.value(1).toString();
-                    QString t_author = qry.value(2).toString();
-                    QString t_day = qry.value(3).toString();
-                    toon_info_list << QString("%1/%2/%3/%4").arg(t_id).arg(t_title).arg(t_author).arg(t_day);
-                    imagePaths.append(qry.value(4).toString());
-                }
-                for (const QString &imagePath : imagePaths)
-                {
-                    QFile file(imagePath); // 이미지 파일 열기
-                    if (file.open(QIODevice::ReadOnly))
-                    {
-                        QByteArray imageData = file.readAll();
-                        QByteArray header;
-                        header.prepend(QString("fileType:thumbnail,fileName:null,fileSize:null;").toUtf8());
-                        header.resize(128);
-                        // 헤더와 이미지 데이터 합치기
-                        QByteArray image_info = header + imageData;
-                        socketStream << image_info;
-                    }
-                    else
-                    {
-                        // 파일을 열 수 없는 경우 에러 처리
-                        qDebug() << "파일 오픈 실패:" << imagePath;
-                    }
-                }
-
-                toon_info_str = toon_info_list.join("\n");
-                sendMessage(socket, TOONINFO, toon_info_str);
+                qry.bindValue(":type", "치킨");
             }
-            else
+            else if (msg == "piiza")
             {
-                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+                qry.bindValue(":type", "치킨");
             }
-        }
-        else if (fileType == "toonlist")
-        {
-            QStringList toon_list;
-            QString toon_list_str;
-            QString toon_id = msg;
-            qry.prepare("SELECT * FROM WEBTOON.TOON_EPI A JOIN WEBTOON.TOON_INFO B ON A.TOON_ID = B.TOON_ID "
-                        "WHERE A.TOON_ID = :toon_id");
-            qry.bindValue(":toon_id", toon_id);
-
-            if (qry.exec())
+            else if (msg == "kfood")
             {
-                while(qry.next())
-                {
-                    QString epi_id = qry.value(0).toString();
-                    QString t_id = qry.value(1).toString();
-                    QString epi_num = qry.value(2).toString();
-                    QString like_num = qry.value(3).toString();
-                    QString view_num = qry.value(4).toString();
-                    QString epi_title = qry.value(5).toString();
-                    QString t_title = qry.value(7).toString();
-                    QString t_author = qry.value(8).toString();
-                    QString t_day = qry.value(9).toString();
-
-                    toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9").arg(epi_id).arg(t_id).arg(t_title).arg(epi_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
-                }
-                toon_list_str = toon_list.join("\n");
-                sendMessage(socket, TOONLIST, toon_list_str);
+                qry.bindValue(":type", "치킨");
             }
-            else
+            else if (msg == "jfood")
             {
-                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+                qry.bindValue(":type", "치킨");
             }
-        }
-        else if (fileType == "toonimage")
-        {
-            QStringList imagePaths;
-
-            QString epi_id = msg;
-            QSqlQuery query;
-            query.prepare("SELECT IMG_SRC FROM TOON_IMG WHERE EPI_ID = :epi_id");
-            query.bindValue(":epi_id", epi_id);
-
-            if (query.exec())
+            else if (msg == "cfood")
             {
-                while (query.next())
-                {
-                    imagePaths.append(query.value(0).toString());
-                }
+                qry.bindValue(":type", "치킨");
+            }
+            else if (msg == "cafe")
+            {
+                qry.bindValue(":type", "치킨");
             }
 
-            for (const QString &imagePath : imagePaths)
-            {
-                QFile file(imagePath); // 이미지 파일 열기
-                if (file.open(QIODevice::ReadOnly))
-                {
-                    QByteArray imageData = file.readAll();
-                    QByteArray header;
-                    header.prepend(QString("fileType:toonimage,fileName:null,fileSize:null;").toUtf8());
-                    header.resize(128);
-                    // 헤더와 이미지 데이터 합치기
-                    QByteArray image_info = header + imageData;
-                    socketStream << image_info;
-                }
-                else
-                {
-                    // 파일을 열 수 없는 경우 에러 처리
-                    qDebug() << "파일 오픈 실패:" << imagePath;
-                }
-            }
-            // 조회수 증가 로직
-            query.prepare("UPDATE TOON_EPI SET VIEW_NUM = VIEW_NUM+1 WHERE EPI_ID = :epi_id");
-            query.bindValue(":epi_id", epi_id);
-            if (!query.exec())
-            {
-                qDebug() << "조회수 업데이트 오류";
-            }
-        }
-        else if (fileType == "bookmark")
-        {
-            msgParts = msg.split(",");
-            QString user_id = msgParts[0];
-            QString epi_id = msgParts[1];
+            // if (qry.exec())
+            // {
+            //     while(qry.next())
+            //     {
+            //         QString t_id = qry.value(0).toString();
+            //         QString t_title = qry.value(1).toString();
+            //         QString t_author = qry.value(2).toString();
+            //         QString t_day = qry.value(3).toString();
+            //         toon_info_list << QString("%1/%2/%3/%4").arg(t_id).arg(t_title).arg(t_author).arg(t_day);
+            //         imagePaths.append(qry.value(4).toString());
+            //     }
+            //     for (const QString &imagePath : imagePaths)
+            //     {
+            //         QFile file(imagePath); // 이미지 파일 열기
+            //         if (file.open(QIODevice::ReadOnly))
+            //         {
+            //             QByteArray imageData = file.readAll();
+            //             QByteArray header;
+            //             header.prepend(QString("fileType:thumbnail,fileName:null,fileSize:null;").toUtf8());
+            //             header.resize(128);
+            //             // 헤더와 이미지 데이터 합치기
+            //             QByteArray image_info = header + imageData;
+            //             socketStream << image_info;
+            //         }
+            //         else
+            //         {
+            //             // 파일을 열 수 없는 경우 에러 처리
+            //             qDebug() << "파일 오픈 실패:" << imagePath;
+            //         }
+            //     }
 
-            qry.prepare("SELECT * FROM BOOKMARK WHERE ID = :id AND EPI_ID = :epi_id");
-            qry.bindValue(":id", user_id);
-            qry.bindValue(":epi_id", epi_id);
-            qry.exec();
-
-            if (qry.next()) // 북마크 있을때
-            {
-                sendMessage(socket, LOGININFO, "login success");
-            }
-            else // 북마크 없을때
-            {
-                sendMessage(socket, LOGININFO, "login fail");
-            }
-        }
-
-
-        // [ex.02.7.5]
-        // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
-        if (fileType == "attachment")
-        {
-
-            // 헤더에서 파일 이름을 추출.
-            // "fileName:example.txt" 형식으로 되어 있으므로 이를 분리하여 실제 파일 이름을 얻는다.
-            QString fileName = header.split(",")[1].split(":")[1];
-
-            // 파일 확장자를 추출. 파일 이름에서 "."을 기준으로 확장자를 분리하여 저장한다.
-            QString ext = fileName.split(".")[1];
-
-            // 헤더에서 파일 크기 추출.  "fileSize:1024;"와 같은 형식에서 파일 크기를 추출한다.
-            QString size = header.split(",")[2].split(":")[1].split(";")[0];
-
-            // 새 파일 이름을 만듦. 기존 파일 이름에 소켓 디스크립터를 덧붙여 이름을 유일하게 만든다.
-            // 이렇게 하면 여러 클라이언트가 동시에 파일을 전송할 때 덮어 씌워지는 것을 방지할 수 있음.
-            QString newFileName = QString("%1_%2.%3").arg(fileName.split(".")[0]).arg(socket->socketDescriptor()).arg(ext);
-
-            // 파일을 저장할 경로를 지정.
-            // QFile 객체를 사용하여 새 파일을 만듦.
-            QFile file("C:/Users/DELL/" + newFileName);
-
-            if (file.open(QFile::WriteOnly))
-            {
-                file.write(buffer);
-                // 데이터를 파일에 쓴 후, 파일을 안전하게 닫음.
-                file.flush();
-                file.close();
-            }
-
-            // 파일이 성공적으로 저장되었다는 메시지를 생성하여 signal_newMessage 시그널을 emit함.
-            QString message = QString("%1 :: %2 of size: %3 bytes has been received").arg(socket->socketDescriptor()).arg(newFileName).arg(size);
-            emit singal_newMessage(message);
-        }
-        // [ex.02.7.6]
-        // fileType이 message(메시지)일 경우, 해당 메시지를 UI에 출력.
-        else
-        {
-            // buffer에 있는 메시지를 출력.  소켓 디스크립터와 메시지 내용을 포함하여 출력한다.
-            QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString(buffer));
-            emit singal_newMessage(message);
+            //     toon_info_str = toon_info_list.join("\n");
+            //     sendMessage(socket, TOONINFO, toon_info_str);
+            // }
+            // else
+            // {
+            //     qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            // }
         }
     }
-}
+
+        // else if (fileType == "tooninfo")
+        // {
+        //     QStringList toon_info_list;
+        //     QString toon_info_str;
+        //     QStringList imagePaths;
+
+        //     qDebug() << "여기야11";
+        //     qry.prepare("SELECT * FROM TOON_INFO");
+
+        //     if (qry.exec())
+        //     {
+        //         while(qry.next())
+        //         {
+        //             QString t_id = qry.value(0).toString();
+        //             QString t_title = qry.value(1).toString();
+        //             QString t_author = qry.value(2).toString();
+        //             QString t_day = qry.value(3).toString();
+        //             toon_info_list << QString("%1/%2/%3/%4").arg(t_id).arg(t_title).arg(t_author).arg(t_day);
+        //             imagePaths.append(qry.value(4).toString());
+        //         }
+        //         for (const QString &imagePath : imagePaths)
+        //         {
+        //             QFile file(imagePath); // 이미지 파일 열기
+        //             if (file.open(QIODevice::ReadOnly))
+        //             {
+        //                 QByteArray imageData = file.readAll();
+        //                 QByteArray header;
+        //                 header.prepend(QString("fileType:thumbnail,fileName:null,fileSize:null;").toUtf8());
+        //                 header.resize(128);
+        //                 // 헤더와 이미지 데이터 합치기
+        //                 QByteArray image_info = header + imageData;
+        //                 socketStream << image_info;
+        //             }
+        //             else
+        //             {
+        //                 // 파일을 열 수 없는 경우 에러 처리
+        //                 qDebug() << "파일 오픈 실패:" << imagePath;
+        //             }
+        //         }
+
+        //         toon_info_str = toon_info_list.join("\n");
+        //         sendMessage(socket, TOONINFO, toon_info_str);
+        //     }
+        //     else
+        //     {
+        //         qDebug() << "쿼리실행 실패" << qry.lastError().text();
+        //     }
+        // }
+        // else if (fileType == "toonlist")
+        // {
+        //     QStringList toon_list;
+        //     QString toon_list_str;
+        //     QString toon_id = msg;
+        //     qry.prepare("SELECT * FROM WEBTOON.TOON_EPI A JOIN WEBTOON.TOON_INFO B ON A.TOON_ID = B.TOON_ID "
+        //                 "WHERE A.TOON_ID = :toon_id");
+        //     qry.bindValue(":toon_id", toon_id);
+
+        //     if (qry.exec())
+        //     {
+        //         while(qry.next())
+        //         {
+        //             QString epi_id = qry.value(0).toString();
+        //             QString t_id = qry.value(1).toString();
+        //             QString epi_num = qry.value(2).toString();
+        //             QString like_num = qry.value(3).toString();
+        //             QString view_num = qry.value(4).toString();
+        //             QString epi_title = qry.value(5).toString();
+        //             QString t_title = qry.value(7).toString();
+        //             QString t_author = qry.value(8).toString();
+        //             QString t_day = qry.value(9).toString();
+
+        //             toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9").arg(epi_id).arg(t_id).arg(t_title).arg(epi_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
+        //         }
+        //         toon_list_str = toon_list.join("\n");
+        //         sendMessage(socket, TOONLIST, toon_list_str);
+        //     }
+        //     else
+        //     {
+        //         qDebug() << "쿼리실행 실패" << qry.lastError().text();
+        //     }
+        // }
+        // else if (fileType == "toonimage")
+        // {
+        //     QStringList imagePaths;
+
+        //     QString epi_id = msg;
+        //     QSqlQuery query;
+        //     query.prepare("SELECT IMG_SRC FROM TOON_IMG WHERE EPI_ID = :epi_id");
+        //     query.bindValue(":epi_id", epi_id);
+
+        //     if (query.exec())
+        //     {
+        //         while (query.next())
+        //         {
+        //             imagePaths.append(query.value(0).toString());
+        //         }
+        //     }
+
+        //     for (const QString &imagePath : imagePaths)
+        //     {
+        //         QFile file(imagePath); // 이미지 파일 열기
+        //         if (file.open(QIODevice::ReadOnly))
+        //         {
+        //             QByteArray imageData = file.readAll();
+        //             QByteArray header;
+        //             header.prepend(QString("fileType:toonimage,fileName:null,fileSize:null;").toUtf8());
+        //             header.resize(128);
+        //             // 헤더와 이미지 데이터 합치기
+        //             QByteArray image_info = header + imageData;
+        //             socketStream << image_info;
+        //         }
+        //         else
+        //         {
+        //             // 파일을 열 수 없는 경우 에러 처리
+        //             qDebug() << "파일 오픈 실패:" << imagePath;
+        //         }
+        //     }
+        //     // 조회수 증가 로직
+        //     query.prepare("UPDATE TOON_EPI SET VIEW_NUM = VIEW_NUM+1 WHERE EPI_ID = :epi_id");
+        //     query.bindValue(":epi_id", epi_id);
+        //     if (!query.exec())
+        //     {
+        //         qDebug() << "조회수 업데이트 오류";
+        //     }
+        // }
+        // else if (fileType == "bookmark")
+        // {
+        //     msgParts = msg.split(",");
+        //     QString user_id = msgParts[0];
+        //     QString epi_id = msgParts[1];
+
+        //     qry.prepare("SELECT * FROM BOOKMARK WHERE ID = :id AND EPI_ID = :epi_id");
+        //     qry.bindValue(":id", user_id);
+        //     qry.bindValue(":epi_id", epi_id);
+        //     qry.exec();
+
+        //     if (qry.next()) // 북마크 있을때
+        //     {
+        //         sendMessage(socket, LOGININFO, "login success");
+        //     }
+        //     else // 북마크 없을때
+        //     {
+        //         sendMessage(socket, LOGININFO, "login fail");
+        //     }
+        // }
 
 
-// [ex.02.8]
-// 서버에서 메시지를 보낼 때,
-// 1) 서버에 연결된 특정 대상에게 전송하거나
-// 2) 연결된 모든 대상에게 전송하도록 선택한다.(Broadcast)
-// void MainWindow::on_pushButton_sendMessage_clicked()
-// {
-//     QString receiver = ui->comboBox_receiver->currentText();
+        // // [ex.02.7.5]
+        // // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
+        // if (fileType == "attachment")
+        // {
 
-//     // Broadcast 라면, qset_connectedSKT 에 저장된 모든 대상에게 메시지 전송
-//     if(receiver=="Broadcast")
-//     {
-//         foreach (QTcpSocket* socket,qset_connectedSKT)
-//         {
-//             sendMessage(socket);
-//         }
-//     }
-//     // 선택한 대상을 qset_connectedSKT에서 소켓을 찾아 메시지 전송
-//     else
-//     {
-//         foreach (QTcpSocket* socket, qset_connectedSKT)
-//         {
-//             if(socket->socketDescriptor() == receiver.toLongLong())
-//             {
-//                 sendMessage(socket);
-//                 break;
-//             }
-//         }
-//     }
+        //     // 헤더에서 파일 이름을 추출.
+        //     // "fileName:example.txt" 형식으로 되어 있으므로 이를 분리하여 실제 파일 이름을 얻는다.
+        //     QString fileName = header.split(",")[1].split(":")[1];
 
-//     // 메시지 입력창 리셋
-//     ui->lineEdit_message->clear();
-// }
+        //     // 파일 확장자를 추출. 파일 이름에서 "."을 기준으로 확장자를 분리하여 저장한다.
+        //     QString ext = fileName.split(".")[1];
 
-// [ex.02.9]
-// 서버에서 파일을 보낼 때
-void MainWindow::on_pushButton_sendAttachment_clicked()
-{
-    // 보낼 대상 선택
-    QString receiver = ui->comboBox_receiver->currentText();
+        //     // 헤더에서 파일 크기 추출.  "fileSize:1024;"와 같은 형식에서 파일 크기를 추출한다.
+        //     QString size = header.split(",")[2].split(":")[1].split(";")[0];
 
-    // 파일 경로 가져오고, 경로 문제시 경고 출력
-    QString filePath = QFileDialog::getOpenFileName(this, ("Select an attachment"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), ("File (*.json *.txt *.png *.jpg *.jpeg)"));
-    if(filePath.isEmpty())
-    {
-        QMessageBox::critical(this,"QTCPClient","You haven't selected any attachment!");
-        return;
-    }
+        //     // 새 파일 이름을 만듦. 기존 파일 이름에 소켓 디스크립터를 덧붙여 이름을 유일하게 만든다.
+        //     // 이렇게 하면 여러 클라이언트가 동시에 파일을 전송할 때 덮어 씌워지는 것을 방지할 수 있음.
+        //     QString newFileName = QString("%1_%2.%3").arg(fileName.split(".")[0]).arg(socket->socketDescriptor()).arg(ext);
 
-    // 보낼 대상이 연결된 모든 socket일때 동작
-    if(receiver=="Broadcast")
-    {
-        foreach (QTcpSocket* socket, qset_connectedSKT)
-        {
-            sendAttachment(socket, filePath);
-        }
-    }
-    // 보낼 대상이 특정 socket일때 동작
-    else
-    {
-        foreach (QTcpSocket* socket, qset_connectedSKT)
-        {
-            if(socket->socketDescriptor() == receiver.toLongLong())
-            {
-                sendAttachment(socket, filePath);
-                break;
-            }
-        }
-    }
-    ui->lineEdit_message->clear();
+        //     // 파일을 저장할 경로를 지정.
+        //     // QFile 객체를 사용하여 새 파일을 만듦.
+        //     QFile file("C:/Users/DELL/" + newFileName);
+
+        //     if (file.open(QFile::WriteOnly))
+        //     {
+        //         file.write(buffer);
+        //         // 데이터를 파일에 쓴 후, 파일을 안전하게 닫음.
+        //         file.flush();
+        //         file.close();
+        //     }
+
+        //     // 파일이 성공적으로 저장되었다는 메시지를 생성하여 signal_newMessage 시그널을 emit함.
+        //     QString message = QString("%1 :: %2 of size: %3 bytes has been received").arg(socket->socketDescriptor()).arg(newFileName).arg(size);
+        //     emit singal_newMessage(message);
+        // }
+        // // [ex.02.7.6]
+        // // fileType이 message(메시지)일 경우, 해당 메시지를 UI에 출력.
+        // else
+        // {
+        //     // buffer에 있는 메시지를 출력.  소켓 디스크립터와 메시지 내용을 포함하여 출력한다.
+        //     QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString(buffer));
+        //     emit singal_newMessage(message);
+        // }
+
 }
 
 // [ex.02.10]
@@ -768,6 +766,79 @@ void MainWindow::sendMessage(QTcpSocket* socket, int act_type, QString msg, int 
     else
         QMessageBox::critical(this,"QTCPServer","Not connected");
 }
+
+// [ex.02.8]
+// 서버에서 메시지를 보낼 때,
+// 1) 서버에 연결된 특정 대상에게 전송하거나
+// 2) 연결된 모든 대상에게 전송하도록 선택한다.(Broadcast)
+// void MainWindow::on_pushButton_sendMessage_clicked()
+// {
+//     QString receiver = ui->comboBox_receiver->currentText();
+
+//     // Broadcast 라면, qset_connectedSKT 에 저장된 모든 대상에게 메시지 전송
+//     if(receiver=="Broadcast")
+//     {
+//         foreach (QTcpSocket* socket,qset_connectedSKT)
+//         {
+//             sendMessage(socket);
+//         }
+//     }
+//     // 선택한 대상을 qset_connectedSKT에서 소켓을 찾아 메시지 전송
+//     else
+//     {
+//         foreach (QTcpSocket* socket, qset_connectedSKT)
+//         {
+//             if(socket->socketDescriptor() == receiver.toLongLong())
+//             {
+//                 sendMessage(socket);
+//                 break;
+//             }
+//         }
+//     }
+
+//     // 메시지 입력창 리셋
+//     ui->lineEdit_message->clear();
+// }
+
+// [ex.02.9]
+// 서버에서 파일을 보낼 때
+// void MainWindow::on_pushButton_sendAttachment_clicked()
+// {
+//     // 보낼 대상 선택
+//     QString receiver = ui->comboBox_receiver->currentText();
+
+//     // 파일 경로 가져오고, 경로 문제시 경고 출력
+//     QString filePath = QFileDialog::getOpenFileName(this, ("Select an attachment"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), ("File (*.json *.txt *.png *.jpg *.jpeg)"));
+//     if(filePath.isEmpty())
+//     {
+//         QMessageBox::critical(this,"QTCPClient","You haven't selected any attachment!");
+//         return;
+//     }
+
+//     // 보낼 대상이 연결된 모든 socket일때 동작
+//     if(receiver=="Broadcast")
+//     {
+//         foreach (QTcpSocket* socket, qset_connectedSKT)
+//         {
+//             sendAttachment(socket, filePath);
+//         }
+//     }
+//     // 보낼 대상이 특정 socket일때 동작
+//     else
+//     {
+//         foreach (QTcpSocket* socket, qset_connectedSKT)
+//         {
+//             if(socket->socketDescriptor() == receiver.toLongLong())
+//             {
+//                 sendAttachment(socket, filePath);
+//                 break;
+//             }
+//         }
+//     }
+//     ui->lineEdit_message->clear();
+// }
+
+
 // ===================================================================================================
 // [ex.02.11]
 void MainWindow::sendAttachment(QTcpSocket* socket, QString filePath)
