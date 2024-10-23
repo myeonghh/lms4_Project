@@ -179,13 +179,13 @@ public:
         gridLayout_3->setObjectName("gridLayout_3");
         user_mainTabWidget = new QTabWidget(user_main_page);
         user_mainTabWidget->setObjectName("user_mainTabWidget");
-        user_mainTabWidget->setStyleSheet(QString::fromUtf8("#mainTabWidget QTabWidget::pane {\n"
+        user_mainTabWidget->setStyleSheet(QString::fromUtf8("#user_mainTabWidget QTabWidget::pane {\n"
 "    background-color: white;\n"
 "    border: 2px solid black;\n"
 "	border-radius:8px\n"
 "}\n"
 "\n"
-"#mainTabWidget QTabBar::tab {\n"
+"#user_mainTabWidget QTabBar::tab {\n"
 "    background: white;\n"
 "    border: 3px solid black;\n"
 "    border-radius: 8px; \n"
@@ -198,7 +198,7 @@ public:
 "	font-size: 16px;\n"
 "}\n"
 "\n"
-"#mainTabWidget QTabBar::tab:selected {\n"
+"#user_mainTabWidget QTabBar::tab:selected {\n"
 "    background: gray;\n"
 "	color: white;\n"
 "	font-weight: bold;\n"
@@ -649,9 +649,9 @@ public:
         retranslateUi(MainWindow);
         QObject::connect(shopSearchText, &QLineEdit::returnPressed, shopSearchButton, qOverload<>(&QPushButton::click));
 
-        mainStackedWidget->setCurrentIndex(3);
+        mainStackedWidget->setCurrentIndex(0);
         user_mainTabWidget->setCurrentIndex(0);
-        shopTabWidget->setCurrentIndex(0);
+        shopTabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);

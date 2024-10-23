@@ -33,12 +33,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::operate_info_signal, loginWidget, &Login::signUp_operate);
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
 
-    connect(ui->chicken_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(CHICKEN);});
-    connect(ui->pizza_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(PIZZA);});
-    connect(ui->kFood_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(KFOOD);});
-    connect(ui->jFood_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(JFOOD);});
-    connect(ui->cFood_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(CFOOD);});
-    connect(ui->cafe_btn, &QPushButton::clicked, this, [this](){to_shop_list_view(CAFE);});
+    connect(ui->chicken_btn, &QPushButton::clicked, this, [this](){clicked_food_type = CHICKEN; send_delivery_func_order(SHOPLIST);});
+    connect(ui->pizza_btn, &QPushButton::clicked, this, [this](){clicked_food_type = PIZZA; send_delivery_func_order(SHOPLIST);});
+    connect(ui->kFood_btn, &QPushButton::clicked, this, [this](){clicked_food_type = KFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->jFood_btn, &QPushButton::clicked, this, [this](){clicked_food_type = JFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->cFood_btn, &QPushButton::clicked, this, [this](){clicked_food_type = CFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->cafe_btn, &QPushButton::clicked, this, [this](){clicked_food_type = CAFE; send_delivery_func_order(SHOPLIST);});
 
 
 
@@ -75,8 +75,8 @@ MainWindow::~MainWindow()
     if(m_socket->isOpen())
         m_socket->close();
     delete ui;
-    delete toonInfo_model;
-    delete toonList_model;
+    delete shoplist_model;
+    delete menulist_model;
 }
 
 // [ex.02.3]
@@ -145,7 +145,7 @@ void MainWindow::slot_readSocket()
         // buffer의 128 byte 이후 부분 buffer에 다시 담음.
         buffer = buffer.mid(128);
         QString msg = buffer;
-
+        // qDebug() << "MSG!!! : " <<msg;
         if (fileType == "signUpInfo")
         {
             if (msg == "signUp success") // 회원가입 성공
@@ -210,6 +210,14 @@ void MainWindow::slot_readSocket()
                 emit login_info_signal("login fail");
             }
         }
+        else if (fileType == "shopImg")
+        {
+            shop_img_to_item(buffer);
+        }
+        else if (fileType == "shoplist")
+        {
+            create_shop_list_model(msg);
+        }
     }
 }
 
@@ -219,31 +227,106 @@ void MainWindow::get_login_user_id(QString id)
     qDebug() << "현재 로그인유저 아이디: " << present_clnt.clnt_id;
 }
 
+void MainWindow::shop_img_to_item(QByteArray &img_buf)
+{
+    QPixmap thumbnailPixmap;
+    thumbnailPixmap.loadFromData(img_buf);
+    QPixmap resizedPixmap = thumbnailPixmap.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    shop_img_list.append(resizedPixmap);
+}
+
+void MainWindow::create_shop_list_model(QString &shoplist)
+{
+        QStringList str_list = shoplist.split("\n");
+        QStandardItem *s_num, *s_title, *s_type, *s_state;
+        int index = 0;
+        shoplist_model = new QStandardItemModel();
+        shoplist_model->setColumnCount(5);
+        shoplist_model->setHorizontalHeaderLabels(QStringList()<<"가게번호"<< "이미지" << "가게이름" << "카테고리"<< "영업상태");
+
+        for (const QString &row: str_list)
+        {
+            QStringList columns = row.split("/");
+            s_num = new QStandardItem(columns[0].trimmed());
+            s_title = new QStandardItem(columns[1].trimmed());
+            s_type = new QStandardItem(columns[2].trimmed());
+            s_state = new QStandardItem(columns[3].trimmed());
+
+            QStandardItem *shop_img_item = new QStandardItem();
+            shop_img_item->setIcon(QIcon(shop_img_list[index++]));
+
+            s_title->setTextAlignment(Qt::AlignCenter);
+            s_type->setTextAlignment(Qt::AlignCenter);
+            s_state->setTextAlignment(Qt::AlignCenter);
+
+            QList<QStandardItem*> items;
+            items << s_num
+                  << shop_img_item
+                  << s_title
+                  << s_type
+                  << s_state;
+            shoplist_model->appendRow(items);
+
+        }
+        // ui->e_tableView->setModel(toonInfo_model);
+        // ui->e_tableView->setIconSize(QSize(100, 100));
+        // ui->e_tableView->resizeColumnsToContents();
+        // ui->e_tableView->resizeRowsToContents();
+        // ui->e_tableView->hideColumn(0);
+        // ui->e_tableView->show();
+        shop_img_list.clear();// 가게 이미지 리스트 초기화
+        to_shop_list_view(clicked_food_type);
+
+}
+
+// 스핀박스 테이블 뷰에 집어넣는 방법!!
+// QSpinBox *menu_spin_box = new QSpinBox();
+// menu_spin_box->setRange(1, 100);
+// menu_spin_box->setValue(1);
+// ui->menu_tableView->setIndexWidget(shoplist_model->index(1,3), menu_spin_box);
+
 void MainWindow::to_shop_list_view(int foodType)
 {
+    // QSortFilterProxyModel을 생성하고 원본 모델과 연결
+    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(shoplist_model);
+    //음식 카테고리 항목으로 필터링
     switch (foodType)
     {
     case CHICKEN:
-        send_delivery_func_order(SHOPLIST, "chicken");
+        proxyModel->setFilterRegularExpression(QRegularExpression("치킨"));
         break;
     case PIZZA:
-        send_delivery_func_order(SHOPLIST, "pizza");
+        proxyModel->setFilterRegularExpression(QRegularExpression("피자"));
         break;
     case KFOOD:
-        send_delivery_func_order(SHOPLIST, "kfood");
+        proxyModel->setFilterRegularExpression(QRegularExpression("한식"));
         break;
     case JFOOD:
-        send_delivery_func_order(SHOPLIST, "jfood");
+        proxyModel->setFilterRegularExpression(QRegularExpression("일식"));
         break;
     case CFOOD:
-        send_delivery_func_order(SHOPLIST, "cfood");
+        proxyModel->setFilterRegularExpression(QRegularExpression("중국집"));
         break;
     case CAFE:
-        send_delivery_func_order(SHOPLIST, "cafe");
+        proxyModel->setFilterRegularExpression(QRegularExpression("카페"));
         break;
     default:
         break;
     }
+    proxyModel->setFilterKeyColumn(3);// 필터링할 열
+    // 필터링된 결과를 View에 출력
+    ui->shopList_tableView->setModel(proxyModel);
+    ui->shopList_tableView->setIconSize(QSize(100, 100));
+    ui->shopList_tableView->resizeColumnsToContents();
+    ui->shopList_tableView->resizeRowsToContents();
+    ui->shopList_tableView->hideColumn(0);
+    ui->shopList_tableView->verticalHeader()->setVisible(false);
+    ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    ui->shopList_tableView->show();
+    ui->mainStackedWidget->setCurrentWidget(ui->shopList_page);
 }
 
 
@@ -269,7 +352,6 @@ void MainWindow::send_delivery_func_order(int act_type, QString msg, int sender,
             default:
                 break;
             }
-
             header.resize(128);
             // message 인코딩 설정하고, QByteArray에 할당하고
             QByteArray byteArray = msg.toUtf8();
@@ -481,13 +563,7 @@ void MainWindow::send_login_func_order(int act_type, int client_type, QString id
 //     ui->stackedWidget->setCurrentWidget(ui->toonList_page);
 // }
 
-// void MainWindow::thumbnail_to_item(QByteArray &img_buf)
-// {
-//     QPixmap thumbnailPixmap;
-//     thumbnailPixmap.loadFromData(img_buf);
-//     QPixmap resizedPixmap = thumbnailPixmap.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-//     thumbnail_list.append(resizedPixmap);
-// }
+
 
 // void MainWindow::create_toonInfo_model(QString &toonlist)
 // {
@@ -666,4 +742,10 @@ void MainWindow::on_logout_btn_clicked()
 
 
 
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
+}
 

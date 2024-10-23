@@ -17,6 +17,7 @@
 #include <QSortFilterProxyModel>
 #include <QRegularExpression>
 #include <QIcon>
+#include <QSpinBox>
 #include "login.h"
 
 namespace Ui {
@@ -41,20 +42,23 @@ private:
     Login *loginWidget;
     QTcpSocket *m_socket;
 
-    QStandardItemModel *toonInfo_model;
-    QStandardItemModel *toonList_model;
+    QStandardItemModel *shoplist_model;
+    QStandardItemModel *menulist_model;
 
     QList<QLabel*> imgLabel_list;
     QString toonInfo_data;
-    QList<QPixmap> thumbnail_list;
+    QList<QPixmap> shop_img_list;
     int rowIndex = 0;
 
     void send_login_func_order(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "");
     void send_delivery_func_order(int act_type, QString msg = "", int sender = 0, int senderNum = 0, int receiver = 0, int receiverNum = 0);
     QString client_type_to_string(int client_type);
+    void shop_img_to_item(QByteArray &img_buf);
+    void create_shop_list_model(QString &shopList);
 
     struct PresentClnt {int type; int clnt_num; QString clnt_id;};
     PresentClnt present_clnt;
+    int clicked_food_type;
 
 signals:
     void signal_newMessage(QString);
@@ -70,6 +74,7 @@ private slots:
     void to_shop_list_view(int foodType);
 
 
+
     // void create_toonInfo_model(QString &toonlist);
     // void create_toonList_model(QString &toonlist);
     // void view_double_clicked(const QModelIndex &index);
@@ -81,6 +86,7 @@ private slots:
     // void like_control();
     void get_login_user_id(QString id);
     void on_logout_btn_clicked();
+    void on_pushButton_clicked();
 };
 
 #endif // MAINWINDOW_H
