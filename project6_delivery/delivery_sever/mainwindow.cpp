@@ -459,32 +459,53 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "shoplist")
         {
-            qry.prepare("SELECT * FROM shop WHERE s_type = :type");
+            qry.prepare("SELECT * FROM shop");
 
-            if (msg == "chicken")
-            {
-                qry.bindValue(":type", "치킨");
-            }
-            else if (msg == "piiza")
-            {
-                qry.bindValue(":type", "치킨");
-            }
-            else if (msg == "kfood")
-            {
-                qry.bindValue(":type", "치킨");
-            }
-            else if (msg == "jfood")
-            {
-                qry.bindValue(":type", "치킨");
-            }
-            else if (msg == "cfood")
-            {
-                qry.bindValue(":type", "치킨");
-            }
-            else if (msg == "cafe")
-            {
-                qry.bindValue(":type", "치킨");
-            }
+                QStringList toon_info_list;
+                QString toon_info_str;
+                QStringList imagePaths;
+
+                qDebug() << "여기야11";
+                qry.prepare("SELECT * FROM TOON_INFO");
+
+                if (qry.exec())
+                {
+                    while(qry.next())
+                    {
+                        QString t_id = qry.value(0).toString();
+                        QString t_title = qry.value(1).toString();
+                        QString t_author = qry.value(2).toString();
+                        QString t_day = qry.value(3).toString();
+                        toon_info_list << QString("%1/%2/%3/%4").arg(t_id).arg(t_title).arg(t_author).arg(t_day);
+                        imagePaths.append(qry.value(4).toString());
+                    }
+                    for (const QString &imagePath : imagePaths)
+                    {
+                        QFile file(imagePath); // 이미지 파일 열기
+                        if (file.open(QIODevice::ReadOnly))
+                        {
+                            QByteArray imageData = file.readAll();
+                            QByteArray header;
+                            header.prepend(QString("fileType:thumbnail,fileName:null,fileSize:null;").toUtf8());
+                            header.resize(128);
+                            // 헤더와 이미지 데이터 합치기
+                            QByteArray image_info = header + imageData;
+                            socketStream << image_info;
+                        }
+                        else
+                        {
+                            // 파일을 열 수 없는 경우 에러 처리
+                            qDebug() << "파일 오픈 실패:" << imagePath;
+                        }
+                    }
+
+                    toon_info_str = toon_info_list.join("\n");
+                    sendMessage(socket, TOONINFO, toon_info_str);
+                }
+                else
+                {
+                    qDebug() << "쿼리실행 실패" << qry.lastError().text();
+                }
 
             // if (qry.exec())
             // {
