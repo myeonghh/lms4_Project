@@ -55,11 +55,11 @@ MainWindow::~MainWindow()
     m_server->close();
     m_server->deleteLater();
 
-    foreach (Client* client, clnt_list)
+    foreach (Client* client, login_clnt_list)
     {
         delete client;
     }
-    clnt_list.clear();
+    login_clnt_list.clear();
 
     QSqlQuery qry;
     qry.prepare("UPDATE shop SET s_state = :state");
@@ -148,6 +148,14 @@ void MainWindow::slot_discardSocket()
         qset_connectedSKT.remove(*it);
     }
 
+    for (int i = 0; i < login_clnt_list.size(); i++)
+    {
+        if (login_clnt_list[i]->clnt_socket == socket)
+        {
+            delete login_clnt_list[i];
+            login_clnt_list.removeAt(i);
+        }
+    }
     // ui 콤보박스 재설정
     refreshComboBox();
 
@@ -274,7 +282,7 @@ void MainWindow::slot_readSocket()
 
                 if (qry.next()) // 아이디 비밀번호 일치
                 {
-                    clnt_list.append(new Client(USER, qry.value(0).toInt(), socket, id));
+                    login_clnt_list.append(new Client(USER, qry.value(0).toInt(), socket, id));
                     sendMessage(socket, LOGININFO, "login success", USER, qry.value(0).toInt());
                 }
                 else // 아이디 or 비밀번호 불일치
@@ -292,7 +300,7 @@ void MainWindow::slot_readSocket()
 
                 if (qry.next()) // 아이디 비밀번호 일치
                 {
-                    clnt_list.append(new Client(SHOP, qry.value(0).toInt(), socket, id));
+                    login_clnt_list.append(new Client(SHOP, qry.value(0).toInt(), socket, id));
                     sendMessage(socket, LOGININFO, "login success", SHOP, qry.value(0).toInt());
 
                     qry2.prepare("UPDATE shop SET s_state = :state WHERE s_id = :id");
@@ -318,7 +326,7 @@ void MainWindow::slot_readSocket()
 
                 if (qry.next()) // 아이디 비밀번호 일치
                 {
-                    clnt_list.append(new Client(RIDER, qry.value(0).toInt(), socket, id));
+                    login_clnt_list.append(new Client(RIDER, qry.value(0).toInt(), socket, id));
                     sendMessage(socket, LOGININFO, "login success", RIDER, qry.value(0).toInt());
                 }
                 else // 아이디 or 비밀번호 불일치
@@ -454,13 +462,23 @@ void MainWindow::slot_readSocket()
                 }
             }
         }
+        else if (fileType == "logout")
+        {
+            for (int i = 0; i < login_clnt_list.size(); i++)
+            {
+                if (login_clnt_list[i]->type == sender.toInt() && login_clnt_list[i]->clnt_num == sender_num.toInt())
+                {
+                    delete login_clnt_list[i];
+                    login_clnt_list.removeAt(i);
+                }
+            }
+        }
         else if (fileType == "shoplist")
         {
             QStringList shop_info_list;
             QString shop_info_str;
             QStringList imagePaths;
 
-            qDebug() << "여기야11";
             qry.prepare("SELECT * FROM shop");
 
             if (qry.exec())
@@ -497,6 +515,56 @@ void MainWindow::slot_readSocket()
                 shop_info_str = shop_info_list.join("\n");
                 sendMessage(socket, SHOPLIST, shop_info_str);
                 qDebug() << "서버 가게 리스트" << shop_info_str;
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "menulist")
+        {
+            QStringList menu_info_list;
+            QString menu_info_str;
+            QStringList imagePaths;
+
+            qDebug() << "여기야11";
+            qry.prepare("SELECT * FROM menu");
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString m_num = qry.value(0).toString();
+                    QString s_num = qry.value(1).toString();
+                    QString s_mnum = qry.value(2).toString();
+                    QString m_title = qry.value(3).toString();
+                    QString m_price = qry.value(4).toString();
+                    menu_info_list << QString("%1/%2/%3/%4/%5").arg(m_num, s_num, s_mnum, m_title, m_price);
+                    imagePaths.append(qry.value(5).toString());
+                }
+                for (const QString &imagePath : imagePaths)
+                {
+                    QFile file(imagePath); // 이미지 파일 열기
+                    if (file.open(QIODevice::ReadOnly))
+                    {
+                        QByteArray imageData = file.readAll();
+                        QByteArray header;
+                        header.prepend(QString("fileType:menuImg,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;").toUtf8());
+                        header.resize(128);
+                        // 헤더와 이미지 데이터 합치기
+                        QByteArray image_info = header + imageData;
+                        socketStream << image_info;
+                        qDebug() << "여기야2";
+                    }
+                    else
+                    {
+                        // 파일을 열 수 없는 경우 에러 처리
+                        qDebug() << "파일 오픈 실패:" << imagePath;
+                    }
+                }
+                menu_info_str = menu_info_list.join("\n");
+                sendMessage(socket, MENULIST, menu_info_str);
+                qDebug() << "서버 메뉴 리스트" << menu_info_str;
             }
             else
             {
@@ -727,6 +795,10 @@ void MainWindow::sendMessage(QTcpSocket* socket, int act_type, QString msg, int 
                 break;
             case SHOPLIST:
                 header.prepend(QString("fileType:shoplist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case MENULIST:
+                header.prepend(QString("fileType:menulist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             default:

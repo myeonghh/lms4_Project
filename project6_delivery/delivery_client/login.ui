@@ -522,17 +522,17 @@
  <connections>
   <connection>
    <sender>l_pwText</sender>
-   <signal>editingFinished()</signal>
+   <signal>returnPressed()</signal>
    <receiver>loginBtn</receiver>
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>337</x>
-     <y>374</y>
+     <x>358</x>
+     <y>394</y>
     </hint>
     <hint type="destinationlabel">
-     <x>341</x>
-     <y>425</y>
+     <x>366</x>
+     <y>432</y>
     </hint>
    </hints>
   </connection>

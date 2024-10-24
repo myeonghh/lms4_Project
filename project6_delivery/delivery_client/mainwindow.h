@@ -35,7 +35,7 @@ public:
 
 private:
     enum LOGINACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
-    enum DELIVERYACT {SHOPLIST = 0};
+    enum DELIVERYACT {LOGOUT = 0, SHOPLIST, MENULIST};
     enum CLIENT {USER= 0, SHOP, RIDER};
     enum FOOD {CHICKEN = 0, PIZZA, KFOOD, JFOOD, CFOOD, CAFE};
     Ui::MainWindow *ui;
@@ -44,21 +44,27 @@ private:
 
     QStandardItemModel *shoplist_model;
     QStandardItemModel *menulist_model;
+    QStandardItemModel *basketlist_model;
+    QSortFilterProxyModel *proxyModel;
 
-    QList<QLabel*> imgLabel_list;
-    QString toonInfo_data;
+    QString clicked_shop_num;
+    QString clicked_shop_title;
     QList<QPixmap> shop_img_list;
+    QList<QPixmap> menu_img_list;
     int rowIndex = 0;
 
     void send_login_func_order(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "");
     void send_delivery_func_order(int act_type, QString msg = "", int sender = 0, int senderNum = 0, int receiver = 0, int receiverNum = 0);
     QString client_type_to_string(int client_type);
     void shop_img_to_item(QByteArray &img_buf);
+    void menu_img_to_item(QByteArray &img_buf);
     void create_shop_list_model(QString &shopList);
+    void create_menu_list_model(QString &menulist);
 
     struct PresentClnt {int type; int clnt_num; QString clnt_id;};
     PresentClnt present_clnt;
     int clicked_food_type;
+    bool shop_search_chk = false;
 
 signals:
     void signal_newMessage(QString);
@@ -72,6 +78,10 @@ private slots:
     void slot_displayError(QAbstractSocket::SocketError socketError);
     void slot_readSocket();
     void to_shop_list_view(int foodType);
+    void shop_view_double_clicked(const QModelIndex &index);
+    void menu_view_double_clicked(const QModelIndex &index);
+    void basket_view_double_clicked(const QModelIndex &index);
+    void shop_search();
 
 
 

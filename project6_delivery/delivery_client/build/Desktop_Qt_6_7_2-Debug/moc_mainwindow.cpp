@@ -50,6 +50,12 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "slot_readSocket",
     "to_shop_list_view",
     "foodType",
+    "shop_view_double_clicked",
+    "QModelIndex",
+    "index",
+    "menu_view_double_clicked",
+    "basket_view_double_clicked",
+    "shop_search",
     "get_login_user_id",
     "id",
     "on_logout_btn_clicked",
@@ -66,7 +72,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      12,   14, // methods
+      16,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -74,20 +80,24 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   86,    2, 0x06,    1 /* Public */,
-       3,    1,   89,    2, 0x06,    3 /* Public */,
-       5,    1,   92,    2, 0x06,    5 /* Public */,
-       6,    1,   95,    2, 0x06,    7 /* Public */,
-       7,    1,   98,    2, 0x06,    9 /* Public */,
+       1,    1,  110,    2, 0x06,    1 /* Public */,
+       3,    1,  113,    2, 0x06,    3 /* Public */,
+       5,    1,  116,    2, 0x06,    5 /* Public */,
+       6,    1,  119,    2, 0x06,    7 /* Public */,
+       7,    1,  122,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    0,  101,    2, 0x08,   11 /* Private */,
-       9,    1,  102,    2, 0x08,   12 /* Private */,
-      12,    0,  105,    2, 0x08,   14 /* Private */,
-      13,    1,  106,    2, 0x08,   15 /* Private */,
-      15,    1,  109,    2, 0x08,   17 /* Private */,
-      17,    0,  112,    2, 0x08,   19 /* Private */,
-      18,    0,  113,    2, 0x08,   20 /* Private */,
+       8,    0,  125,    2, 0x08,   11 /* Private */,
+       9,    1,  126,    2, 0x08,   12 /* Private */,
+      12,    0,  129,    2, 0x08,   14 /* Private */,
+      13,    1,  130,    2, 0x08,   15 /* Private */,
+      15,    1,  133,    2, 0x08,   17 /* Private */,
+      18,    1,  136,    2, 0x08,   19 /* Private */,
+      19,    1,  139,    2, 0x08,   21 /* Private */,
+      20,    0,  142,    2, 0x08,   23 /* Private */,
+      21,    1,  143,    2, 0x08,   24 /* Private */,
+      23,    0,  146,    2, 0x08,   26 /* Private */,
+      24,    0,  147,    2, 0x08,   27 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,
@@ -101,7 +111,11 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
     QMetaType::Void, 0x80000000 | 10,   11,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,   14,
-    QMetaType::Void, QMetaType::QString,   16,
+    QMetaType::Void, 0x80000000 | 16,   17,
+    QMetaType::Void, 0x80000000 | 16,   17,
+    QMetaType::Void, 0x80000000 | 16,   17,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,   22,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -142,6 +156,17 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'to_shop_list_view'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'shop_view_double_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QModelIndex &, std::false_type>,
+        // method 'menu_view_double_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QModelIndex &, std::false_type>,
+        // method 'basket_view_double_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QModelIndex &, std::false_type>,
+        // method 'shop_search'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'get_login_user_id'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
@@ -168,9 +193,13 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 6: _t->slot_displayError((*reinterpret_cast< std::add_pointer_t<QAbstractSocket::SocketError>>(_a[1]))); break;
         case 7: _t->slot_readSocket(); break;
         case 8: _t->to_shop_list_view((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 9: _t->get_login_user_id((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 10: _t->on_logout_btn_clicked(); break;
-        case 11: _t->on_pushButton_clicked(); break;
+        case 9: _t->shop_view_double_clicked((*reinterpret_cast< std::add_pointer_t<QModelIndex>>(_a[1]))); break;
+        case 10: _t->menu_view_double_clicked((*reinterpret_cast< std::add_pointer_t<QModelIndex>>(_a[1]))); break;
+        case 11: _t->basket_view_double_clicked((*reinterpret_cast< std::add_pointer_t<QModelIndex>>(_a[1]))); break;
+        case 12: _t->shop_search(); break;
+        case 13: _t->get_login_user_id((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 14: _t->on_logout_btn_clicked(); break;
+        case 15: _t->on_pushButton_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -243,13 +272,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 16;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 16;
     }
     return _id;
 }

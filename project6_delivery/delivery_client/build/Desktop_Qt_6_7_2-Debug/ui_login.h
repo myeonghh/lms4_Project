@@ -363,7 +363,7 @@ public:
 
 
         retranslateUi(Login);
-        QObject::connect(l_pwText, &QLineEdit::editingFinished, loginBtn, qOverload<>(&QPushButton::click));
+        QObject::connect(l_pwText, &QLineEdit::returnPressed, loginBtn, qOverload<>(&QPushButton::click));
 
         stackedWidget->setCurrentIndex(0);
 

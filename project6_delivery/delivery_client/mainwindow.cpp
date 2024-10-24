@@ -33,14 +33,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::operate_info_signal, loginWidget, &Login::signUp_operate);
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
 
-    connect(ui->chicken_btn, &QPushButton::clicked, this, [this](){clicked_food_type = CHICKEN; send_delivery_func_order(SHOPLIST);});
-    connect(ui->pizza_btn, &QPushButton::clicked, this, [this](){clicked_food_type = PIZZA; send_delivery_func_order(SHOPLIST);});
-    connect(ui->kFood_btn, &QPushButton::clicked, this, [this](){clicked_food_type = KFOOD; send_delivery_func_order(SHOPLIST);});
-    connect(ui->jFood_btn, &QPushButton::clicked, this, [this](){clicked_food_type = JFOOD; send_delivery_func_order(SHOPLIST);});
-    connect(ui->cFood_btn, &QPushButton::clicked, this, [this](){clicked_food_type = CFOOD; send_delivery_func_order(SHOPLIST);});
-    connect(ui->cafe_btn, &QPushButton::clicked, this, [this](){clicked_food_type = CAFE; send_delivery_func_order(SHOPLIST);});
+    connect(ui->shopSearchButton, &QPushButton::clicked, this, [this](){shop_search_chk = true; send_delivery_func_order(SHOPLIST);});
+    connect(ui->chicken_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CHICKEN; send_delivery_func_order(SHOPLIST);});
+    connect(ui->pizza_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = PIZZA; send_delivery_func_order(SHOPLIST);});
+    connect(ui->kFood_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = KFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->jFood_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = JFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->cFood_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->cafe_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CAFE; send_delivery_func_order(SHOPLIST);});
+    connect(ui->toshop_backBtn, &QPushButton::clicked, this, [this](){send_delivery_func_order(SHOPLIST);});
 
-
+    connect(ui->shopList_tableView, &QTableView::doubleClicked, this, &MainWindow::shop_view_double_clicked);
+    connect(ui->searchTableView, &QTableView::doubleClicked, this, &MainWindow::shop_view_double_clicked);
+    connect(ui->menu_tableView, &QTableView::doubleClicked, this, &MainWindow::menu_view_double_clicked);
+    connect(ui->menu_basket_tableView, &QTableView::doubleClicked, this, &MainWindow::basket_view_double_clicked);
 
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
@@ -188,12 +193,13 @@ void MainWindow::slot_readSocket()
                     ui->title_label->setText("저기요");
                     ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
                     ui->user_mainTabWidget->setCurrentWidget(ui->foodCategoryTab);
+                    send_delivery_func_order(MENULIST);
                 }
                 else if (sender == "shop") // 가게 로그인 성공
                 {
                     present_clnt.type = SHOP;
                     this->window()->show();
-                    ui->title_label->setText("저기요 매장");
+                    ui->title_label->setText("저기요 업주");
                     ui->mainStackedWidget->setCurrentWidget(ui->shop_main_page);
                     ui->shopTabWidget->setCurrentWidget(ui->shop_orderWait_tab);
                 }
@@ -218,6 +224,14 @@ void MainWindow::slot_readSocket()
         {
             create_shop_list_model(msg);
         }
+        else if (fileType == "menuImg")
+        {
+            menu_img_to_item(buffer);
+        }
+        else if (fileType == "menulist")
+        {
+            create_menu_list_model(msg);
+        }
     }
 }
 
@@ -225,6 +239,199 @@ void MainWindow::get_login_user_id(QString id)
 {
     present_clnt.clnt_id = id;
     qDebug() << "현재 로그인유저 아이디: " << present_clnt.clnt_id;
+}
+
+void MainWindow::basket_view_double_clicked(const QModelIndex &index)
+{
+    int clicked_row = index.row();
+    basketlist_model->removeRow(clicked_row);
+    ui->menu_basket_tableView->setModel(basketlist_model);
+    ui->menu_basket_tableView->show();
+}
+
+void MainWindow::menu_view_double_clicked(const QModelIndex &index)
+{
+    QStandardItem *m_num, *s_num, *m_title, *m_price, *f_cnt;
+    int clicked_row = index.row();
+    int food_cnt;
+    // 어떤 칸을 클릭해도 해당 열의 웹툰 일련번호가 리턴됨
+    QString clicked_m_num = index.sibling(clicked_row, 0).data().toString();
+    QString clicked_s_num = index.sibling(clicked_row, 1).data().toString();
+    QString clicekd_m_title = index.sibling(clicked_row, 4).data().toString();
+    QString clicekd_m_price = index.sibling(clicked_row, 5).data().toString();
+
+    QWidget *widget = ui->menu_tableView->indexWidget(proxyModel->index(index.row(), 6));
+    food_cnt = qobject_cast<QSpinBox*>(widget)->value(); // spinBox의 현재 값 가져오기
+
+    int rowCount = basketlist_model->rowCount();
+    for (int row = 0; row < rowCount; row++)
+    {
+        int mnum = basketlist_model->item(row, 0)->data(Qt::DisplayRole).toInt();
+        int fcnt = basketlist_model->item(row, 5)->data(Qt::DisplayRole).toInt();
+        if (mnum == clicked_m_num.toInt())
+        {
+            basketlist_model->item(row, 5)->setData(QString::number(fcnt + food_cnt), Qt::DisplayRole);
+            return;
+        }
+    }
+
+    m_num = new QStandardItem(clicked_m_num);
+    s_num = new QStandardItem(clicked_s_num);
+    m_title = new QStandardItem(clicekd_m_title);
+    m_price = new QStandardItem(clicekd_m_price);
+    f_cnt = new QStandardItem(QString::number(food_cnt));
+
+    QStandardItem *menu_img_item = new QStandardItem();
+    menu_img_item->setIcon(QIcon(menu_img_list[clicked_m_num.toInt()-1]));
+
+    m_title->setTextAlignment(Qt::AlignCenter);
+    m_price->setTextAlignment(Qt::AlignCenter);
+    f_cnt->setTextAlignment(Qt::AlignCenter);
+
+    QList<QStandardItem*> items;
+    items << m_num
+          << s_num
+          << menu_img_item
+          << m_title
+          << m_price
+          << f_cnt;
+
+    basketlist_model->appendRow(items);
+
+    ui->menu_basket_tableView->setModel(basketlist_model);
+    ui->menu_basket_tableView->setIconSize(QSize(100, 100));
+    ui->menu_basket_tableView->resizeColumnsToContents();
+    ui->menu_basket_tableView->resizeRowsToContents();
+    ui->menu_basket_tableView->hideColumn(0);
+    ui->menu_basket_tableView->hideColumn(1);
+    ui->menu_basket_tableView->verticalHeader()->setVisible(false);
+    ui->menu_basket_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    ui->menu_basket_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+
+    ui->menu_basket_tableView->show();
+}
+
+void MainWindow::shop_search()
+{
+    QString search_shop_str = ui->shopSearchText->text().trimmed();
+    if (search_shop_str.isEmpty())
+    {
+        QMessageBox::critical(this, "오류", "검색어를 입력하세요.");
+        return;
+    }
+
+    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(shoplist_model);
+    proxyModel->setFilterRegularExpression(QRegularExpression(search_shop_str));
+    proxyModel->setFilterKeyColumn(2);// 필터링할 열
+    // 필터링된 결과를 View에 출력
+    ui->searchTableView->setModel(proxyModel);
+    ui->searchTableView->setIconSize(QSize(100, 100));
+    ui->searchTableView->resizeColumnsToContents();
+    ui->searchTableView->resizeRowsToContents();
+    ui->searchTableView->hideColumn(0);
+    ui->searchTableView->verticalHeader()->setVisible(false);
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    ui->searchTableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    ui->searchTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->searchTableView->show();
+    ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
+    ui->user_mainTabWidget->setCurrentWidget(ui->shopSearchTab);
+}
+
+void MainWindow::shop_view_double_clicked(const QModelIndex &index)
+{
+    int clicked_row = index.row();
+    // 어떤 칸을 클릭해도 해당 열의 웹툰 일련번호가 리턴됨
+    clicked_shop_num = index.sibling(clicked_row, 0).data().toString();
+    clicked_shop_title = index.sibling(clicked_row, 2).data().toString();
+
+    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(menulist_model);
+
+    // QRegularExpression을 사용하여 문자열의 시작(^)과 끝($)을 고정
+    QRegularExpression exactMatch("^" + QRegularExpression::escape(clicked_shop_num) + "$");
+    proxyModel->setFilterRegularExpression(exactMatch);
+    proxyModel->setFilterKeyColumn(1); // 필터링할 열
+
+
+
+    // 필터링된 결과를 View에 출력
+    ui->menu_tableView->setModel(proxyModel);
+    ui->menu_tableView->setIconSize(QSize(100, 100));
+    ui->menu_tableView->resizeColumnsToContents();
+    ui->menu_tableView->resizeRowsToContents();
+    ui->menu_tableView->hideColumn(0);
+    ui->menu_tableView->hideColumn(1);
+    ui->menu_tableView->verticalHeader()->setVisible(false);
+    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
+
+    int row_cnt = ui->menu_tableView->model()->rowCount();
+    // 스핀박스 테이블 뷰에 집어넣는 방법!!
+
+    for (int i = 0; i < row_cnt; i++)
+    {
+        QSpinBox *menu_spin_box = new QSpinBox();
+        menu_spin_box->setRange(1, 100);
+        menu_spin_box->setValue(1);
+        ui->menu_tableView->setIndexWidget(proxyModel->index(i,6), menu_spin_box);
+    }
+
+    ui->menu_tableView->show();
+    ui->menu_shopTitle->setText(clicked_shop_title);
+    ui->mainStackedWidget->setCurrentWidget(ui->menuList_page);
+
+    basketlist_model = new QStandardItemModel();
+    basketlist_model->setColumnCount(6);
+    basketlist_model->setHorizontalHeaderLabels(QStringList()<< "메뉴번호" << "가게번호" << "이미지"<< "이름" << "가격" << "개수");
+
+}
+
+void MainWindow::menu_img_to_item(QByteArray &img_buf)
+{
+    QPixmap thumbnailPixmap;
+    thumbnailPixmap.loadFromData(img_buf);
+    QPixmap resizedPixmap = thumbnailPixmap.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    menu_img_list.append(resizedPixmap);
+}
+
+void MainWindow::create_menu_list_model(QString &menulist)
+{
+    QStringList str_list = menulist.split("\n");
+    QStandardItem *m_num, *s_num, *s_mnum, *m_title, *m_price;
+    int index = 0;
+    menulist_model = new QStandardItemModel();
+    menulist_model->setColumnCount(7);
+    menulist_model->setHorizontalHeaderLabels(QStringList()<<"메뉴번호"<< "가게번호" << "번호" << "이미지"<< "이름" << "가격" << "개수");
+
+    for (const QString &row: str_list)
+    {
+        QStringList columns = row.split("/");
+        m_num = new QStandardItem(columns[0].trimmed());
+        s_num = new QStandardItem(columns[1].trimmed());
+        s_mnum = new QStandardItem(columns[2].trimmed());
+        m_title = new QStandardItem(columns[3].trimmed());
+        m_price = new QStandardItem(columns[4].trimmed());
+
+        QStandardItem *menu_img_item = new QStandardItem();
+        menu_img_item->setIcon(QIcon(menu_img_list[index++]));
+
+        s_mnum->setTextAlignment(Qt::AlignCenter);
+        m_title->setTextAlignment(Qt::AlignCenter);
+        m_price->setTextAlignment(Qt::AlignCenter);
+
+        QList<QStandardItem*> items;
+        items << m_num
+              << s_num
+              << s_mnum
+              << menu_img_item
+              << m_title
+              << m_price;
+
+        menulist_model->appendRow(items);
+    }
 }
 
 void MainWindow::shop_img_to_item(QByteArray &img_buf)
@@ -237,60 +444,54 @@ void MainWindow::shop_img_to_item(QByteArray &img_buf)
 
 void MainWindow::create_shop_list_model(QString &shoplist)
 {
-        QStringList str_list = shoplist.split("\n");
-        QStandardItem *s_num, *s_title, *s_type, *s_state;
-        int index = 0;
-        shoplist_model = new QStandardItemModel();
-        shoplist_model->setColumnCount(5);
-        shoplist_model->setHorizontalHeaderLabels(QStringList()<<"가게번호"<< "이미지" << "가게이름" << "카테고리"<< "영업상태");
+    QStringList str_list = shoplist.split("\n");
+    QStandardItem *s_num, *s_title, *s_type, *s_state;
+    int index = 0;
+    shoplist_model = new QStandardItemModel();
+    shoplist_model->setColumnCount(5);
+    shoplist_model->setHorizontalHeaderLabels(QStringList()<<"가게번호"<< "이미지" << "가게이름" << "카테고리"<< "영업상태");
 
-        for (const QString &row: str_list)
-        {
-            QStringList columns = row.split("/");
-            s_num = new QStandardItem(columns[0].trimmed());
-            s_title = new QStandardItem(columns[1].trimmed());
-            s_type = new QStandardItem(columns[2].trimmed());
-            s_state = new QStandardItem(columns[3].trimmed());
+    for (const QString &row: str_list)
+    {
+        QStringList columns = row.split("/");
+        s_num = new QStandardItem(columns[0].trimmed());
+        s_title = new QStandardItem(columns[1].trimmed());
+        s_type = new QStandardItem(columns[2].trimmed());
+        s_state = new QStandardItem(columns[3].trimmed());
 
-            QStandardItem *shop_img_item = new QStandardItem();
-            shop_img_item->setIcon(QIcon(shop_img_list[index++]));
+        QStandardItem *shop_img_item = new QStandardItem();
+        shop_img_item->setIcon(QIcon(shop_img_list[index++]));
 
-            s_title->setTextAlignment(Qt::AlignCenter);
-            s_type->setTextAlignment(Qt::AlignCenter);
-            s_state->setTextAlignment(Qt::AlignCenter);
+        s_title->setTextAlignment(Qt::AlignCenter);
+        s_type->setTextAlignment(Qt::AlignCenter);
+        s_state->setTextAlignment(Qt::AlignCenter);
 
-            QList<QStandardItem*> items;
-            items << s_num
-                  << shop_img_item
-                  << s_title
-                  << s_type
-                  << s_state;
-            shoplist_model->appendRow(items);
+        QList<QStandardItem*> items;
+        items << s_num
+              << shop_img_item
+              << s_title
+              << s_type
+              << s_state;
+        shoplist_model->appendRow(items);
 
-        }
-        // ui->e_tableView->setModel(toonInfo_model);
-        // ui->e_tableView->setIconSize(QSize(100, 100));
-        // ui->e_tableView->resizeColumnsToContents();
-        // ui->e_tableView->resizeRowsToContents();
-        // ui->e_tableView->hideColumn(0);
-        // ui->e_tableView->show();
-        shop_img_list.clear();// 가게 이미지 리스트 초기화
+    }
+    shop_img_list.clear();// 가게 이미지 리스트 초기화
+    if (shop_search_chk)
+    {
+        shop_search();
+    }
+    else
+    {
         to_shop_list_view(clicked_food_type);
-
+    }
 }
-
-// 스핀박스 테이블 뷰에 집어넣는 방법!!
-// QSpinBox *menu_spin_box = new QSpinBox();
-// menu_spin_box->setRange(1, 100);
-// menu_spin_box->setValue(1);
-// ui->menu_tableView->setIndexWidget(shoplist_model->index(1,3), menu_spin_box);
 
 void MainWindow::to_shop_list_view(int foodType)
 {
-    // QSortFilterProxyModel을 생성하고 원본 모델과 연결
+    // QSortFilterProxyModel을 생성하고 원본 모델과 사귐
     QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(shoplist_model);
-    //음식 카테고리 항목으로 필터링
+    //음식 카테고리 항문으로 필터링
     switch (foodType)
     {
     case CHICKEN:
@@ -325,6 +526,7 @@ void MainWindow::to_shop_list_view(int foodType)
     ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
     ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    ui->shopList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->shopList_tableView->show();
     ui->mainStackedWidget->setCurrentWidget(ui->shopList_page);
 }
@@ -345,8 +547,16 @@ void MainWindow::send_delivery_func_order(int act_type, QString msg, int sender,
 
             switch (act_type)
             {
+            case LOGOUT:
+                header.prepend(QString("fileType:logout,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
             case SHOPLIST:
                 header.prepend(QString("fileType:shoplist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case MENULIST:
+                header.prepend(QString("fileType:menulist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             default:
@@ -415,6 +625,33 @@ void MainWindow::send_login_func_order(int act_type, int client_type, QString id
     }
     else
         QMessageBox::critical(this,"QTCPClient","Not connected");
+}
+
+QString MainWindow::client_type_to_string(int client_type) // 클라이언트 타입을 문자열로 바꿔주는 함수
+{
+    QString client_str;
+    switch (client_type) {
+    case USER:
+        client_str = "user";
+        break;
+    case SHOP:
+        client_str = "shop";
+        break;
+    case RIDER:
+        client_str = "rider";
+        break;
+    default:
+        break;
+    }
+    return client_str;
+}
+
+void MainWindow::on_logout_btn_clicked()
+{
+    send_delivery_func_order(LOGOUT, "", present_clnt.type, present_clnt.clnt_num);
+    QMessageBox::information(this, "알림","로그아웃 하였습니다.");
+    this->window()->hide();
+    loginWidget->show();
 }
 //============================================================================================================
 // void MainWindow::epi_view_double_clicked(const QModelIndex &index)
@@ -611,31 +848,7 @@ void MainWindow::send_login_func_order(int act_type, int client_type, QString id
 //     create_day_view();
 // }
 
-QString MainWindow::client_type_to_string(int client_type) // 클라이언트 타입을 문자열로 바꿔주는 함수
-{
-    QString client_str;
-    switch (client_type) {
-    case USER:
-        client_str = "user";
-        break;
-    case SHOP:
-        client_str = "shop";
-        break;
-    case RIDER:
-        client_str = "rider";
-        break;
-    default:
-        break;
-    }
-    return client_str;
-}
 
-void MainWindow::on_logout_btn_clicked()
-{
-    QMessageBox::information(this, "알림","로그아웃 하였습니다.");
-    this->window()->hide();
-    loginWidget->show();
-}
 
 // [ex.02.5]
 // 메시지를 보냄

@@ -39,7 +39,7 @@ private:
     QSet<QTcpSocket*> qset_connectedSKT;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
-    enum ACTTYPE {SIGNUPINFO = 0, LOGININFO, SHOPLIST};
+    enum ACTTYPE {SIGNUPINFO = 0, LOGININFO, SHOPLIST, MENULIST};
     enum CLIENTTYPE {USER = 0, SHOP, RIDER};
 
     bool initializeDataBase();
@@ -53,7 +53,7 @@ private:
     struct Client {int type; int clnt_num; QTcpSocket* clnt_socket; QString clnt_id;
                     Client(int type, int clnt_num, QTcpSocket* clnt_socket, QString clnt_id)
                     : type(type), clnt_num(clnt_num), clnt_socket(clnt_socket), clnt_id(clnt_id){}};
-    QList<Client*> clnt_list;
+    QList<Client*> login_clnt_list;
 
 signals:
     void singal_newMessage(QString);
