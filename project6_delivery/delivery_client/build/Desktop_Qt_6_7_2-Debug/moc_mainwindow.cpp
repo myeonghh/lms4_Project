@@ -59,7 +59,10 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "get_login_user_id",
     "id",
     "on_logout_btn_clicked",
-    "on_to_mainBtn_clicked"
+    "to_order_page",
+    "user_final_order",
+    "on_to_mainBtn_clicked",
+    "on_to_menu_back_btn_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -72,7 +75,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      16,   14, // methods
+      19,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -80,24 +83,27 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,  110,    2, 0x06,    1 /* Public */,
-       3,    1,  113,    2, 0x06,    3 /* Public */,
-       5,    1,  116,    2, 0x06,    5 /* Public */,
-       6,    1,  119,    2, 0x06,    7 /* Public */,
-       7,    1,  122,    2, 0x06,    9 /* Public */,
+       1,    1,  128,    2, 0x06,    1 /* Public */,
+       3,    1,  131,    2, 0x06,    3 /* Public */,
+       5,    1,  134,    2, 0x06,    5 /* Public */,
+       6,    1,  137,    2, 0x06,    7 /* Public */,
+       7,    1,  140,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    0,  125,    2, 0x08,   11 /* Private */,
-       9,    1,  126,    2, 0x08,   12 /* Private */,
-      12,    0,  129,    2, 0x08,   14 /* Private */,
-      13,    1,  130,    2, 0x08,   15 /* Private */,
-      15,    1,  133,    2, 0x08,   17 /* Private */,
-      18,    1,  136,    2, 0x08,   19 /* Private */,
-      19,    1,  139,    2, 0x08,   21 /* Private */,
-      20,    0,  142,    2, 0x08,   23 /* Private */,
-      21,    1,  143,    2, 0x08,   24 /* Private */,
-      23,    0,  146,    2, 0x08,   26 /* Private */,
-      24,    0,  147,    2, 0x08,   27 /* Private */,
+       8,    0,  143,    2, 0x08,   11 /* Private */,
+       9,    1,  144,    2, 0x08,   12 /* Private */,
+      12,    0,  147,    2, 0x08,   14 /* Private */,
+      13,    1,  148,    2, 0x08,   15 /* Private */,
+      15,    1,  151,    2, 0x08,   17 /* Private */,
+      18,    1,  154,    2, 0x08,   19 /* Private */,
+      19,    1,  157,    2, 0x08,   21 /* Private */,
+      20,    0,  160,    2, 0x08,   23 /* Private */,
+      21,    1,  161,    2, 0x08,   24 /* Private */,
+      23,    0,  164,    2, 0x08,   26 /* Private */,
+      24,    0,  165,    2, 0x08,   27 /* Private */,
+      25,    0,  166,    2, 0x08,   28 /* Private */,
+      26,    0,  167,    2, 0x08,   29 /* Private */,
+      27,    0,  168,    2, 0x08,   30 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,
@@ -116,6 +122,9 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
     QMetaType::Void, 0x80000000 | 16,   17,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,   22,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -172,7 +181,13 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         // method 'on_logout_btn_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'to_order_page'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'user_final_order'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_to_mainBtn_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_to_menu_back_btn_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -199,7 +214,10 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 12: _t->shop_search(); break;
         case 13: _t->get_login_user_id((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 14: _t->on_logout_btn_clicked(); break;
-        case 15: _t->on_to_mainBtn_clicked(); break;
+        case 15: _t->to_order_page(); break;
+        case 16: _t->user_final_order(); break;
+        case 17: _t->on_to_mainBtn_clicked(); break;
+        case 18: _t->on_to_menu_back_btn_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -272,13 +290,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 16)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 19;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 16)
+        if (_id < 19)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 19;
     }
     return _id;
 }

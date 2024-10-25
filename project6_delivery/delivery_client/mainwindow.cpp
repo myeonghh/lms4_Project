@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // [ex.02.1.1]
     // MainWindow 객체 생성과 동시에 생성자에서 서버로 연결 요청을 보내도록 실행
     m_socket = new QTcpSocket(this);
-
     m_socket->connectToHost(QHostAddress::LocalHost,8080);
     if(m_socket->waitForConnected())
     {
@@ -41,11 +40,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->cFood_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CFOOD; send_delivery_func_order(SHOPLIST);});
     connect(ui->cafe_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CAFE; send_delivery_func_order(SHOPLIST);});
     connect(ui->toshop_backBtn, &QPushButton::clicked, this, [this](){basketlist_model->clear(); send_delivery_func_order(SHOPLIST);});
+    connect(ui->to_order_btn, &QPushButton::clicked, this, &MainWindow::to_order_page);
+    connect(ui->pay_btn, &QPushButton::clicked, this, &MainWindow::user_final_order);
 
     connect(ui->shopList_tableView, &QTableView::doubleClicked, this, &MainWindow::shop_view_double_clicked);
     connect(ui->searchTableView, &QTableView::doubleClicked, this, &MainWindow::shop_view_double_clicked);
     connect(ui->menu_tableView, &QTableView::doubleClicked, this, &MainWindow::menu_view_double_clicked);
     connect(ui->menu_basket_tableView, &QTableView::doubleClicked, this, &MainWindow::basket_view_double_clicked);
+    connect(ui->order_accept_btn, &QPushButton::clicked, this, [this](){order_accept_or_deny(true);});
+    connect(ui->order_deny_btn, &QPushButton::clicked, this, [this](){order_accept_or_deny(false);});
 
     // [ex.02.1.2]
     // 연결된 socket에 read 할 데이터가 들어오면,
@@ -71,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(m_socket, &QAbstractSocket::errorOccurred,
             this,     &MainWindow::slot_displayError);
 
+
+
 }
 
 // [ex.02.2]
@@ -82,6 +87,8 @@ MainWindow::~MainWindow()
     delete ui;
     delete shoplist_model;
     delete menulist_model;
+    delete basketlist_model;
+    delete orderWaitList_model;
 }
 
 // [ex.02.3]
@@ -145,7 +152,7 @@ void MainWindow::slot_readSocket()
         QString sender = header.split(",")[1].split(":")[1];
         QString sender_num = header.split(",")[2].split(":")[1];
         QString receiver = header.split(",")[3].split(":")[1];
-        QString receiver_num = header.split(",")[4].split(":")[1];
+        QString receiver_num = header.split(";")[0].split(",")[4].split(":")[1];
 
         // buffer의 128 byte 이후 부분 buffer에 다시 담음.
         buffer = buffer.mid(128);
@@ -189,7 +196,6 @@ void MainWindow::slot_readSocket()
                 if (sender == "user") // 유저 로그인 성공
                 {
                     present_clnt.type = USER;
-
                     this->window()->show();
                     ui->title_label->setText("저기요");
                     ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
@@ -199,6 +205,7 @@ void MainWindow::slot_readSocket()
                 }
                 else if (sender == "shop") // 가게 로그인 성공
                 {
+                    create_order_wait_list_model();
                     present_clnt.type = SHOP;
                     this->window()->show();
                     ui->title_label->setText("저기요 업주");
@@ -238,7 +245,174 @@ void MainWindow::slot_readSocket()
         {
             create_menu_list_model(msg);
         }
+        else if (fileType == "userorder")
+        {
+            input_order_wait_list_model(msg, sender_num);
+        }
     }
+}
+
+void MainWindow::order_accept_or_deny(bool accept)
+{
+    QModelIndex currentIndex = ui->orderWait_tableView->selectionModel()->currentIndex();
+
+    // 선택된 행의 다른 열 값들 가져오기
+    QString full_msg = currentIndex.sibling(currentIndex.row(), 6).data().toString();
+    int u_num = currentIndex.sibling(currentIndex.row(), 0).data().toInt();
+
+    if (accept)
+    {
+        send_delivery_func_order(ORDERACCEPT, full_msg, SHOP, present_clnt.clnt_num, USER, u_num);
+    }
+    else
+    {
+        send_delivery_func_order(ORDERDENY, "", SHOP, present_clnt.clnt_num, USER, u_num);
+    }
+
+
+void MainWindow::create_order_wait_list_model()
+{
+    orderWaitList_model = new QStandardItemModel();
+    orderWaitList_model->setColumnCount(6);
+    orderWaitList_model->setHorizontalHeaderLabels(QStringList()<<"주문자번호"<<"주문자ID"<<"주문정보"<<"가격"<<"배달주소"<<"요청사항"<<"총주문정보");
+}
+
+void MainWindow::input_order_wait_list_model(QString msg, QString sender_num)
+{
+    qDebug() <<"문자열!!!! :" << msg;
+    QStringList str_list = msg.split("/");
+    QStandardItem *u_id, *o_text, *o_price, *o_address, *o_request, *u_num, *full_msg;
+
+    //total_order_str += "/" + QString::number(total_price) + "/" + address + "/" + request + "/" + present_clnt.clnt_id;
+
+    u_num = new QStandardItem(sender_num);
+    u_id = new QStandardItem(str_list[4].trimmed());
+    o_text = new QStandardItem(str_list[0].trimmed());
+    o_price = new QStandardItem(str_list[1].trimmed());
+    o_address = new QStandardItem(str_list[2].trimmed());
+    o_request = new QStandardItem(str_list[3].trimmed());
+    full_msg = new QStandardItem(msg.trimmed());
+
+    u_id->setTextAlignment(Qt::AlignCenter);
+    o_text->setTextAlignment(Qt::AlignCenter);
+    o_price->setTextAlignment(Qt::AlignCenter);
+    o_address->setTextAlignment(Qt::AlignCenter);
+    o_request->setTextAlignment(Qt::AlignCenter);
+
+    QList<QStandardItem*> items;
+    items << u_num
+          << u_id
+          << o_text
+          << o_price
+          << o_address
+          << o_request
+          << full_msg;
+
+    orderWaitList_model->appendRow(items);
+
+    ui->orderWait_tableView->setModel(orderWaitList_model);
+    ui->orderWait_tableView->hideColumn(0);
+    ui->orderWait_tableView->hideColumn(6);
+    ui->orderWait_tableView->resizeColumnsToContents();
+    ui->orderWait_tableView->resizeRowsToContents(); // 행 높이를 셀 내용에 맞게 자동 조정
+    ui->orderWait_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->orderWait_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch); // 배달주소 열
+    ui->orderWait_tableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch); // 요청사항 열
+    ui->orderWait_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->orderWait_tableView->show();
+
+}
+
+//============================================ 유저 ===============================================================================
+void MainWindow::m_view_design_setting(QTableView *view, int type)
+{
+    view->setIconSize(QSize(100, 100));
+    view->resizeColumnsToContents();
+    view->resizeRowsToContents();
+    view->hideColumn(0);
+    view->hideColumn(1);
+    view->verticalHeader()->setVisible(false);
+    view->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    if (type == TYPE1)
+        view->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    else
+        view->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
+    view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    view->show();
+}
+
+void MainWindow::s_view_design_setting(QTableView *view)
+{
+    view->setIconSize(QSize(100, 100));
+    view->resizeColumnsToContents();
+    view->resizeRowsToContents();
+    view->hideColumn(0);
+    view->verticalHeader()->setVisible(false);
+    view->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    view->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    view->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    view->show();
+}
+
+void MainWindow::user_final_order()
+{
+    QString total_order_str = "";
+    QString order_menu_str, food_name, food_cnt;
+    QString address = ui->del_address_text->text().trimmed();
+    QString request = ui->del_request_text->text().trimmed();
+    int shop_num = basketlist_model->item(0, 1)->data(Qt::DisplayRole).toInt();
+
+    if (address.isEmpty())
+    {
+        QMessageBox::critical(this, "오류", "주소를 입력하세요");
+        return;
+    }
+    // items << m_num
+    //       << s_num
+    //       << menu_img_item
+    //       << m_title
+    //       << m_price
+    //       << f_cnt;
+
+    int rowCount = basketlist_model->rowCount();
+    for (int row = 0; row < rowCount; row++)
+    {
+        food_name = basketlist_model->item(row, 3)->data(Qt::DisplayRole).toString();
+        food_cnt = basketlist_model->item(row, 5)->data(Qt::DisplayRole).toString();
+        order_menu_str = QString("%1 %2개\n").arg(food_name, food_cnt);
+        total_order_str += order_menu_str;
+    }
+    total_order_str += "/" + QString::number(total_price) + "/" + address + "/" + request + "/" + present_clnt.clnt_id;
+
+    send_delivery_func_order(USERORDER, total_order_str, USER, present_clnt.clnt_num, SHOP, shop_num);
+    QMessageBox::information(this, "정보", "주문이 접수되었습니다.");
+    ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
+}
+
+void MainWindow::to_order_page()
+{
+    if (basketlist_model->rowCount() == 0)
+    {
+        QMessageBox::critical(this, "오류", "주문 할 메뉴를 선택하세요");
+        return;
+    }
+
+    total_price = 0;
+    ui->pay_tableView->setModel(basketlist_model);
+    m_view_design_setting(ui->pay_tableView, TYPE1);
+    ui->menu_shopTitle2->setText(clicked_shop_title);
+    ui->mainStackedWidget->setCurrentWidget(ui->pay_page);
+
+    int rowCount = basketlist_model->rowCount();
+    for (int row = 0; row < rowCount; row++)
+    {
+        int price = basketlist_model->item(row, 4)->data(Qt::DisplayRole).toInt();
+        int fcnt = basketlist_model->item(row, 5)->data(Qt::DisplayRole).toInt();
+
+        total_price += price * fcnt;
+    }
+    ui->menu_price_label->setText(QString("%1 원").arg(total_price));
 }
 
 void MainWindow::category_img_to_item(QByteArray &img_buf)
@@ -266,6 +440,7 @@ void MainWindow::create_food_category()
         button->setStyleSheet("");
         button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     }
+    category_btn_list.clear();
 }
 
 void MainWindow::get_login_user_id(QString id)
@@ -330,17 +505,8 @@ void MainWindow::menu_view_double_clicked(const QModelIndex &index)
           << f_cnt;
 
     basketlist_model->appendRow(items);
-
     ui->menu_basket_tableView->setModel(basketlist_model);
-    ui->menu_basket_tableView->setIconSize(QSize(100, 100));
-    ui->menu_basket_tableView->resizeColumnsToContents();
-    ui->menu_basket_tableView->resizeRowsToContents();
-    ui->menu_basket_tableView->hideColumn(0);
-    ui->menu_basket_tableView->hideColumn(1);
-    ui->menu_basket_tableView->verticalHeader()->setVisible(false);
-    ui->menu_basket_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
-    ui->menu_basket_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
-    ui->menu_basket_tableView->show();
+    m_view_design_setting(ui->menu_basket_tableView, TYPE1);
 }
 
 void MainWindow::shop_search()
@@ -358,16 +524,7 @@ void MainWindow::shop_search()
     proxyModel->setFilterKeyColumn(2);// 필터링할 열
     // 필터링된 결과를 View에 출력
     ui->searchTableView->setModel(proxyModel);
-    ui->searchTableView->setIconSize(QSize(100, 100));
-    ui->searchTableView->resizeColumnsToContents();
-    ui->searchTableView->resizeRowsToContents();
-    ui->searchTableView->hideColumn(0);
-    ui->searchTableView->verticalHeader()->setVisible(false);
-    ui->searchTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
-    ui->searchTableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
-    ui->searchTableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
-    ui->searchTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->searchTableView->show();
+    s_view_design_setting(ui->searchTableView);
     ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
     ui->user_mainTabWidget->setCurrentWidget(ui->shopSearchTab);
 }
@@ -389,9 +546,6 @@ void MainWindow::shop_view_double_clicked(const QModelIndex &index)
 
     // 필터링된 결과를 View에 출력
     ui->menu_tableView->setModel(proxyModel);
-    ui->menu_tableView->setIconSize(QSize(100, 100));
-
-
 
     int row_cnt = ui->menu_tableView->model()->rowCount();
     // 스핀박스 테이블 뷰에 집어넣기
@@ -402,15 +556,7 @@ void MainWindow::shop_view_double_clicked(const QModelIndex &index)
         menu_spin_box->setValue(1);
         ui->menu_tableView->setIndexWidget(proxyModel->index(i,6), menu_spin_box);
     }
-    ui->menu_tableView->resizeColumnsToContents();
-    ui->menu_tableView->resizeRowsToContents();
-    ui->menu_tableView->hideColumn(0);
-    ui->menu_tableView->hideColumn(1);
-    ui->menu_tableView->verticalHeader()->setVisible(false);
-    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
-    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
-
-    ui->menu_tableView->show();
+    m_view_design_setting(ui->menu_tableView, TYPE2);
     ui->menu_shopTitle->setText(clicked_shop_title);
     ui->mainStackedWidget->setCurrentWidget(ui->menuList_page);
 
@@ -549,16 +695,7 @@ void MainWindow::to_shop_list_view(int foodType)
     proxyModel->setFilterKeyColumn(3);// 필터링할 열
     // 필터링된 결과를 View에 출력
     ui->shopList_tableView->setModel(proxyModel);
-    ui->shopList_tableView->setIconSize(QSize(100, 100));
-    ui->shopList_tableView->resizeColumnsToContents();
-    ui->shopList_tableView->resizeRowsToContents();
-    ui->shopList_tableView->hideColumn(0);
-    ui->shopList_tableView->verticalHeader()->setVisible(false);
-    ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
-    ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
-    ui->shopList_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
-    ui->shopList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->shopList_tableView->show();
+    s_view_design_setting(ui->shopList_tableView);
     ui->mainStackedWidget->setCurrentWidget(ui->shopList_page);
 }
 
@@ -592,6 +729,10 @@ void MainWindow::send_delivery_func_order(int act_type, QString msg, int sender,
                 break;
             case MENULIST:
                 header.prepend(QString("fileType:menulist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case USERORDER:
+                header.prepend(QString("fileType:userorder,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             default:
@@ -693,6 +834,12 @@ void MainWindow::on_to_mainBtn_clicked()
 {
     ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
 }
+
+void MainWindow::on_to_menu_back_btn_clicked()
+{
+    ui->mainStackedWidget->setCurrentWidget(ui->menuList_page);
+}
+
 //============================================================================================================
 // void MainWindow::epi_view_double_clicked(const QModelIndex &index)
 // {
@@ -992,13 +1139,3 @@ void MainWindow::on_to_mainBtn_clicked()
 //     }
 //     imgLabel_list.clear(); // 리스트 요소 클리어
 // }
-
-
-
-
-
-
-
-
-
-

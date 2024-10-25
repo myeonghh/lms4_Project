@@ -39,7 +39,7 @@ private:
     QSet<QTcpSocket*> qset_connectedSKT;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
-    enum ACTTYPE {SIGNUPINFO = 0, LOGININFO, SHOPLIST, MENULIST};
+    enum ACTTYPE {SIGNUPINFO = 0, LOGININFO, SHOPLIST, MENULIST, USERORDER};
     enum CLIENTTYPE {USER = 0, SHOP, RIDER};
 
     bool initializeDataBase();

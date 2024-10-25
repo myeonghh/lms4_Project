@@ -74,7 +74,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::initializeDataBase() // DB 연결 함수
 {
-    m_db = QSqlDatabase::addDatabase("QODBC");
+    m_db = QSqlDatabase::addDatabase("QMYSQL");
     m_db.setHostName("127.0.0.1");
     m_db.setDatabaseName("delivery");
     m_db.setUserName("root");
@@ -254,7 +254,7 @@ void MainWindow::slot_readSocket()
         QString sender = header.split(",")[1].split(":")[1];
         QString sender_num = header.split(",")[2].split(":")[1];
         QString receiver = header.split(",")[3].split(":")[1];
-        QString receiver_num = header.split(",")[4].split(":")[1];
+        QString receiver_num = header.split(";")[0].split(",")[4].split(":")[1];
 
         // 나머지 데이터는 실제 전송된 파일 또는 메시지 데이터
         // 128바이트 이후부터는 실제 파일 혹은 메시지이므로 buffer에서 그 부분만 남김.
@@ -475,8 +475,6 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "category")
         {
-            QStringList imagePaths;
-
             qry.prepare("SELECT c_img FROM category");
             if (qry.exec())
             {
@@ -600,6 +598,23 @@ void MainWindow::slot_readSocket()
             else
             {
                 qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "userorder")
+        {
+            qDebug() << header;
+            qDebug() << msg;
+            qDebug() << "여기야1";
+            foreach (Client * client, login_clnt_list)
+            {
+                qDebug() <<"타입: "<<client->type<<"번호: "<< client->clnt_num<<"소켓: " << client->clnt_socket<<"\n";
+                qDebug() << "여기야2";
+                qDebug() << "리시버 번호:" << receiver_num;
+                if (client->type == SHOP && client->clnt_num == receiver_num.toInt())
+                {
+                    qDebug() << "여기야3";
+                    sendMessage(client->clnt_socket, USERORDER, msg, USER, sender_num.toInt());
+                }
             }
         }
     }
@@ -830,6 +845,10 @@ void MainWindow::sendMessage(QTcpSocket* socket, int act_type, QString msg, int 
                 break;
             case MENULIST:
                 header.prepend(QString("fileType:menulist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case USERORDER:
+                header.prepend(QString("fileType:userorder,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             default:

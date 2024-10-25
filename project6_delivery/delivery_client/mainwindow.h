@@ -36,9 +36,10 @@ public:
 
 private:
     enum LOGINACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
-    enum DELIVERYACT {LOGOUT = 0, CATEGORY, SHOPLIST, MENULIST};
+    enum DELIVERYACT {LOGOUT = 0, CATEGORY, SHOPLIST, MENULIST, USERORDER, ORDERDENY, ORDERACCEPT};
     enum CLIENT {USER= 0, SHOP, RIDER};
     enum FOOD {CHICKEN = 0, PIZZA, KFOOD, JFOOD, CFOOD, CAFE};
+    enum VIEWTYPE {TYPE1 = 0, TYPE2};
     Ui::MainWindow *ui;
     Login *loginWidget;
     QTcpSocket *m_socket;
@@ -47,6 +48,7 @@ private:
     QStandardItemModel *menulist_model;
     QStandardItemModel *basketlist_model;
     QSortFilterProxyModel *proxyModel;
+    QStandardItemModel *orderWaitList_model;
 
     QString clicked_shop_num;
     QString clicked_shop_title;
@@ -55,7 +57,6 @@ private:
     QList<QPixmap> menu_img_list;
     QList<QPixmap> category_img_list;
     int rowIndex = 0;
-
     void send_login_func_order(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "");
     void send_delivery_func_order(int act_type, QString msg = "", int sender = 0, int senderNum = 0, int receiver = 0, int receiverNum = 0);
     QString client_type_to_string(int client_type);
@@ -65,11 +66,16 @@ private:
     void create_shop_list_model(QString &shopList);
     void create_menu_list_model(QString &menulist);
     void create_food_category();
-
+    void m_view_design_setting(QTableView *view, int type);
+    void s_view_design_setting(QTableView *view);
     struct PresentClnt {int type; int clnt_num; QString clnt_id;};
     PresentClnt present_clnt;
     int clicked_food_type;
     bool shop_search_chk = false;
+    int total_price;
+
+    void create_order_wait_list_model();
+    void input_order_wait_list_model(QString msg, QString sender_num);
 
 signals:
     void signal_newMessage(QString);
@@ -89,6 +95,9 @@ private slots:
     void shop_search();
     void get_login_user_id(QString id);
     void on_logout_btn_clicked();
+    void to_order_page();
+    void user_final_order();
+    void order_accept_or_deny(bool accept);
 
 
     // void create_toonInfo_model(QString &toonlist);
@@ -102,6 +111,7 @@ private slots:
     // void like_control();
 
     void on_to_mainBtn_clicked();
+    void on_to_menu_back_btn_clicked();
 };
 
 #endif // MAINWINDOW_H
