@@ -59,7 +59,7 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "get_login_user_id",
     "id",
     "on_logout_btn_clicked",
-    "on_pushButton_clicked"
+    "on_to_mainBtn_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -172,7 +172,7 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         // method 'on_logout_btn_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_pushButton_clicked'
+        // method 'on_to_mainBtn_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -199,7 +199,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 12: _t->shop_search(); break;
         case 13: _t->get_login_user_id((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 14: _t->on_logout_btn_clicked(); break;
-        case 15: _t->on_pushButton_clicked(); break;
+        case 15: _t->on_to_mainBtn_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {

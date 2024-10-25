@@ -19,6 +19,7 @@
 #include <QIcon>
 #include <QSpinBox>
 #include "login.h"
+#include "qtoolbutton.h"
 
 namespace Ui {
 class MainWindow;
@@ -35,7 +36,7 @@ public:
 
 private:
     enum LOGINACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
-    enum DELIVERYACT {LOGOUT = 0, SHOPLIST, MENULIST};
+    enum DELIVERYACT {LOGOUT = 0, CATEGORY, SHOPLIST, MENULIST};
     enum CLIENT {USER= 0, SHOP, RIDER};
     enum FOOD {CHICKEN = 0, PIZZA, KFOOD, JFOOD, CFOOD, CAFE};
     Ui::MainWindow *ui;
@@ -49,8 +50,10 @@ private:
 
     QString clicked_shop_num;
     QString clicked_shop_title;
+    QList<QToolButton*> category_btn_list;
     QList<QPixmap> shop_img_list;
     QList<QPixmap> menu_img_list;
+    QList<QPixmap> category_img_list;
     int rowIndex = 0;
 
     void send_login_func_order(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "");
@@ -58,8 +61,10 @@ private:
     QString client_type_to_string(int client_type);
     void shop_img_to_item(QByteArray &img_buf);
     void menu_img_to_item(QByteArray &img_buf);
+    void category_img_to_item(QByteArray &img_buf);
     void create_shop_list_model(QString &shopList);
     void create_menu_list_model(QString &menulist);
+    void create_food_category();
 
     struct PresentClnt {int type; int clnt_num; QString clnt_id;};
     PresentClnt present_clnt;
@@ -82,7 +87,8 @@ private slots:
     void menu_view_double_clicked(const QModelIndex &index);
     void basket_view_double_clicked(const QModelIndex &index);
     void shop_search();
-
+    void get_login_user_id(QString id);
+    void on_logout_btn_clicked();
 
 
     // void create_toonInfo_model(QString &toonlist);
@@ -94,9 +100,8 @@ private slots:
     // void on_backList_btn_clicked();
     // void bookmark_control();
     // void like_control();
-    void get_login_user_id(QString id);
-    void on_logout_btn_clicked();
-    void on_pushButton_clicked();
+
+    void on_to_mainBtn_clicked();
 };
 
 #endif // MAINWINDOW_H

@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // loginWidget 객체 생성!!!
     loginWidget = new Login();
     loginWidget->show();
-
+    send_delivery_func_order(CATEGORY);
     connect(loginWidget, &Login::user_info_signal, this, &MainWindow::send_login_func_order); // 회원가입 정보 전송 connect
     connect(loginWidget, &Login::login_success_signal, this, &MainWindow::get_login_user_id);
 
@@ -34,13 +34,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::login_info_signal, loginWidget, &Login::login_operate);
 
     connect(ui->shopSearchButton, &QPushButton::clicked, this, [this](){shop_search_chk = true; send_delivery_func_order(SHOPLIST);});
-    connect(ui->chicken_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CHICKEN; send_delivery_func_order(SHOPLIST);});
-    connect(ui->pizza_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = PIZZA; send_delivery_func_order(SHOPLIST);});
-    connect(ui->kFood_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = KFOOD; send_delivery_func_order(SHOPLIST);});
-    connect(ui->jFood_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = JFOOD; send_delivery_func_order(SHOPLIST);});
-    connect(ui->cFood_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CFOOD; send_delivery_func_order(SHOPLIST);});
-    connect(ui->cafe_btn, &QPushButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CAFE; send_delivery_func_order(SHOPLIST);});
-    connect(ui->toshop_backBtn, &QPushButton::clicked, this, [this](){send_delivery_func_order(SHOPLIST);});
+    connect(ui->chicken_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CHICKEN; send_delivery_func_order(SHOPLIST);});
+    connect(ui->pizza_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = PIZZA; send_delivery_func_order(SHOPLIST);});
+    connect(ui->kFood_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = KFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->jFood_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = JFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->cFood_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CFOOD; send_delivery_func_order(SHOPLIST);});
+    connect(ui->cafe_btn, &QToolButton::clicked, this, [this](){shop_search_chk = false; clicked_food_type = CAFE; send_delivery_func_order(SHOPLIST);});
+    connect(ui->toshop_backBtn, &QPushButton::clicked, this, [this](){basketlist_model->clear(); send_delivery_func_order(SHOPLIST);});
 
     connect(ui->shopList_tableView, &QTableView::doubleClicked, this, &MainWindow::shop_view_double_clicked);
     connect(ui->searchTableView, &QTableView::doubleClicked, this, &MainWindow::shop_view_double_clicked);
@@ -189,10 +189,12 @@ void MainWindow::slot_readSocket()
                 if (sender == "user") // 유저 로그인 성공
                 {
                     present_clnt.type = USER;
+
                     this->window()->show();
                     ui->title_label->setText("저기요");
                     ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
                     ui->user_mainTabWidget->setCurrentWidget(ui->foodCategoryTab);
+                    create_food_category();
                     send_delivery_func_order(MENULIST);
                 }
                 else if (sender == "shop") // 가게 로그인 성공
@@ -216,6 +218,10 @@ void MainWindow::slot_readSocket()
                 emit login_info_signal("login fail");
             }
         }
+        else if (fileType == "categoryImg")
+        {
+            category_img_to_item(buffer);
+        }
         else if (fileType == "shopImg")
         {
             shop_img_to_item(buffer);
@@ -232,6 +238,33 @@ void MainWindow::slot_readSocket()
         {
             create_menu_list_model(msg);
         }
+    }
+}
+
+void MainWindow::category_img_to_item(QByteArray &img_buf)
+{
+    QPixmap thumbnailPixmap;
+    thumbnailPixmap.loadFromData(img_buf);
+    QPixmap resizedPixmap = thumbnailPixmap.scaled(220, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    category_img_list.append(resizedPixmap);
+}
+
+void MainWindow::create_food_category()
+{
+    category_btn_list.append(ui->chicken_btn);
+    category_btn_list.append(ui->pizza_btn);
+    category_btn_list.append(ui->kFood_btn);
+    category_btn_list.append(ui->jFood_btn);
+    category_btn_list.append(ui->cFood_btn);
+    category_btn_list.append(ui->cafe_btn);
+    int index = 0;
+
+    foreach (QToolButton *button, category_btn_list)
+    {
+        button->setIcon(QIcon(category_img_list[index++]));
+        button->setIconSize(QSize(220, 180));
+        button->setStyleSheet("");
+        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     }
 }
 
@@ -307,7 +340,6 @@ void MainWindow::menu_view_double_clicked(const QModelIndex &index)
     ui->menu_basket_tableView->verticalHeader()->setVisible(false);
     ui->menu_basket_tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     ui->menu_basket_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
-
     ui->menu_basket_tableView->show();
 }
 
@@ -355,22 +387,14 @@ void MainWindow::shop_view_double_clicked(const QModelIndex &index)
     proxyModel->setFilterRegularExpression(exactMatch);
     proxyModel->setFilterKeyColumn(1); // 필터링할 열
 
-
-
     // 필터링된 결과를 View에 출력
     ui->menu_tableView->setModel(proxyModel);
     ui->menu_tableView->setIconSize(QSize(100, 100));
-    ui->menu_tableView->resizeColumnsToContents();
-    ui->menu_tableView->resizeRowsToContents();
-    ui->menu_tableView->hideColumn(0);
-    ui->menu_tableView->hideColumn(1);
-    ui->menu_tableView->verticalHeader()->setVisible(false);
-    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
-    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
+
+
 
     int row_cnt = ui->menu_tableView->model()->rowCount();
-    // 스핀박스 테이블 뷰에 집어넣는 방법!!
-
+    // 스핀박스 테이블 뷰에 집어넣기
     for (int i = 0; i < row_cnt; i++)
     {
         QSpinBox *menu_spin_box = new QSpinBox();
@@ -378,6 +402,13 @@ void MainWindow::shop_view_double_clicked(const QModelIndex &index)
         menu_spin_box->setValue(1);
         ui->menu_tableView->setIndexWidget(proxyModel->index(i,6), menu_spin_box);
     }
+    ui->menu_tableView->resizeColumnsToContents();
+    ui->menu_tableView->resizeRowsToContents();
+    ui->menu_tableView->hideColumn(0);
+    ui->menu_tableView->hideColumn(1);
+    ui->menu_tableView->verticalHeader()->setVisible(false);
+    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
+    ui->menu_tableView->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
 
     ui->menu_tableView->show();
     ui->menu_shopTitle->setText(clicked_shop_title);
@@ -551,6 +582,10 @@ void MainWindow::send_delivery_func_order(int act_type, QString msg, int sender,
                 header.prepend(QString("fileType:logout,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
                 break;
+            case CATEGORY:
+                header.prepend(QString("fileType:category,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                break;
             case SHOPLIST:
                 header.prepend(QString("fileType:shoplist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
                                    .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
@@ -652,6 +687,11 @@ void MainWindow::on_logout_btn_clicked()
     QMessageBox::information(this, "알림","로그아웃 하였습니다.");
     this->window()->hide();
     loginWidget->show();
+}
+
+void MainWindow::on_to_mainBtn_clicked()
+{
+    ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
 }
 //============================================================================================================
 // void MainWindow::epi_view_double_clicked(const QModelIndex &index)
@@ -957,8 +997,8 @@ void MainWindow::on_logout_btn_clicked()
 
 
 
-void MainWindow::on_pushButton_clicked()
-{
-    ui->mainStackedWidget->setCurrentWidget(ui->user_main_page);
-}
+
+
+
+
 

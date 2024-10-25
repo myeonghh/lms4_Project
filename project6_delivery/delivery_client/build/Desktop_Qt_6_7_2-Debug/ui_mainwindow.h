@@ -26,6 +26,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QToolButton>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -47,24 +48,24 @@ public:
     QTabWidget *user_mainTabWidget;
     QWidget *foodCategoryTab;
     QGridLayout *gridLayout_4;
-    QFrame *frame_6;
-    QGridLayout *gridLayout_9;
-    QPushButton *chicken_btn;
-    QFrame *frame_7;
-    QGridLayout *gridLayout_10;
-    QPushButton *pizza_btn;
-    QFrame *frame_8;
-    QGridLayout *gridLayout_11;
-    QPushButton *kFood_btn;
     QFrame *frame_9;
     QGridLayout *gridLayout_12;
-    QPushButton *jFood_btn;
+    QToolButton *jFood_btn;
     QFrame *frame_10;
     QGridLayout *gridLayout_13;
-    QPushButton *cFood_btn;
+    QToolButton *cFood_btn;
+    QFrame *frame_8;
+    QGridLayout *gridLayout_11;
+    QToolButton *kFood_btn;
+    QFrame *frame_7;
+    QGridLayout *gridLayout_10;
+    QToolButton *pizza_btn;
     QFrame *frame_11;
     QGridLayout *gridLayout_14;
-    QPushButton *cafe_btn;
+    QToolButton *cafe_btn;
+    QFrame *frame_6;
+    QGridLayout *gridLayout_9;
+    QToolButton *chicken_btn;
     QWidget *shopSearchTab;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
@@ -85,7 +86,7 @@ public:
     QFrame *frame_12;
     QHBoxLayout *horizontalLayout_4;
     QSpacerItem *horizontalSpacer_5;
-    QPushButton *pushButton;
+    QPushButton *to_mainBtn;
     QSpacerItem *horizontalSpacer_6;
     QWidget *menuList_page;
     QVBoxLayout *verticalLayout_3;
@@ -104,6 +105,26 @@ public:
     QSpacerItem *horizontalSpacer_2;
     QSpacerItem *horizontalSpacer_3;
     QPushButton *oder_btn;
+    QWidget *page;
+    QGridLayout *gridLayout_17;
+    QFrame *frame_14;
+    QVBoxLayout *verticalLayout_7;
+    QLabel *menu_shopTitle2;
+    QTableView *tableView_2;
+    QFrame *frame_15;
+    QGridLayout *gridLayout_18;
+    QSpacerItem *horizontalSpacer_9;
+    QLineEdit *lineEdit;
+    QLineEdit *lineEdit_2;
+    QLabel *label_6;
+    QLabel *label_5;
+    QSpacerItem *horizontalSpacer_10;
+    QFrame *frame_16;
+    QHBoxLayout *horizontalLayout_5;
+    QSpacerItem *horizontalSpacer_7;
+    QPushButton *pushButton_2;
+    QPushButton *pushButton_3;
+    QSpacerItem *horizontalSpacer_8;
     QWidget *shop_main_page;
     QVBoxLayout *verticalLayout_2;
     QTabWidget *shopTabWidget;
@@ -218,54 +239,6 @@ public:
         gridLayout_4->setSpacing(6);
         gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName("gridLayout_4");
-        frame_6 = new QFrame(foodCategoryTab);
-        frame_6->setObjectName("frame_6");
-        frame_6->setFrameShape(QFrame::Shape::StyledPanel);
-        frame_6->setFrameShadow(QFrame::Shadow::Raised);
-        gridLayout_9 = new QGridLayout(frame_6);
-        gridLayout_9->setSpacing(6);
-        gridLayout_9->setContentsMargins(11, 11, 11, 11);
-        gridLayout_9->setObjectName("gridLayout_9");
-        chicken_btn = new QPushButton(frame_6);
-        chicken_btn->setObjectName("chicken_btn");
-
-        gridLayout_9->addWidget(chicken_btn, 0, 0, 1, 1);
-
-
-        gridLayout_4->addWidget(frame_6, 0, 0, 1, 1);
-
-        frame_7 = new QFrame(foodCategoryTab);
-        frame_7->setObjectName("frame_7");
-        frame_7->setFrameShape(QFrame::Shape::StyledPanel);
-        frame_7->setFrameShadow(QFrame::Shadow::Raised);
-        gridLayout_10 = new QGridLayout(frame_7);
-        gridLayout_10->setSpacing(6);
-        gridLayout_10->setContentsMargins(11, 11, 11, 11);
-        gridLayout_10->setObjectName("gridLayout_10");
-        pizza_btn = new QPushButton(frame_7);
-        pizza_btn->setObjectName("pizza_btn");
-
-        gridLayout_10->addWidget(pizza_btn, 0, 0, 1, 1);
-
-
-        gridLayout_4->addWidget(frame_7, 0, 1, 1, 1);
-
-        frame_8 = new QFrame(foodCategoryTab);
-        frame_8->setObjectName("frame_8");
-        frame_8->setFrameShape(QFrame::Shape::StyledPanel);
-        frame_8->setFrameShadow(QFrame::Shadow::Raised);
-        gridLayout_11 = new QGridLayout(frame_8);
-        gridLayout_11->setSpacing(6);
-        gridLayout_11->setContentsMargins(11, 11, 11, 11);
-        gridLayout_11->setObjectName("gridLayout_11");
-        kFood_btn = new QPushButton(frame_8);
-        kFood_btn->setObjectName("kFood_btn");
-
-        gridLayout_11->addWidget(kFood_btn, 0, 0, 1, 1);
-
-
-        gridLayout_4->addWidget(frame_8, 0, 2, 1, 1);
-
         frame_9 = new QFrame(foodCategoryTab);
         frame_9->setObjectName("frame_9");
         frame_9->setFrameShape(QFrame::Shape::StyledPanel);
@@ -274,8 +247,12 @@ public:
         gridLayout_12->setSpacing(6);
         gridLayout_12->setContentsMargins(11, 11, 11, 11);
         gridLayout_12->setObjectName("gridLayout_12");
-        jFood_btn = new QPushButton(frame_9);
+        jFood_btn = new QToolButton(frame_9);
         jFood_btn->setObjectName("jFood_btn");
+        QFont font1;
+        font1.setPointSize(12);
+        font1.setBold(true);
+        jFood_btn->setFont(font1);
 
         gridLayout_12->addWidget(jFood_btn, 0, 0, 1, 1);
 
@@ -290,13 +267,48 @@ public:
         gridLayout_13->setSpacing(6);
         gridLayout_13->setContentsMargins(11, 11, 11, 11);
         gridLayout_13->setObjectName("gridLayout_13");
-        cFood_btn = new QPushButton(frame_10);
+        cFood_btn = new QToolButton(frame_10);
         cFood_btn->setObjectName("cFood_btn");
+        cFood_btn->setFont(font1);
 
         gridLayout_13->addWidget(cFood_btn, 0, 0, 1, 1);
 
 
         gridLayout_4->addWidget(frame_10, 1, 1, 1, 1);
+
+        frame_8 = new QFrame(foodCategoryTab);
+        frame_8->setObjectName("frame_8");
+        frame_8->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_8->setFrameShadow(QFrame::Shadow::Raised);
+        gridLayout_11 = new QGridLayout(frame_8);
+        gridLayout_11->setSpacing(6);
+        gridLayout_11->setContentsMargins(11, 11, 11, 11);
+        gridLayout_11->setObjectName("gridLayout_11");
+        kFood_btn = new QToolButton(frame_8);
+        kFood_btn->setObjectName("kFood_btn");
+        kFood_btn->setFont(font1);
+
+        gridLayout_11->addWidget(kFood_btn, 0, 0, 1, 1);
+
+
+        gridLayout_4->addWidget(frame_8, 0, 2, 1, 1);
+
+        frame_7 = new QFrame(foodCategoryTab);
+        frame_7->setObjectName("frame_7");
+        frame_7->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_7->setFrameShadow(QFrame::Shadow::Raised);
+        gridLayout_10 = new QGridLayout(frame_7);
+        gridLayout_10->setSpacing(6);
+        gridLayout_10->setContentsMargins(11, 11, 11, 11);
+        gridLayout_10->setObjectName("gridLayout_10");
+        pizza_btn = new QToolButton(frame_7);
+        pizza_btn->setObjectName("pizza_btn");
+        pizza_btn->setFont(font1);
+
+        gridLayout_10->addWidget(pizza_btn, 0, 0, 1, 1);
+
+
+        gridLayout_4->addWidget(frame_7, 0, 1, 1, 1);
 
         frame_11 = new QFrame(foodCategoryTab);
         frame_11->setObjectName("frame_11");
@@ -306,13 +318,37 @@ public:
         gridLayout_14->setSpacing(6);
         gridLayout_14->setContentsMargins(11, 11, 11, 11);
         gridLayout_14->setObjectName("gridLayout_14");
-        cafe_btn = new QPushButton(frame_11);
+        cafe_btn = new QToolButton(frame_11);
         cafe_btn->setObjectName("cafe_btn");
+        cafe_btn->setFont(font1);
 
         gridLayout_14->addWidget(cafe_btn, 0, 0, 1, 1);
 
 
         gridLayout_4->addWidget(frame_11, 1, 2, 1, 1);
+
+        frame_6 = new QFrame(foodCategoryTab);
+        frame_6->setObjectName("frame_6");
+        frame_6->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_6->setFrameShadow(QFrame::Shadow::Raised);
+        gridLayout_9 = new QGridLayout(frame_6);
+        gridLayout_9->setSpacing(6);
+        gridLayout_9->setContentsMargins(11, 11, 11, 11);
+        gridLayout_9->setObjectName("gridLayout_9");
+        chicken_btn = new QToolButton(frame_6);
+        chicken_btn->setObjectName("chicken_btn");
+        QFont font2;
+        font2.setFamilies({QString::fromUtf8("\353\247\221\354\235\200 \352\263\240\353\224\225")});
+        font2.setPointSize(12);
+        font2.setBold(true);
+        font2.setItalic(false);
+        font2.setStrikeOut(false);
+        chicken_btn->setFont(font2);
+
+        gridLayout_9->addWidget(chicken_btn, 0, 0, 1, 1);
+
+
+        gridLayout_4->addWidget(frame_6, 0, 0, 1, 1);
 
         user_mainTabWidget->addTab(foodCategoryTab, QString());
         shopSearchTab = new QWidget();
@@ -326,9 +362,6 @@ public:
         horizontalLayout->setObjectName("horizontalLayout");
         label_2 = new QLabel(shopSearchTab);
         label_2->setObjectName("label_2");
-        QFont font1;
-        font1.setPointSize(12);
-        font1.setBold(true);
         label_2->setFont(font1);
 
         horizontalLayout->addWidget(label_2);
@@ -412,15 +445,15 @@ public:
 
         horizontalLayout_4->addItem(horizontalSpacer_5);
 
-        pushButton = new QPushButton(frame_12);
-        pushButton->setObjectName("pushButton");
-        pushButton->setMinimumSize(QSize(200, 0));
-        pushButton->setSizeIncrement(QSize(0, 0));
-        QFont font2;
-        font2.setPointSize(13);
-        pushButton->setFont(font2);
+        to_mainBtn = new QPushButton(frame_12);
+        to_mainBtn->setObjectName("to_mainBtn");
+        to_mainBtn->setMinimumSize(QSize(200, 0));
+        to_mainBtn->setSizeIncrement(QSize(0, 0));
+        QFont font3;
+        font3.setPointSize(13);
+        to_mainBtn->setFont(font3);
 
-        horizontalLayout_4->addWidget(pushButton);
+        horizontalLayout_4->addWidget(to_mainBtn);
 
         horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
@@ -446,10 +479,10 @@ public:
         verticalLayout_5->setObjectName("verticalLayout_5");
         menu_shopTitle = new QLabel(frame);
         menu_shopTitle->setObjectName("menu_shopTitle");
-        QFont font3;
-        font3.setPointSize(15);
-        font3.setBold(true);
-        menu_shopTitle->setFont(font3);
+        QFont font4;
+        font4.setPointSize(15);
+        font4.setBold(true);
+        menu_shopTitle->setFont(font4);
         menu_shopTitle->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         verticalLayout_5->addWidget(menu_shopTitle);
@@ -476,11 +509,11 @@ public:
 
         label_3 = new QLabel(frame_13);
         label_3->setObjectName("label_3");
-        QFont font4;
-        font4.setPointSize(12);
-        font4.setBold(true);
-        font4.setItalic(false);
-        label_3->setFont(font4);
+        QFont font5;
+        font5.setPointSize(12);
+        font5.setBold(true);
+        font5.setItalic(false);
+        label_3->setFont(font5);
 
         gridLayout_16->addWidget(label_3, 0, 1, 1, 1);
 
@@ -507,9 +540,9 @@ public:
         toshop_backBtn = new QPushButton(frame_2);
         toshop_backBtn->setObjectName("toshop_backBtn");
         toshop_backBtn->setMinimumSize(QSize(120, 0));
-        QFont font5;
-        font5.setPointSize(12);
-        toshop_backBtn->setFont(font5);
+        QFont font6;
+        font6.setPointSize(12);
+        toshop_backBtn->setFont(font6);
 
         gridLayout_15->addWidget(toshop_backBtn, 0, 1, 1, 1);
 
@@ -524,7 +557,7 @@ public:
         oder_btn = new QPushButton(frame_2);
         oder_btn->setObjectName("oder_btn");
         oder_btn->setMinimumSize(QSize(120, 0));
-        oder_btn->setFont(font5);
+        oder_btn->setFont(font6);
 
         gridLayout_15->addWidget(oder_btn, 0, 2, 1, 1);
 
@@ -532,6 +565,112 @@ public:
         verticalLayout_3->addWidget(frame_2);
 
         mainStackedWidget->addWidget(menuList_page);
+        page = new QWidget();
+        page->setObjectName("page");
+        gridLayout_17 = new QGridLayout(page);
+        gridLayout_17->setSpacing(6);
+        gridLayout_17->setContentsMargins(11, 11, 11, 11);
+        gridLayout_17->setObjectName("gridLayout_17");
+        frame_14 = new QFrame(page);
+        frame_14->setObjectName("frame_14");
+        frame_14->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_14->setFrameShadow(QFrame::Shadow::Raised);
+        verticalLayout_7 = new QVBoxLayout(frame_14);
+        verticalLayout_7->setSpacing(6);
+        verticalLayout_7->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_7->setObjectName("verticalLayout_7");
+        menu_shopTitle2 = new QLabel(frame_14);
+        menu_shopTitle2->setObjectName("menu_shopTitle2");
+        menu_shopTitle2->setFont(font4);
+        menu_shopTitle2->setAlignment(Qt::AlignmentFlag::AlignCenter);
+
+        verticalLayout_7->addWidget(menu_shopTitle2);
+
+        tableView_2 = new QTableView(frame_14);
+        tableView_2->setObjectName("tableView_2");
+
+        verticalLayout_7->addWidget(tableView_2);
+
+        frame_15 = new QFrame(frame_14);
+        frame_15->setObjectName("frame_15");
+        frame_15->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_15->setFrameShadow(QFrame::Shadow::Raised);
+        gridLayout_18 = new QGridLayout(frame_15);
+        gridLayout_18->setSpacing(6);
+        gridLayout_18->setContentsMargins(11, 11, 11, 11);
+        gridLayout_18->setObjectName("gridLayout_18");
+        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        gridLayout_18->addItem(horizontalSpacer_9, 0, 0, 1, 1);
+
+        lineEdit = new QLineEdit(frame_15);
+        lineEdit->setObjectName("lineEdit");
+        lineEdit->setMinimumSize(QSize(600, 30));
+
+        gridLayout_18->addWidget(lineEdit, 0, 2, 1, 1);
+
+        lineEdit_2 = new QLineEdit(frame_15);
+        lineEdit_2->setObjectName("lineEdit_2");
+        lineEdit_2->setMinimumSize(QSize(600, 30));
+
+        gridLayout_18->addWidget(lineEdit_2, 1, 2, 1, 1);
+
+        label_6 = new QLabel(frame_15);
+        label_6->setObjectName("label_6");
+        label_6->setFont(font6);
+
+        gridLayout_18->addWidget(label_6, 1, 1, 1, 1);
+
+        label_5 = new QLabel(frame_15);
+        label_5->setObjectName("label_5");
+        label_5->setFont(font6);
+
+        gridLayout_18->addWidget(label_5, 0, 1, 1, 1);
+
+        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        gridLayout_18->addItem(horizontalSpacer_10, 0, 3, 1, 1);
+
+
+        verticalLayout_7->addWidget(frame_15);
+
+        frame_16 = new QFrame(frame_14);
+        frame_16->setObjectName("frame_16");
+        frame_16->setFrameShape(QFrame::Shape::StyledPanel);
+        frame_16->setFrameShadow(QFrame::Shadow::Raised);
+        horizontalLayout_5 = new QHBoxLayout(frame_16);
+        horizontalLayout_5->setSpacing(6);
+        horizontalLayout_5->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_5->setObjectName("horizontalLayout_5");
+        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_7);
+
+        pushButton_2 = new QPushButton(frame_16);
+        pushButton_2->setObjectName("pushButton_2");
+        pushButton_2->setMinimumSize(QSize(120, 0));
+        pushButton_2->setFont(font6);
+
+        horizontalLayout_5->addWidget(pushButton_2);
+
+        pushButton_3 = new QPushButton(frame_16);
+        pushButton_3->setObjectName("pushButton_3");
+        pushButton_3->setMinimumSize(QSize(120, 0));
+        pushButton_3->setFont(font6);
+
+        horizontalLayout_5->addWidget(pushButton_3);
+
+        horizontalSpacer_8 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_8);
+
+
+        verticalLayout_7->addWidget(frame_16);
+
+
+        gridLayout_17->addWidget(frame_14, 0, 0, 1, 1);
+
+        mainStackedWidget->addWidget(page);
         shop_main_page = new QWidget();
         shop_main_page->setObjectName("shop_main_page");
         verticalLayout_2 = new QVBoxLayout(shop_main_page);
@@ -597,13 +736,13 @@ public:
 
         order_accept_btn = new QPushButton(frame_4);
         order_accept_btn->setObjectName("order_accept_btn");
-        order_accept_btn->setFont(font5);
+        order_accept_btn->setFont(font6);
 
         horizontalLayout_3->addWidget(order_accept_btn);
 
         order_deny_btn = new QPushButton(frame_4);
         order_deny_btn->setObjectName("order_deny_btn");
-        order_deny_btn->setFont(font5);
+        order_deny_btn->setFont(font6);
 
         horizontalLayout_3->addWidget(order_deny_btn);
 
@@ -643,10 +782,10 @@ public:
         verticalLayout_4->setObjectName("verticalLayout_4");
         label = new QLabel(frame_5);
         label->setObjectName("label");
-        QFont font6;
-        font6.setPointSize(13);
-        font6.setBold(false);
-        label->setFont(font6);
+        QFont font7;
+        font7.setPointSize(13);
+        font7.setBold(false);
+        label->setFont(font7);
 
         verticalLayout_4->addWidget(label);
 
@@ -671,7 +810,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName("menuBar");
-        menuBar->setGeometry(QRect(0, 0, 931, 22));
+        menuBar->setGeometry(QRect(0, 0, 931, 21));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName("mainToolBar");
@@ -683,8 +822,8 @@ public:
         retranslateUi(MainWindow);
         QObject::connect(shopSearchText, &QLineEdit::returnPressed, shopSearchButton, qOverload<>(&QPushButton::click));
 
-        mainStackedWidget->setCurrentIndex(2);
-        user_mainTabWidget->setCurrentIndex(2);
+        mainStackedWidget->setCurrentIndex(3);
+        user_mainTabWidget->setCurrentIndex(0);
         shopTabWidget->setCurrentIndex(1);
 
 
@@ -696,24 +835,29 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "QTCPClient", nullptr));
         title_label->setText(QCoreApplication::translate("MainWindow", "\354\240\200\352\270\260\354\232\224", nullptr));
         logout_btn->setText(QCoreApplication::translate("MainWindow", "\353\241\234\352\267\270\354\225\204\354\233\203", nullptr));
-        chicken_btn->setText(QCoreApplication::translate("MainWindow", "\354\271\230\355\202\250", nullptr));
-        pizza_btn->setText(QCoreApplication::translate("MainWindow", "\355\224\274\354\236\220", nullptr));
-        kFood_btn->setText(QCoreApplication::translate("MainWindow", "\355\225\234\354\213\235", nullptr));
         jFood_btn->setText(QCoreApplication::translate("MainWindow", "\354\235\274\354\213\235", nullptr));
         cFood_btn->setText(QCoreApplication::translate("MainWindow", "\354\244\221\352\265\255\354\247\221", nullptr));
+        kFood_btn->setText(QCoreApplication::translate("MainWindow", "\355\225\234\354\213\235", nullptr));
+        pizza_btn->setText(QCoreApplication::translate("MainWindow", "\355\224\274\354\236\220", nullptr));
         cafe_btn->setText(QCoreApplication::translate("MainWindow", "\354\271\264\355\216\230", nullptr));
+        chicken_btn->setText(QCoreApplication::translate("MainWindow", "\354\271\230\355\202\250", nullptr));
         user_mainTabWidget->setTabText(user_mainTabWidget->indexOf(foodCategoryTab), QCoreApplication::translate("MainWindow", "\354\235\214\354\213\235 \354\271\264\355\205\214\352\263\240\353\246\254 \353\252\251\353\241\235", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "\352\260\200\352\262\214 \354\235\264\353\246\204", nullptr));
         shopSearchButton->setText(QCoreApplication::translate("MainWindow", "\352\262\200\354\203\211", nullptr));
         user_mainTabWidget->setTabText(user_mainTabWidget->indexOf(shopSearchTab), QCoreApplication::translate("MainWindow", "\352\260\200\352\262\214 \352\262\200\354\203\211", nullptr));
         user_mainTabWidget->setTabText(user_mainTabWidget->indexOf(orderStateTab), QCoreApplication::translate("MainWindow", "\354\243\274\353\254\270 \355\230\204\355\231\251", nullptr));
         user_mainTabWidget->setTabText(user_mainTabWidget->indexOf(shopBookmarkTab), QCoreApplication::translate("MainWindow", "\352\260\200\352\262\214 \354\246\220\352\262\250\354\260\276\352\270\260", nullptr));
-        pushButton->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234 \352\260\200\352\270\260", nullptr));
+        to_mainBtn->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234 \352\260\200\352\270\260", nullptr));
         menu_shopTitle->setText(QCoreApplication::translate("MainWindow", "\352\260\200\352\262\214 \354\235\264\353\246\204", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "   \354\236\245\353\260\224\352\265\254\353\213\210", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "  \353\251\224\353\211\264", nullptr));
-        toshop_backBtn->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234 \352\260\200\352\270\260", nullptr));
-        oder_btn->setText(QCoreApplication::translate("MainWindow", "\354\243\274\353\254\270 \355\225\230\352\270\260", nullptr));
+        toshop_backBtn->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234\352\260\200\352\270\260", nullptr));
+        oder_btn->setText(QCoreApplication::translate("MainWindow", "\354\243\274\353\254\270\355\225\230\352\270\260", nullptr));
+        menu_shopTitle2->setText(QCoreApplication::translate("MainWindow", "\352\260\200\352\262\214 \354\235\264\353\246\204", nullptr));
+        label_6->setText(QCoreApplication::translate("MainWindow", "\354\232\224\354\262\255\354\202\254\355\225\255", nullptr));
+        label_5->setText(QCoreApplication::translate("MainWindow", "\353\260\260\353\213\254\354\243\274\354\206\214", nullptr));
+        pushButton_2->setText(QCoreApplication::translate("MainWindow", "\353\222\244\353\241\234\352\260\200\352\270\260", nullptr));
+        pushButton_3->setText(QCoreApplication::translate("MainWindow", "\352\262\260\354\240\234\355\225\230\352\270\260", nullptr));
         total_sales_text->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
         order_accept_btn->setText(QCoreApplication::translate("MainWindow", "\354\243\274\353\254\270 \354\212\271\353\202\231", nullptr));
         order_deny_btn->setText(QCoreApplication::translate("MainWindow", "\354\243\274\353\254\270 \352\261\260\354\240\210", nullptr));

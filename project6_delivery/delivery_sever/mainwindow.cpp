@@ -74,10 +74,10 @@ MainWindow::~MainWindow()
 
 bool MainWindow::initializeDataBase() // DB 연결 함수
 {
-    m_db = QSqlDatabase::addDatabase("QMYSQL");
+    m_db = QSqlDatabase::addDatabase("QODBC");
     m_db.setHostName("127.0.0.1");
     m_db.setDatabaseName("delivery");
-    m_db.setUserName("SMH");
+    m_db.setUserName("root");
     m_db.setPassword("1234");
 
     if( !m_db.open() ) {
@@ -473,6 +473,38 @@ void MainWindow::slot_readSocket()
                 }
             }
         }
+        else if (fileType == "category")
+        {
+            QStringList imagePaths;
+
+            qry.prepare("SELECT c_img FROM category");
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString imagePath = qry.value(0).toString().remove("\""); // 쌍따옴표 제거
+                    QFile file(imagePath); // 이미지 파일 열기
+                    if (file.open(QIODevice::ReadOnly))
+                    {
+                        QByteArray imageData = file.readAll();
+                        QByteArray header;
+                        header.prepend(QString("fileType:categoryImg,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;").toUtf8());
+                        header.resize(128);
+                        // 헤더와 이미지 데이터 합치기
+                        QByteArray image_info = header + imageData;
+                        socketStream << image_info;
+                    }
+                    else
+                    {
+                        qDebug() << "파일 오픈 실패:" << imagePath;
+                    }
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
         else if (fileType == "shoplist")
         {
             QStringList shop_info_list;
@@ -492,8 +524,9 @@ void MainWindow::slot_readSocket()
                     shop_info_list << QString("%1/%2/%3/%4").arg(s_num, s_title, s_type, s_state);
                     imagePaths.append(qry.value(7).toString());
                 }
-                for (const QString &imagePath : imagePaths)
+                for (QString &imagePath : imagePaths)
                 {
+                    imagePath = imagePath.remove("\""); // 쌍따옴표 제거
                     QFile file(imagePath); // 이미지 파일 열기
                     if (file.open(QIODevice::ReadOnly))
                     {
@@ -504,7 +537,6 @@ void MainWindow::slot_readSocket()
                         // 헤더와 이미지 데이터 합치기
                         QByteArray image_info = header + imageData;
                         socketStream << image_info;
-                        qDebug() << "여기야2";
                     }
                     else
                     {
@@ -527,7 +559,6 @@ void MainWindow::slot_readSocket()
             QString menu_info_str;
             QStringList imagePaths;
 
-            qDebug() << "여기야11";
             qry.prepare("SELECT * FROM menu");
 
             if (qry.exec())
@@ -542,8 +573,9 @@ void MainWindow::slot_readSocket()
                     menu_info_list << QString("%1/%2/%3/%4/%5").arg(m_num, s_num, s_mnum, m_title, m_price);
                     imagePaths.append(qry.value(5).toString());
                 }
-                for (const QString &imagePath : imagePaths)
+                for (QString &imagePath : imagePaths)
                 {
+                    imagePath = imagePath.remove("\""); // 쌍따옴표 제거
                     QFile file(imagePath); // 이미지 파일 열기
                     if (file.open(QIODevice::ReadOnly))
                     {
@@ -554,7 +586,6 @@ void MainWindow::slot_readSocket()
                         // 헤더와 이미지 데이터 합치기
                         QByteArray image_info = header + imageData;
                         socketStream << image_info;
-                        qDebug() << "여기야2";
                     }
                     else
                     {
