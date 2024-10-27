@@ -13,11 +13,113 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* QTableView */
+QTableView {
+    border: 1px solid #2c3e50; /* 테두리 두께 */
+    gridline-color: #bdc3c7;      /* 셀 구분선 색상 */
+    font-size: 13px;           /* 내부 텍스트 크기 */
+    font-family: &quot;Malgun Gothic&quot;; /* 내부 텍스트 폰트 */
+}
+
+/* QHeaderView */
+QHeaderView::section {
+    background-color: #2ecc71; /* 헤더 배경색을 연한 초록색으로 변경 */
+    color: white;              /* 헤더 글자 색상 */
+    font-size: 15px;           /* 헤더 글자 크기 */
+    font-weight: bold;         /* 헤더 글자 굵기 */
+    padding: 4px;
+    border: 1px solid #27ae60; /* 헤더 테두리를 조금 더 진한 초록색으로 */
+    font-family: &quot;Malgun Gothic&quot;;
+}
+
+/* QPushButton */
+QPushButton {
+    background-color: #2ecc71; /* 버튼 배경을 연한 초록색으로 */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #27ae60; /* 마우스 오버 시 진한 초록색으로 */
+}
+
+/* QMessageBox */
+QMessageBox {
+    background-color: #ffffff;        /* 배경 색상을 흰색으로 설정 */
+    border: 2px solid #27ae60;        /* 초록색 테두리 */
+    border-radius: 10px;              /* 둥근 모서리 */
+    padding: 10px;                    /* 내부 여백 */
+}
+
+/* QMessageBox 텍스트 */
+QMessageBox QLabel {
+    color: #000000;                   /* 텍스트 색상 (검정) */
+    font-family: &quot;맑은 고딕&quot;;          /* 폰트 설정 */
+    font-size: 14pt;                  /* 텍스트 크기 */
+    font-weight: bold;                /* 굵은 텍스트 */
+    margin-bottom: 10px;              /* 메시지와 버튼 사이 여백 */
+}
+
+/* QMessageBox 버튼 */
+QMessageBox QPushButton {
+    background-color: #27ae60;        /* 버튼 배경을 진한 초록색으로 */
+    color: white;                     /* 버튼 텍스트 색상 */
+    font-family: &quot;맑은 고딕&quot;;          /* 버튼 폰트 설정 */
+    font-size: 12pt;                  /* 텍스트 크기 */
+    border-radius: 5px;               /* 버튼 모서리 둥글게 */
+    padding: 5px 15px;                /* 버튼 내부 여백 */
+    margin: 5px;                      /* 버튼 외부 여백 */
+}
+
+QMessageBox QPushButton:hover {
+    background-color: #2ecc71;        /* 마우스 오버 시 연한 초록색으로 */
+}
+
+QMessageBox QPushButton:pressed {
+    background-color: #1e8449;        /* 클릭 시 더 진한 초록색 */
+}
+
+/* QLineEdit */
+QLineEdit {
+    background-color: #ecf0f1;        /* 배경을 연한 회색으로 */
+    border: 1px solid #27ae60;        /* 테두리를 중간 초록색으로 */
+    border-radius: 4px;               /* 모서리 약간 둥글게 */
+    padding: 3px 8px;                 /* 내부 여백을 가볍게 */
+    font-size: 14px;                  /* 텍스트 크기 */
+    font-family: &quot;Malgun Gothic&quot;;     /* 폰트 설정 */
+}
+
+QLineEdit:focus {
+    border: 1px solid #2ecc71;        /* 포커스 시 테두리를 연한 초록색으로 */
+}
+
+/* QComboBox */
+QComboBox {
+    background-color: #ecf0f1;        /* 배경을 연한 회색으로 */
+    border: 1px solid #27ae60;        /* 테두리를 중간 초록색으로 */
+    border-radius: 4px;               /* 모서리 약간 둥글게 */
+    padding: 3px 8px;                 /* 내부 여백을 가볍게 */
+    font-size: 14px;                  /* 텍스트 크기 */
+    font-family: &quot;Malgun Gothic&quot;;     /* 폰트 설정 */
+}
+
+/* QComboBox의 드롭다운 리스트 */
+QComboBox QAbstractItemView {
+    background-color: #ffffff;            /* 드롭다운 배경을 흰색으로 */
+    border: 1px solid #27ae60;            /* 드롭다운 테두리 */
+    selection-background-color: #2ecc71;  /* 선택 항목 배경을 연한 초록색으로 */
+    selection-color: #ffffff;             /* 선택 항목 텍스트 색상 */
+}</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="login">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -59,38 +161,12 @@
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="1" column="0">
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
              <item row="2" column="2">
               <widget class="QLineEdit" name="l_pwText">
                <property name="echoMode">
                 <enum>QLineEdit::EchoMode::Password</enum>
                </property>
               </widget>
-             </item>
-             <item row="1" column="3">
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
              <item row="1" column="1">
               <widget class="QLabel" name="label_2">
@@ -164,6 +240,32 @@
                </item>
               </widget>
              </item>
+             <item row="2" column="3">
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="2" column="0">
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
            </widget>
           </item>
@@ -182,11 +284,43 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QPushButton" name="toSignUpBtn">
+               <property name="minimumSize">
+                <size>
+                 <width>150</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>회원가입</string>
                </property>
               </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>
@@ -213,7 +347,8 @@
            <widget class="QLabel" name="title_label">
             <property name="font">
              <font>
-              <pointsize>30</pointsize>
+              <pointsize>32</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -256,7 +391,8 @@
            <widget class="QLabel" name="label_4">
             <property name="font">
              <font>
-              <pointsize>15</pointsize>
+              <pointsize>20</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -305,30 +441,7 @@
              <enum>QFrame::Shadow::Raised</enum>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="2" column="2">
-              <widget class="QLineEdit" name="s_pwText"/>
-             </item>
-             <item row="3" column="0">
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="3">
-              <widget class="QPushButton" name="pnumDupChkBtn">
-               <property name="text">
-                <string>중복 확인</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
+             <item row="5" column="1">
               <widget class="QLabel" name="label_7">
                <property name="font">
                 <font>
@@ -343,17 +456,28 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="2">
-              <widget class="QPushButton" name="signUpBtn">
+             <item row="2" column="2">
+              <widget class="QLabel" name="idDupChkText">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel {
+	margin: 0;
+}</string>
+               </property>
                <property name="text">
-                <string>회원가입</string>
+                <string/>
                </property>
               </widget>
              </item>
-             <item row="3" column="5">
-              <widget class="QLabel" name="pnumDupChkText">
+             <item row="1" column="3">
+              <widget class="QPushButton" name="idDupChkBtn">
                <property name="text">
-                <string/>
+                <string>중복 확인</string>
                </property>
               </widget>
              </item>
@@ -366,6 +490,24 @@
                </property>
                <property name="text">
                 <string>아이디 </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="2">
+              <widget class="QLineEdit" name="s_pNumText"/>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLabel" name="label_6">
+               <property name="font">
+                <font>
+                 <pointsize>13</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string> 비밀번호 </string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -385,50 +527,8 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="2">
-              <widget class="QLineEdit" name="s_pNumText"/>
-             </item>
-             <item row="1" column="5">
-              <widget class="QLabel" name="idDupChkText">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="4">
-              <spacer name="horizontalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="label_6">
-               <property name="font">
-                <font>
-                 <pointsize>13</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string> 비밀번호 </string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QPushButton" name="idDupChkBtn">
-               <property name="text">
-                <string>중복 확인</string>
-               </property>
-              </widget>
+             <item row="4" column="2">
+              <widget class="QLineEdit" name="s_pwText"/>
              </item>
              <item row="0" column="2">
               <widget class="QComboBox" name="signUp_client_choice">
@@ -449,6 +549,59 @@
                 </property>
                </item>
               </widget>
+             </item>
+             <item row="8" column="2">
+              <widget class="QPushButton" name="signUpBtn">
+               <property name="text">
+                <string>회원가입</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="3">
+              <widget class="QPushButton" name="pnumDupChkBtn">
+               <property name="text">
+                <string>중복 확인</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="2">
+              <widget class="QLabel" name="pnumDupChkText">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="5" column="5">
+              <spacer name="horizontalSpacer_6">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>

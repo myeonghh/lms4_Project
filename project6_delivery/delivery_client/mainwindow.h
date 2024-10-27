@@ -36,7 +36,9 @@ public:
 
 private:
     enum LOGINACT {LOGIN = 0, SIGNUP, IDDUPCHK, PNUMDUPCHK};
-    enum DELIVERYACT {LOGOUT = 0, CATEGORY, SHOPLIST, MENULIST, USERORDER, ORDERDENY, ORDERACCEPT};
+    enum DELIVERYACT {LOGOUT = 0, CATEGORY, SHOPTITLE ,SHOPLIST, MENULIST, USERORDER, ORDERDENY,
+                       ORDERACCEPT, UORDERLIST, SORDERLIST_WAITING, SORDERLIST_ENTIRE, DELIVERYLIST,
+                       DELIACCEPT, DELIACCEPTLIST, DELICOMPLETE, DELIHISTORYLIST, UORDER_HISTORYLIST, BOOKMARK, BOOKMARKLIST};
     enum CLIENT {USER= 0, SHOP, RIDER};
     enum FOOD {CHICKEN = 0, PIZZA, KFOOD, JFOOD, CFOOD, CAFE};
     enum VIEWTYPE {TYPE1 = 0, TYPE2};
@@ -44,11 +46,20 @@ private:
     Login *loginWidget;
     QTcpSocket *m_socket;
 
-    QStandardItemModel *shoplist_model;
-    QStandardItemModel *menulist_model;
-    QStandardItemModel *basketlist_model;
-    QSortFilterProxyModel *proxyModel;
-    QStandardItemModel *orderWaitList_model;
+    QStandardItemModel *shoplist_model = nullptr;
+    QStandardItemModel *menulist_model = nullptr;
+    QStandardItemModel *basketlist_model = nullptr;
+    QSortFilterProxyModel *proxyModel = nullptr;
+    QStandardItemModel *orderWaitList_model = nullptr;
+    QStandardItemModel *user_orderlist_model = nullptr;
+    QStandardItemModel *user_historyList_model = nullptr;
+    QStandardItemModel *shop_orderlist_model = nullptr;
+    QStandardItemModel *rider_orderlist_model = nullptr;
+    QStandardItemModel *orderEntireList_model = nullptr;
+    QStandardItemModel *deliveryWaitList_model = nullptr;
+    QStandardItemModel *deliveryAcceptList_model = nullptr;
+    QStandardItemModel *deliveryCompleteList_model = nullptr;
+    QStandardItemModel *bookmarkList_model = nullptr;
 
     QString clicked_shop_num;
     QString clicked_shop_title;
@@ -59,7 +70,6 @@ private:
     int rowIndex = 0;
     void send_login_func_order(int act_type, int client_type, QString id = "", QString pw = "", QString phone_num = "");
     void send_delivery_func_order(int act_type, QString msg = "", int sender = 0, int senderNum = 0, int receiver = 0, int receiverNum = 0);
-    QString client_type_to_string(int client_type);
     void shop_img_to_item(QByteArray &img_buf);
     void menu_img_to_item(QByteArray &img_buf);
     void category_img_to_item(QByteArray &img_buf);
@@ -72,10 +82,20 @@ private:
     PresentClnt present_clnt;
     int clicked_food_type;
     bool shop_search_chk = false;
+    bool shop_renewal_chk = false;
+    bool bookmarkview_chk = false;
     int total_price;
-
-    void create_order_wait_list_model();
-    void input_order_wait_list_model(QString msg, QString sender_num);
+    void create_client_order_list_model(QStandardItemModel *model, QString orderlist);
+    void show_user_state_tableView(QString orderlist);
+    void show_user_history_tableView(QString orderlist);
+    void show_order_wait_tableView(QString orderlist);
+    void show_order_entire_tableView(QString orderlist);
+    void show_delivery_wait_tableView(QString orderlist);
+    void show_delivery_accept_tableView(QString orderlist);
+    void show_delivery_complete_tableView(QString orderlist);
+    void rider_view_design_setting(QTableView *view);
+    void bookmark_operate(QString msg);
+    void create_bookmark_list_model(QString &shoplist);
 
 signals:
     void signal_newMessage(QString);
@@ -98,20 +118,11 @@ private slots:
     void to_order_page();
     void user_final_order();
     void order_accept_or_deny(bool accept);
-
-
-    // void create_toonInfo_model(QString &toonlist);
-    // void create_toonList_model(QString &toonlist);
-    // void view_double_clicked(const QModelIndex &index);
-    // void toon_search();
-    // void on_toList_backBtn_clicked();
-    // void epi_view_double_clicked(const QModelIndex &index);
-    // void on_backList_btn_clicked();
-    // void bookmark_control();
-    // void like_control();
-
+    void delivery_tableView_double_clicked(const QModelIndex &index);
+    void change_bookmark_tab(int index);
     void on_to_mainBtn_clicked();
     void on_to_menu_back_btn_clicked();
+    void delivery_complete();
 };
 
 #endif // MAINWINDOW_H

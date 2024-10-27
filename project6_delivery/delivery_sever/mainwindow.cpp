@@ -63,7 +63,7 @@ MainWindow::~MainWindow()
 
     QSqlQuery qry;
     qry.prepare("UPDATE shop SET s_state = :state");
-    qry.bindValue(":state", "영업종료");
+    qry.bindValue(":state", "영업대기");
     if(!qry.exec())
     {
         qDebug() << "DB 가게 상태 변경 오류";
@@ -74,7 +74,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::initializeDataBase() // DB 연결 함수
 {
-    m_db = QSqlDatabase::addDatabase("QMYSQL");
+    m_db = QSqlDatabase::addDatabase("QODBC");
     m_db.setHostName("127.0.0.1");
     m_db.setDatabaseName("delivery");
     m_db.setUserName("root");
@@ -152,6 +152,25 @@ void MainWindow::slot_discardSocket()
     {
         if (login_clnt_list[i]->clnt_socket == socket)
         {
+            if (login_clnt_list[i]->type == SHOP)
+            {
+                QSqlQuery qry;
+                qry.prepare("UPDATE shop SET s_state = :state WHERE s_num = :s_num");
+                qry.bindValue(":state", "영업대기");
+                qry.bindValue(":s_num", login_clnt_list[i]->clnt_num);
+                if(!qry.exec())
+                {
+                    qDebug() << "DB 가게 상태 변경 오류";
+                }
+                foreach (Client *client, login_clnt_list)
+                {
+                    if (client->type == USER)
+                    {
+                        sendMessage(client->clnt_socket, SHOPLOGOUT);
+                    }
+                }
+            }
+
             delete login_clnt_list[i];
             login_clnt_list.removeAt(i);
         }
@@ -182,25 +201,6 @@ void MainWindow::slot_displayError(QAbstractSocket::SocketError socketError)
     }
 }
 
-QString MainWindow::client_type_to_string(int client_type) // 클라이언트 타입을 문자열로 바꿔주는 함수
-{
-    QString client_str;
-    switch (client_type) {
-    case USER:
-        client_str = "user";
-        break;
-    case SHOP:
-        client_str = "shop";
-        break;
-    case RIDER:
-        client_str = "rider";
-        break;
-    default:
-        break;
-    }
-    return client_str;
-}
-
 // [ex.02.7]
 // 클라이언트가 보낸 데이터를 소켓을 통해 읽고, 메시지인지 파일인지 확인한 후에 처리하는 함수
 void MainWindow::slot_readSocket()
@@ -215,7 +215,6 @@ void MainWindow::slot_readSocket()
 
         // [ex.02.7.2]
         // 클라이언트로부터 수신한 데이터를 임시로 저장할 QByteArray 타입의 buffer를 생성.
-        // 이 buffer는 나중에 클라이언트로부터 수신한 전체 데이터를 저장하게 됨.
         QByteArray buffer;
 
         // [ex.02.7.3]
@@ -224,7 +223,6 @@ void MainWindow::slot_readSocket()
         QDataStream socketStream(socket);
         socketStream.setVersion(QDataStream::Qt_5_15);
 
-        // 트랜잭션을 시작.
         //  startTransaction()은 데이터의 완전성을 보장하기 위한 작업으로,  데이터를 읽는 동안 문제가 발생하면 롤백할 수 있음.
         socketStream.startTransaction();
 
@@ -242,26 +240,27 @@ void MainWindow::slot_readSocket()
         }
 
         // [ex.02.7.4]
-        // 데이터의 첫 128바이트는 헤더로 사용됨.
-        // 헤더는 전송된 데이터가 메시지인지 파일인지를 구분하는 정보를 포함하고 있음.
         // mid(0, 128)을 통해 buffer의 처음 128바이트를 추출하여 header 변수에 저장함.
         QString header = buffer.mid(0,128);
 
-        // 헤더를 파싱하여 첫 번째 값인 fileType(데이터 타입: message 또는 attachment)을 확인.
-        // header는 "fileType:attachment,fileName:example.txt,fileSize:1024;" 형식으로 데이터를 담고 있으며,
-        // 이를 콤마(,)와 콜론(:)으로 분리하여 fileType을 추출.
-        QString fileType = header.split(",")[0].split(":")[1];
-        QString sender = header.split(",")[1].split(":")[1];
-        QString sender_num = header.split(",")[2].split(":")[1];
-        QString receiver = header.split(",")[3].split(":")[1];
-        QString receiver_num = header.split(";")[0].split(",")[4].split(":")[1];
 
-        // 나머지 데이터는 실제 전송된 파일 또는 메시지 데이터
+        // 콤마(,)와 콜론(:)으로 분리하여 fileType을 추출.
+        QString fileType = header.split(",")[0].split(":")[1];
+        QString sender_str = header.split(",")[1].split(":")[1];
+        QString sender_num_str = header.split(",")[2].split(":")[1];
+        QString receiver_str = header.split(",")[3].split(":")[1];
+        QString receiver_num_str = header.split(";")[0].split(",")[4].split(":")[1];
+        int sender = sender_str.toInt();
+        int receiver = receiver_str.toInt();
+        int sender_num = sender_num_str.toInt();
+        int receiver_num = receiver_num_str.toInt();
+
         // 128바이트 이후부터는 실제 파일 혹은 메시지이므로 buffer에서 그 부분만 남김.
         buffer = buffer.mid(128);
 
         QString msg = buffer;
         QString id, pw, phone_num;
+        QString o_text, o_price, o_addr, u_id, s_num, o_request, o_num, u_num;
         QSqlQuery qry;
         QSqlQuery qry2;
         QStringList msgParts;
@@ -273,7 +272,7 @@ void MainWindow::slot_readSocket()
             id = msgParts[0];
             pw = msgParts[1];
 
-            if (sender == "user")
+            if (sender == USER)
             {
                 qry.prepare("SELECT u_num FROM user WHERE u_id = :id AND u_pw = :pw");
                 qry.bindValue(":id", id);
@@ -291,7 +290,7 @@ void MainWindow::slot_readSocket()
                 }
 
             }
-            else if (sender == "shop")
+            else if (sender == SHOP)
             {
                 qry.prepare("SELECT s_num FROM shop WHERE s_id = :id AND s_pw = :pw");
                 qry.bindValue(":id", id);
@@ -310,6 +309,14 @@ void MainWindow::slot_readSocket()
                     {
                         qDebug() << "DB 가게 상태 변경 오류";
                     }
+
+                    foreach (Client *client, login_clnt_list)
+                    {
+                        if (client->type == USER)
+                        {
+                            sendMessage(client->clnt_socket, SHOPLOGOUT);
+                        }
+                    }
                 }
                 else // 아이디 or 비밀번호 불일치
                 {
@@ -317,7 +324,7 @@ void MainWindow::slot_readSocket()
                 }
 
             }
-            else if (sender == "rider")
+            else if (sender == RIDER)
             {
                 qry.prepare("SELECT r_num FROM rider WHERE r_id = :id AND r_pw = :pw");
                 qry.bindValue(":id", id);
@@ -343,7 +350,7 @@ void MainWindow::slot_readSocket()
             pw = msgParts[1];
             phone_num = msgParts[2];
 
-            if (sender == "user")
+            if (sender == USER)
             {
                 qry.prepare("INSERT INTO user "
                             "(u_id, u_pw, u_pnum) "
@@ -363,7 +370,7 @@ void MainWindow::slot_readSocket()
                     sendMessage(socket, SIGNUPINFO, "signUp error");
                 }
             }
-            else if (sender == "rider")
+            else if (sender == RIDER)
             {
                 qry.prepare("INSERT INTO rider "
                             "(r_id, r_pw, r_pnum) "
@@ -390,7 +397,7 @@ void MainWindow::slot_readSocket()
             msgParts = msg.split(",");
             id = msgParts[0];
 
-            if (sender == "user")
+            if (sender == USER)
             {
                 // 아이디 중복 확인
                 qry.prepare("SELECT * FROM user WHERE u_id = :id");
@@ -406,7 +413,7 @@ void MainWindow::slot_readSocket()
                     sendMessage(socket, SIGNUPINFO, "signUp !idDup");
                 }
             }
-            else if (sender == "rider")
+            else if (sender == RIDER)
             {
                 // 아이디 중복 확인
                 qry.prepare("SELECT * FROM rider WHERE r_id = :id");
@@ -429,7 +436,7 @@ void MainWindow::slot_readSocket()
             msgParts = msg.split(",");
             phone_num = msgParts[2];
 
-            if (sender == "user")
+            if (sender == USER)
             {
                 // 휴대폰 번호 중복 확인
                 qry.prepare("SELECT * FROM user WHERE u_pnum = :phone_num");
@@ -445,7 +452,7 @@ void MainWindow::slot_readSocket()
                     sendMessage(socket, SIGNUPINFO, "signUp !phoneNumDup");
                 }
             }
-            else if (sender == "rider")
+            else if (sender == RIDER)
             {
                 // 휴대폰 번호 중복 확인
                 qry.prepare("SELECT * FROM rider WHERE r_pnum = :phone_num");
@@ -466,11 +473,30 @@ void MainWindow::slot_readSocket()
         {
             for (int i = 0; i < login_clnt_list.size(); i++)
             {
-                if (login_clnt_list[i]->type == sender.toInt() && login_clnt_list[i]->clnt_num == sender_num.toInt())
+                if (login_clnt_list[i]->type == sender && login_clnt_list[i]->clnt_num == sender_num)
                 {
                     delete login_clnt_list[i];
                     login_clnt_list.removeAt(i);
                 }
+            }
+            if (sender == SHOP)
+            {
+                qry.prepare("UPDATE shop SET s_state = :state WHERE s_num = :s_num");
+                qry.bindValue(":state", "영업대기");
+                qry.bindValue(":s_num", sender_num);
+                if(!qry.exec())
+                {
+                    qDebug() << "DB 가게 상태 변경 오류";
+                }
+
+                foreach (Client *client, login_clnt_list)
+                {
+                    if (client->type == USER)
+                    {
+                        sendMessage(client->clnt_socket, SHOPLOGOUT);
+                    }
+                }
+
             }
         }
         else if (fileType == "category")
@@ -497,6 +523,21 @@ void MainWindow::slot_readSocket()
                         qDebug() << "파일 오픈 실패:" << imagePath;
                     }
                 }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "shoptitle")
+        {
+            qry.prepare("SELECT s_title FROM shop WHERE s_num = :s_num");
+            qry.bindValue(":s_num", sender_num);
+
+            if (qry.exec() && qry.next())
+            {
+                QString s_title = qry.value(0).toString();
+                sendMessage(socket, SHOPTITLE, s_title);
             }
             else
             {
@@ -602,214 +643,550 @@ void MainWindow::slot_readSocket()
         }
         else if (fileType == "userorder")
         {
-            qDebug() << header;
-            qDebug() << msg;
-            qDebug() << "여기야1";
+            msgParts = msg.split("/");
+            o_text = msgParts[0];
+            o_price = msgParts[1];
+            o_addr = msgParts[2];
+            o_request = msgParts[3];
+            u_id = msgParts[4];
+
             foreach (Client * client, login_clnt_list)
             {
-                qDebug() <<"타입: "<<client->type<<"번호: "<< client->clnt_num<<"소켓: " << client->clnt_socket<<"\n";
-                qDebug() << "여기야2";
-                qDebug() << "리시버 번호:" << receiver_num;
-                if (client->type == SHOP && client->clnt_num == receiver_num.toInt())
+                if (client->type == SHOP && client->clnt_num == receiver_num)
                 {
-                    qDebug() << "여기야3";
-                    sendMessage(client->clnt_socket, USERORDER, msg, USER, sender_num.toInt());
+                    qry.prepare("INSERT INTO ordertable "
+                                "(o_text, o_price, o_addr, u_num, s_num, o_request) "
+                                "VALUES "
+                                "(:text, :price, :addr, :u_num, :s_num, :request)");
+                    qry.bindValue(":text", o_text);
+                    qry.bindValue(":price", o_price.toInt());
+                    qry.bindValue(":addr", o_addr);
+                    qry.bindValue(":u_num", sender_num);
+                    qry.bindValue(":s_num", receiver_num);
+                    qry.bindValue(":request", o_request);
+
+                    if(qry.exec())
+                    {
+                        sendMessage(client->clnt_socket, USERORDER);
+                    }
+                    else
+                    {
+                        qDebug() << "주문정보 insert 오류" << qry.lastError().text();
+                        return;
+                    }
                 }
             }
         }
+        else if (fileType == "uOrderList")
+        {
+
+            QStringList order_list;
+            QString order_list_str;
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                        "JOIN delivery.shop s ON o.s_num = s.s_num "
+                        "JOIN delivery.user u on o.u_num = u.u_num "
+                        "WHERE o.u_num = :u_num AND o.o_state != :o_stateA AND o.o_state != :o_stateB");
+            qry.bindValue(":u_num", sender_num);
+            qry.bindValue(":o_stateA", "주문거절");
+            qry.bindValue(":o_stateB", "배달완료");
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (order_list.size() != 0)
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, UORDERLIST, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "sOrderListW")
+        {
+            QStringList order_list;
+            QString order_list_str;
+
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                         "JOIN delivery.shop s ON o.s_num = s.s_num "
+                         "JOIN delivery.user u on o.u_num = u.u_num "
+                         "WHERE o.s_num = :s_num AND o.o_state = :o_state");
+            qry.bindValue(":s_num", sender_num);
+            qry.bindValue(":o_state", "주문대기");
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (!order_list.isEmpty())
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, SORDERLIST_WAITING, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "sOrderListE")
+        {
+            QStringList order_list;
+            QString order_list_str;
+
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                        "JOIN delivery.shop s ON o.s_num = s.s_num "
+                        "JOIN delivery.user u on o.u_num = u.u_num "
+                        "WHERE o.s_num = :s_num AND o.o_state != :o_stateA AND o.o_state != :o_stateB");
+            qry.bindValue(":s_num", sender_num);
+            qry.bindValue(":o_stateA", "주문대기");
+            qry.bindValue(":o_stateB", "주문거절");
+
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (!order_list.isEmpty())
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, SORDERLIST_ENTIRE, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "orderAccept")
+        {
+            qry.prepare("UPDATE ordertable SET o_state = :o_state WHERE o_num = :o_num");
+            qry.bindValue(":o_state", "배달대기");
+            qry.bindValue(":o_num", msg.toInt());
+            if (!qry.exec())
+            {
+                qDebug() << "주문상태 업데이트 오류:" << qry.lastError().text();
+                return;
+            }
+
+            foreach (Client *client, login_clnt_list)
+            {
+                if (client->type == RIDER)
+                {
+                    sendMessage(client->clnt_socket, PUTDELIVERY, "", SHOP, sender_num);
+                }
+                if (client->type == USER && client->clnt_num == receiver_num)
+                {
+                    sendMessage(client->clnt_socket, ORDERACCEPT, "", SHOP, sender_num);
+                }
+            }
+        }
+        else if (fileType == "orderDeny")
+        {
+            qry.prepare("UPDATE ordertable SET o_state = :o_state WHERE o_num = :o_num");
+            qry.bindValue(":o_state", "주문거절");
+            qry.bindValue(":o_num", msg.toInt());
+            if (!qry.exec())
+            {
+                qDebug() << "주문상태 업데이트 오류:" << qry.lastError().text();
+                return;
+            }
+
+            foreach (Client *client, login_clnt_list)
+            {
+                if (client->type == USER && client->clnt_num == receiver_num)
+                {
+                    sendMessage(client->clnt_socket, ORDERDENY, "", SHOP, sender_num);
+                }
+            }
+        }
+        else if (fileType == "deliveryList")
+        {
+            QStringList order_list;
+            QString order_list_str;
+
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                         "JOIN delivery.shop s ON o.s_num = s.s_num "
+                         "JOIN delivery.user u on o.u_num = u.u_num "
+                         "WHERE o.o_state = :o_state");
+            qry.bindValue(":o_state", "배달대기");
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (!order_list.isEmpty())
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, DELIVERYLIST, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "deliAccept")
+        {
+            msgParts = msg.split("/");
+            o_num = msgParts[0];
+            u_num = msgParts[1];
+            s_num = msgParts[2];
+
+            qry.prepare("UPDATE ordertable "
+                        "SET r_num = :r_num, o_state = :o_state "
+                        "WHERE o_num = :o_num");
+            qry.bindValue(":r_num", sender_num);
+            qry.bindValue(":o_state", "배달중");
+            qry.bindValue(":o_num", o_num.toInt());
+            if (!qry.exec())
+            {
+                qDebug() << "주문상태 업데이트 오류:" << qry.lastError().text();
+                return;
+            }
+
+            foreach (Client *client, login_clnt_list)
+            {
+                if (client->type == USER && client->clnt_num == u_num.toInt())
+                {
+                    sendMessage(client->clnt_socket, DELIACCEPT, "", RIDER, sender_num, USER, u_num.toInt());
+                }
+                else if (client->type == SHOP && client->clnt_num == s_num.toInt())
+                {
+                    sendMessage(client->clnt_socket, DELIACCEPT, "", RIDER, sender_num, SHOP, s_num.toInt());
+                }
+                else if (client->type == RIDER)
+                {
+                    sendMessage(client->clnt_socket, DELIACCEPT, "", RIDER, sender_num, RIDER);
+                }
+            }
+        }
+        else if (fileType == "deliAcceptList")
+        {
+            QStringList order_list;
+            QString order_list_str;
+
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                        "JOIN delivery.shop s ON o.s_num = s.s_num "
+                        "JOIN delivery.user u on o.u_num = u.u_num "
+                        "WHERE o.o_state = :o_state AND o.r_num = :r_num");
+            qry.bindValue(":o_state", "배달중");
+            qry.bindValue(":r_num", sender_num);
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (!order_list.isEmpty())
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, DELIACCEPTLIST, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "deliComplete")
+        {
+            msgParts = msg.split("/");
+            o_num = msgParts[0];
+            u_num = msgParts[1];
+            s_num = msgParts[2];
+
+            qry.prepare("UPDATE ordertable "
+                        "SET o_state = :o_state "
+                        "WHERE o_num = :o_num");
+            qry.bindValue(":o_state", "배달완료");
+            qry.bindValue(":o_num", o_num.toInt());
+            if (!qry.exec())
+            {
+                qDebug() << "주문상태 업데이트 오류:" << qry.lastError().text();
+                return;
+            }
+
+            foreach (Client *client, login_clnt_list)
+            {
+                if (client->type == USER && client->clnt_num == u_num.toInt())
+                {
+                    sendMessage(client->clnt_socket, DELICOMPLETE, "", RIDER, sender_num, USER, u_num.toInt());
+                }
+                else if (client->type == SHOP && client->clnt_num == s_num.toInt())
+                {
+                    sendMessage(client->clnt_socket, DELICOMPLETE, "", RIDER, sender_num, SHOP, s_num.toInt());
+                }
+            }
+        }
+        else if (fileType == "deliHistoryList")
+        {
+            QStringList order_list;
+            QString order_list_str;
+
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                        "JOIN delivery.shop s ON o.s_num = s.s_num "
+                        "JOIN delivery.user u on o.u_num = u.u_num "
+                        "WHERE o.o_state = :o_state AND o.r_num = :r_num");
+            qry.bindValue(":o_state", "배달완료");
+            qry.bindValue(":r_num", sender_num);
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (!order_list.isEmpty())
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, DELIHISTORYLIST, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "orderHistoryList")
+        {
+            QStringList order_list;
+            QString order_list_str;
+
+            qry.prepare("SELECT o.*, s.s_title, u.u_id FROM delivery.ordertable o "
+                        "JOIN delivery.shop s ON o.s_num = s.s_num "
+                        "JOIN delivery.user u on o.u_num = u.u_num "
+                        "WHERE (o.o_state = :o_stateA OR o.o_state = :o_stateB) AND o.u_num = :u_num");
+            qry.bindValue(":o_stateA", "주문거절");
+            qry.bindValue(":o_stateB", "배달완료");
+            qry.bindValue(":u_num", sender_num);
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString o_num = qry.value(0).toString();
+                    QString o_text = qry.value(1).toString();
+                    QString o_price = qry.value(2).toString();
+                    QString o_addr = qry.value(3).toString();
+                    QString u_num = qry.value(4).toString();
+                    QString s_num = qry.value(5).toString();
+                    QString r_num = qry.value(6).toString();
+                    QString o_state = qry.value(7).toString();
+                    QString o_request = qry.value(8).toString();
+                    QString s_title = qry.value(9).toString();
+                    QString u_id = qry.value(10).toString();
+
+
+                    order_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9/%10/%11")
+                                      .arg(o_num, o_text, o_price, o_addr, u_num, s_num, r_num, o_state, o_request, s_title, u_id);
+                }
+                if (!order_list.isEmpty())
+                {
+                    order_list_str = order_list.join("@");
+                    sendMessage(socket, UORDER_HISTORYLIST, order_list_str);
+                }
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
+        else if (fileType == "bookmark")
+        {
+            msgParts = msg.split("/");
+            QString s_num = msgParts[0];
+            QString check = msgParts[1];
+
+            qry.prepare("SELECT * FROM bookmark WHERE u_num = :u_num AND s_num = :s_num");
+            qry.bindValue(":u_num", sender_num);
+            qry.bindValue(":s_num", s_num.toInt());
+            qry.exec();
+
+            if (check == "click") // 즐겨찾기 버튼 클릭시
+            {
+                if (qry.next()) // 북마크 있을때
+                {
+                    qry.prepare("DELETE FROM bookmark WHERE u_num = :u_num AND s_num = :s_num");
+                    qry.bindValue(":u_num", sender_num);
+                    qry.bindValue(":s_num", s_num.toInt());
+                    if (qry.exec())
+                        sendMessage(socket, BOOKMARK, "bookmarkDel");
+                }
+                else // 북마크 없을때
+                {
+                    qry.prepare("INSERT INTO bookmark "
+                                "(u_num, s_num) "
+                                "VALUES "
+                                "(:u_num, :s_num)");
+                    qry.bindValue(":u_num", sender_num);
+                    qry.bindValue(":s_num", s_num.toInt());
+                    if(qry.exec())
+                        sendMessage(socket, BOOKMARK, "bookmarkAdd");
+                }
+            }
+            else // 즐겨찾기 체크
+            {
+                if (qry.next()) // 북마크 있을때
+                {
+                    sendMessage(socket, BOOKMARK, "bookmarkTrue");
+                }
+                else // 북마크 없을때
+                {
+                    sendMessage(socket, BOOKMARK, "bookmarkFalse");
+                }
+            }
+        }
+        else if (fileType == "bookmarkList")
+        {
+
+            QStringList shop_info_list;
+            QString shop_info_str;
+            QStringList imagePaths;
+
+            qry.prepare("SELECT * FROM bookmark b "
+                        "JOIN shop s ON b.s_num = s.s_num "
+                        "WHERE u_num = :u_num");
+            qry.bindValue(":u_num", sender_num);
+
+            if (qry.exec())
+            {
+                while(qry.next())
+                {
+                    QString s_num = qry.value(3).toString();
+                    QString s_title = qry.value(7).toString();
+                    QString s_type = qry.value(8).toString();
+                    QString s_state = qry.value(9).toString();
+                    shop_info_list << QString("%1/%2/%3/%4").arg(s_num, s_title, s_type, s_state);
+                    imagePaths.append(qry.value(10).toString());
+                }
+                if (shop_info_list.isEmpty())
+                    return;
+                for (QString &imagePath : imagePaths)
+                {
+                    imagePath = imagePath.remove("\""); // 쌍따옴표 제거
+                    QFile file(imagePath); // 이미지 파일 열기
+                    if (file.open(QIODevice::ReadOnly))
+                    {
+                        QByteArray imageData = file.readAll();
+                        QByteArray header;
+                        header.prepend(QString("fileType:shopImg,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;").toUtf8());
+                        header.resize(128);
+                        // 헤더와 이미지 데이터 합치기
+                        QByteArray image_info = header + imageData;
+                        socketStream << image_info;
+                    }
+                    else
+                    {
+                        // 파일을 열 수 없는 경우 에러 처리
+                        qDebug() << "파일 오픈 실패:" << imagePath;
+                    }
+                }
+                shop_info_str = shop_info_list.join("\n");
+                sendMessage(socket, BOOKMARKLIST, shop_info_str);
+
+            }
+            else
+            {
+                qDebug() << "쿼리실행 실패" << qry.lastError().text();
+            }
+        }
     }
-
-        // else if (fileType == "tooninfo")
-        // {
-        //     QStringList toon_info_list;
-        //     QString toon_info_str;
-        //     QStringList imagePaths;
-
-        //     qDebug() << "여기야11";
-        //     qry.prepare("SELECT * FROM TOON_INFO");
-
-        //     if (qry.exec())
-        //     {
-        //         while(qry.next())
-        //         {
-        //             QString t_id = qry.value(0).toString();
-        //             QString t_title = qry.value(1).toString();
-        //             QString t_author = qry.value(2).toString();
-        //             QString t_day = qry.value(3).toString();
-        //             toon_info_list << QString("%1/%2/%3/%4").arg(t_id).arg(t_title).arg(t_author).arg(t_day);
-        //             imagePaths.append(qry.value(4).toString());
-        //         }
-        //         for (const QString &imagePath : imagePaths)
-        //         {
-        //             QFile file(imagePath); // 이미지 파일 열기
-        //             if (file.open(QIODevice::ReadOnly))
-        //             {
-        //                 QByteArray imageData = file.readAll();
-        //                 QByteArray header;
-        //                 header.prepend(QString("fileType:thumbnail,fileName:null,fileSize:null;").toUtf8());
-        //                 header.resize(128);
-        //                 // 헤더와 이미지 데이터 합치기
-        //                 QByteArray image_info = header + imageData;
-        //                 socketStream << image_info;
-        //             }
-        //             else
-        //             {
-        //                 // 파일을 열 수 없는 경우 에러 처리
-        //                 qDebug() << "파일 오픈 실패:" << imagePath;
-        //             }
-        //         }
-
-        //         toon_info_str = toon_info_list.join("\n");
-        //         sendMessage(socket, TOONINFO, toon_info_str);
-        //     }
-        //     else
-        //     {
-        //         qDebug() << "쿼리실행 실패" << qry.lastError().text();
-        //     }
-        // }
-        // else if (fileType == "toonlist")
-        // {
-        //     QStringList toon_list;
-        //     QString toon_list_str;
-        //     QString toon_id = msg;
-        //     qry.prepare("SELECT * FROM WEBTOON.TOON_EPI A JOIN WEBTOON.TOON_INFO B ON A.TOON_ID = B.TOON_ID "
-        //                 "WHERE A.TOON_ID = :toon_id");
-        //     qry.bindValue(":toon_id", toon_id);
-
-        //     if (qry.exec())
-        //     {
-        //         while(qry.next())
-        //         {
-        //             QString epi_id = qry.value(0).toString();
-        //             QString t_id = qry.value(1).toString();
-        //             QString epi_num = qry.value(2).toString();
-        //             QString like_num = qry.value(3).toString();
-        //             QString view_num = qry.value(4).toString();
-        //             QString epi_title = qry.value(5).toString();
-        //             QString t_title = qry.value(7).toString();
-        //             QString t_author = qry.value(8).toString();
-        //             QString t_day = qry.value(9).toString();
-
-        //             toon_list << QString("%1/%2/%3/%4/%5/%6/%7/%8/%9").arg(epi_id).arg(t_id).arg(t_title).arg(epi_title).arg(t_author).arg(t_day).arg(epi_num).arg(view_num).arg(like_num);
-        //         }
-        //         toon_list_str = toon_list.join("\n");
-        //         sendMessage(socket, TOONLIST, toon_list_str);
-        //     }
-        //     else
-        //     {
-        //         qDebug() << "쿼리실행 실패" << qry.lastError().text();
-        //     }
-        // }
-        // else if (fileType == "toonimage")
-        // {
-        //     QStringList imagePaths;
-
-        //     QString epi_id = msg;
-        //     QSqlQuery query;
-        //     query.prepare("SELECT IMG_SRC FROM TOON_IMG WHERE EPI_ID = :epi_id");
-        //     query.bindValue(":epi_id", epi_id);
-
-        //     if (query.exec())
-        //     {
-        //         while (query.next())
-        //         {
-        //             imagePaths.append(query.value(0).toString());
-        //         }
-        //     }
-
-        //     for (const QString &imagePath : imagePaths)
-        //     {
-        //         QFile file(imagePath); // 이미지 파일 열기
-        //         if (file.open(QIODevice::ReadOnly))
-        //         {
-        //             QByteArray imageData = file.readAll();
-        //             QByteArray header;
-        //             header.prepend(QString("fileType:toonimage,fileName:null,fileSize:null;").toUtf8());
-        //             header.resize(128);
-        //             // 헤더와 이미지 데이터 합치기
-        //             QByteArray image_info = header + imageData;
-        //             socketStream << image_info;
-        //         }
-        //         else
-        //         {
-        //             // 파일을 열 수 없는 경우 에러 처리
-        //             qDebug() << "파일 오픈 실패:" << imagePath;
-        //         }
-        //     }
-        //     // 조회수 증가 로직
-        //     query.prepare("UPDATE TOON_EPI SET VIEW_NUM = VIEW_NUM+1 WHERE EPI_ID = :epi_id");
-        //     query.bindValue(":epi_id", epi_id);
-        //     if (!query.exec())
-        //     {
-        //         qDebug() << "조회수 업데이트 오류";
-        //     }
-        // }
-        // else if (fileType == "bookmark")
-        // {
-        //     msgParts = msg.split(",");
-        //     QString user_id = msgParts[0];
-        //     QString epi_id = msgParts[1];
-
-        //     qry.prepare("SELECT * FROM BOOKMARK WHERE ID = :id AND EPI_ID = :epi_id");
-        //     qry.bindValue(":id", user_id);
-        //     qry.bindValue(":epi_id", epi_id);
-        //     qry.exec();
-
-        //     if (qry.next()) // 북마크 있을때
-        //     {
-        //         sendMessage(socket, LOGININFO, "login success");
-        //     }
-        //     else // 북마크 없을때
-        //     {
-        //         sendMessage(socket, LOGININFO, "login fail");
-        //     }
-        // }
-
-
-        // // [ex.02.7.5]
-        // // fileType이 attachment(첨부 파일)인 경우, 파일을 수신.
-        // if (fileType == "attachment")
-        // {
-
-        //     // 헤더에서 파일 이름을 추출.
-        //     // "fileName:example.txt" 형식으로 되어 있으므로 이를 분리하여 실제 파일 이름을 얻는다.
-        //     QString fileName = header.split(",")[1].split(":")[1];
-
-        //     // 파일 확장자를 추출. 파일 이름에서 "."을 기준으로 확장자를 분리하여 저장한다.
-        //     QString ext = fileName.split(".")[1];
-
-        //     // 헤더에서 파일 크기 추출.  "fileSize:1024;"와 같은 형식에서 파일 크기를 추출한다.
-        //     QString size = header.split(",")[2].split(":")[1].split(";")[0];
-
-        //     // 새 파일 이름을 만듦. 기존 파일 이름에 소켓 디스크립터를 덧붙여 이름을 유일하게 만든다.
-        //     // 이렇게 하면 여러 클라이언트가 동시에 파일을 전송할 때 덮어 씌워지는 것을 방지할 수 있음.
-        //     QString newFileName = QString("%1_%2.%3").arg(fileName.split(".")[0]).arg(socket->socketDescriptor()).arg(ext);
-
-        //     // 파일을 저장할 경로를 지정.
-        //     // QFile 객체를 사용하여 새 파일을 만듦.
-        //     QFile file("C:/Users/DELL/" + newFileName);
-
-        //     if (file.open(QFile::WriteOnly))
-        //     {
-        //         file.write(buffer);
-        //         // 데이터를 파일에 쓴 후, 파일을 안전하게 닫음.
-        //         file.flush();
-        //         file.close();
-        //     }
-
-        //     // 파일이 성공적으로 저장되었다는 메시지를 생성하여 signal_newMessage 시그널을 emit함.
-        //     QString message = QString("%1 :: %2 of size: %3 bytes has been received").arg(socket->socketDescriptor()).arg(newFileName).arg(size);
-        //     emit singal_newMessage(message);
-        // }
-        // // [ex.02.7.6]
-        // // fileType이 message(메시지)일 경우, 해당 메시지를 UI에 출력.
-        // else
-        // {
-        //     // buffer에 있는 메시지를 출력.  소켓 디스크립터와 메시지 내용을 포함하여 출력한다.
-        //     QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString(buffer));
-        //     emit singal_newMessage(message);
-        // }
-
 }
 
 // [ex.02.10]
@@ -833,23 +1210,87 @@ void MainWindow::sendMessage(QTcpSocket* socket, int act_type, QString msg, int 
             switch (act_type) {
             case SIGNUPINFO:
                 header.prepend(QString("fileType:signUpInfo,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
-                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             case LOGININFO:
                 header.prepend(QString("fileType:loginInfo,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
-                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case SHOPTITLE:
+                header.prepend(QString("fileType:shoptitle,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             case SHOPLIST:
                 header.prepend(QString("fileType:shoplist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
-                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case SHOPLOGOUT:
+                header.prepend(QString("fileType:shopLogout,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             case MENULIST:
                 header.prepend(QString("fileType:menulist,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
-                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             case USERORDER:
                 header.prepend(QString("fileType:userorder,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
-                                   .arg(client_type_to_string(sender), QString::number(senderNum), client_type_to_string(receiver), QString::number(receiverNum)).toUtf8());
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case UORDERLIST:
+                header.prepend(QString("fileType:uOrderList,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case SORDERLIST_WAITING:
+                header.prepend(QString("fileType:sOrderListW,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case SORDERLIST_ENTIRE:
+                header.prepend(QString("fileType:sOrderListE,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case ORDERACCEPT:
+                header.prepend(QString("fileType:orderAccept,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case ORDERDENY:
+                header.prepend(QString("fileType:orderDeny,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case PUTDELIVERY:
+                header.prepend(QString("fileType:putDelivery,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case DELIVERYLIST:
+                header.prepend(QString("fileType:deliveryList,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case DELIACCEPT:
+                header.prepend(QString("fileType:deliAccept,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case DELIACCEPTLIST:
+                header.prepend(QString("fileType:deliAcceptList,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case DELICOMPLETE:
+                header.prepend(QString("fileType:deliComplete,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case DELIHISTORYLIST:
+                header.prepend(QString("fileType:deliHistoryList,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case UORDER_HISTORYLIST:
+                header.prepend(QString("fileType:orderHistoryList,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case BOOKMARK:
+                header.prepend(QString("fileType:bookmark,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
+                break;
+            case BOOKMARKLIST:
+                header.prepend(QString("fileType:bookmarkList,sender:%1,senderNum:%2,receiver:%3,recieverNum:%4;")
+                                   .arg(QString::number(sender), QString::number(senderNum), QString::number(receiver), QString::number(receiverNum)).toUtf8());
                 break;
             default:
                 break;
@@ -863,122 +1304,6 @@ void MainWindow::sendMessage(QTcpSocket* socket, int act_type, QString msg, int 
             // stream으로 byteArray 정보 전송
             socketStream << byteArray;
             qDebug()<<"서버 바이트 어레이" <<QString(byteArray);
-        }
-        else
-            QMessageBox::critical(this,"QTCPServer","Socket doesn't seem to be opened");
-    }
-    else
-        QMessageBox::critical(this,"QTCPServer","Not connected");
-}
-
-// [ex.02.8]
-// 서버에서 메시지를 보낼 때,
-// 1) 서버에 연결된 특정 대상에게 전송하거나
-// 2) 연결된 모든 대상에게 전송하도록 선택한다.(Broadcast)
-// void MainWindow::on_pushButton_sendMessage_clicked()
-// {
-//     QString receiver = ui->comboBox_receiver->currentText();
-
-//     // Broadcast 라면, qset_connectedSKT 에 저장된 모든 대상에게 메시지 전송
-//     if(receiver=="Broadcast")
-//     {
-//         foreach (QTcpSocket* socket,qset_connectedSKT)
-//         {
-//             sendMessage(socket);
-//         }
-//     }
-//     // 선택한 대상을 qset_connectedSKT에서 소켓을 찾아 메시지 전송
-//     else
-//     {
-//         foreach (QTcpSocket* socket, qset_connectedSKT)
-//         {
-//             if(socket->socketDescriptor() == receiver.toLongLong())
-//             {
-//                 sendMessage(socket);
-//                 break;
-//             }
-//         }
-//     }
-
-//     // 메시지 입력창 리셋
-//     ui->lineEdit_message->clear();
-// }
-
-// [ex.02.9]
-// 서버에서 파일을 보낼 때
-// void MainWindow::on_pushButton_sendAttachment_clicked()
-// {
-//     // 보낼 대상 선택
-//     QString receiver = ui->comboBox_receiver->currentText();
-
-//     // 파일 경로 가져오고, 경로 문제시 경고 출력
-//     QString filePath = QFileDialog::getOpenFileName(this, ("Select an attachment"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), ("File (*.json *.txt *.png *.jpg *.jpeg)"));
-//     if(filePath.isEmpty())
-//     {
-//         QMessageBox::critical(this,"QTCPClient","You haven't selected any attachment!");
-//         return;
-//     }
-
-//     // 보낼 대상이 연결된 모든 socket일때 동작
-//     if(receiver=="Broadcast")
-//     {
-//         foreach (QTcpSocket* socket, qset_connectedSKT)
-//         {
-//             sendAttachment(socket, filePath);
-//         }
-//     }
-//     // 보낼 대상이 특정 socket일때 동작
-//     else
-//     {
-//         foreach (QTcpSocket* socket, qset_connectedSKT)
-//         {
-//             if(socket->socketDescriptor() == receiver.toLongLong())
-//             {
-//                 sendAttachment(socket, filePath);
-//                 break;
-//             }
-//         }
-//     }
-//     ui->lineEdit_message->clear();
-// }
-
-
-// ===================================================================================================
-// [ex.02.11]
-void MainWindow::sendAttachment(QTcpSocket* socket, QString filePath)
-{
-    if(socket)
-    {
-        if(socket->isOpen())
-        {
-            // 전송 할 file 객체를 경로 지정해서 열고
-            QFile m_file(filePath);
-            if(m_file.open(QIODevice::ReadOnly))
-            {
-                // file 이름을 가져오고
-                QFileInfo fileInfo(m_file.fileName());
-                QString fileName(fileInfo.fileName());
-
-                // stream으로 보내는데
-                QDataStream socketStream(socket);
-                socketStream.setVersion(QDataStream::Qt_5_15);
-
-                // 헤더 부분에 fileType을 attachment로 설정한다.
-                QByteArray header;
-                header.prepend(QString("fileType:attachment,fileName:%1,fileSize:%2;").arg(fileName).arg(m_file.size()).toUtf8());
-                header.resize(128);
-
-                // QByteArray에 file을 byte로 할당하고
-                QByteArray byteArray = m_file.readAll();
-                // header 정보를 앞에 넣어준다.
-                byteArray.prepend(header);
-
-                // stream으로 byteArray 정보 전송
-                socketStream << byteArray;
-
-            }
-            else
-                QMessageBox::critical(this,"QTCPClient","Couldn't open the attachment!");
         }
         else
             QMessageBox::critical(this,"QTCPServer","Socket doesn't seem to be opened");

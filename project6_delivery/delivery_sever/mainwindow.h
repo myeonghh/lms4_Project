@@ -39,7 +39,9 @@ private:
     QSet<QTcpSocket*> qset_connectedSKT;
     QSqlDatabase m_db;
     QSqlTableModel *m_model;
-    enum ACTTYPE {SIGNUPINFO = 0, LOGININFO, SHOPLIST, MENULIST, USERORDER};
+    enum ACTTYPE {SIGNUPINFO = 0, LOGININFO, SHOPTITLE, SHOPLIST, SHOPLOGOUT, MENULIST, USERORDER, UORDERLIST,
+                   SORDERLIST_WAITING, SORDERLIST_ENTIRE, ORDERACCEPT, ORDERDENY, PUTDELIVERY,
+                   DELIVERYLIST, DELIACCEPT, DELIACCEPTLIST, DELICOMPLETE, DELIHISTORYLIST, UORDER_HISTORYLIST, BOOKMARK, BOOKMARKLIST};
     enum CLIENTTYPE {USER = 0, SHOP, RIDER};
 
     bool initializeDataBase();
@@ -48,7 +50,6 @@ private:
 
     void sendAttachment(QTcpSocket* socket, QString filePath);
     void refreshComboBox();
-    QString client_type_to_string(int client_type);
 
     struct Client {int type; int clnt_num; QTcpSocket* clnt_socket; QString clnt_id;
                     Client(int type, int clnt_num, QTcpSocket* clnt_socket, QString clnt_id)

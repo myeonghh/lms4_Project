@@ -39,10 +39,11 @@ void Login::choice_client_change(int index)
     switch (index) {
     case CLIENT::USER:
         ui->toSignUpBtn->show();
+        ui->title_label->setText("거기요 고객");
         break;
     case CLIENT::SHOP:
         ui->toSignUpBtn->hide();
-        ui->title_label->setText("거기요 매장");
+        ui->title_label->setText("거기요 업주");
         break;
     case CLIENT::RIDER:
         ui->toSignUpBtn->show();

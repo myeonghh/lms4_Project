@@ -6,15 +6,82 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>931</width>
-    <height>730</height>
+    <width>815</width>
+    <height>696</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>QTCPClient</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">/* QTableView */
+QTableView {
+    border: 1px solid #2c3e50; /* 테두리 두께 */
+    gridline-color: #bdc3c7;      /* 셀 구분선 색상 */
+    font-size: 13px;           /* 내부 텍스트 크기 */
+    font-family: &quot;Malgun Gothic&quot;; /* 내부 텍스트 폰트 */
+}
+
+/* QHeaderView */
+QHeaderView::section {
+    background-color: #2ecc71; /* 헤더 배경색을 연한 초록색으로 변경 */
+    color: white;              /* 헤더 글자 색상 */
+    font-size: 15px;           /* 헤더 글자 크기 */
+    font-weight: bold;         /* 헤더 글자 굵기 */
+    padding: 4px;
+    border: 1px solid #27ae60; /* 헤더 테두리를 조금 더 진한 초록색으로 */
+    font-family: &quot;Malgun Gothic&quot;;
+}
+
+/* QPushButton */
+QPushButton {
+    background-color: #2ecc71; /* 버튼 배경을 연한 초록색으로 */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #27ae60; /* 마우스 오버 시 진한 초록색으로 */
+}
+
+/* QMessageBox */
+QMessageBox {
+    background-color: #ffffff;        /* 배경 색상을 흰색으로 설정 */
+    border: 2px solid #27ae60;        /* 초록색 테두리 */
+    border-radius: 10px;              /* 둥근 모서리 */
+    padding: 10px;                    /* 내부 여백 */
+}
+
+/* QMessageBox 텍스트 */
+QMessageBox QLabel {
+    color: #000000;                   /* 텍스트 색상 (검정) */
+    font-family: &quot;맑은 고딕&quot;;          /* 폰트 설정 */
+    font-size: 14pt;                  /* 텍스트 크기 */
+    font-weight: bold;                /* 굵은 텍스트 */
+    margin-bottom: 10px;              /* 메시지와 버튼 사이 여백 */
+}
+
+/* QMessageBox 버튼 */
+QMessageBox QPushButton {
+    background-color: #27ae60;        /* 버튼 배경을 진한 초록색으로 */
+    color: white;                     /* 버튼 텍스트 색상 */
+    font-family: &quot;맑은 고딕&quot;;          /* 버튼 폰트 설정 */
+    font-size: 12pt;                  /* 텍스트 크기 */
+    border-radius: 5px;               /* 버튼 모서리 둥글게 */
+    padding: 5px 15px;                /* 버튼 내부 여백 */
+    margin: 5px;                      /* 버튼 외부 여백 */
+}
+
+QMessageBox QPushButton:hover {
+    background-color: #2ecc71;        /* 마우스 오버 시 연한 초록색으로 */
+}
+
+QMessageBox QPushButton:pressed {
+    background-color: #1e8449;        /* 클릭 시 더 진한 초록색 */
+}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -70,6 +137,18 @@
        </item>
        <item>
         <widget class="QPushButton" name="logout_btn">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>26</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
           <string>로그아웃</string>
          </property>
@@ -81,7 +160,7 @@
     <item row="1" column="0">
      <widget class="QStackedWidget" name="mainStackedWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="user_main_page">
        <layout class="QGridLayout" name="gridLayout_3">
@@ -104,7 +183,7 @@
 	min-width: 100px;  
     min-height: 24px;  
 	color: black;
-	font-size: 16px;
+	font-size: 14px;
 }
 
 #user_mainTabWidget QTabBar::tab:selected {
@@ -119,7 +198,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="foodCategoryTab">
            <attribute name="title">
@@ -302,7 +381,13 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="shopSearchText"/>
+               <widget class="QLineEdit" name="shopSearchText">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="shopSearchButton">
@@ -335,13 +420,16 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="orderStateTab">
+          <widget class="QWidget" name="shopBookmarkTab">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <attribute name="title">
-            <string>주문 현황</string>
+            <string>찜한 가게</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_6">
+           <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <widget class="QTableView" name="b_tableView">
+             <widget class="QTableView" name="bookmark_tableView">
               <property name="editTriggers">
                <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
               </property>
@@ -349,16 +437,27 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="shopBookmarkTab">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QWidget" name="orderStateTab">
            <attribute name="title">
-            <string>가게 즐겨찾기</string>
+            <string>배달 현황</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
-             <widget class="QTableView" name="tableView"/>
+             <widget class="QTableView" name="user_order_state_tableView">
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="user_order_history_tab">
+           <attribute name="title">
+            <string>주문 내역</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_20">
+            <item row="0" column="0">
+             <widget class="QTableView" name="order_history_tableView"/>
             </item>
            </layout>
           </widget>
@@ -370,6 +469,9 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
          <widget class="QTableView" name="shopList_tableView">
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+          </property>
           <property name="editTriggers">
            <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
           </property>
@@ -378,6 +480,9 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
             <width>100</width>
             <height>100</height>
            </size>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::TextElideMode::ElideMiddle</enum>
           </property>
          </widget>
         </item>
@@ -419,7 +524,8 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
              </property>
              <property name="font">
               <font>
-               <pointsize>13</pointsize>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
               </font>
              </property>
              <property name="text">
@@ -457,19 +563,50 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
-            <widget class="QLabel" name="menu_shopTitle">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-               <bold>true</bold>
-              </font>
+            <widget class="QFrame" name="frame_5">
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
              </property>
-             <property name="text">
-              <string>가게 이름</string>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
-             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QLabel" name="menu_shopTitle">
+                <property name="font">
+                 <font>
+                  <pointsize>16</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>가게 이름</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bookmark_btn">
+                <property name="maximumSize">
+                 <size>
+                  <width>100</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>-1</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>찜하기</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -539,24 +676,6 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_15">
-           <item row="0" column="1">
-            <widget class="QPushButton" name="toshop_backBtn">
-             <property name="minimumSize">
-              <size>
-               <width>120</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>뒤로가기</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
@@ -570,6 +689,44 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
              </property>
             </spacer>
            </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="toshop_backBtn">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>뒤로가기</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="to_order_btn">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>주문하기</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="3">
             <spacer name="horizontalSpacer_3">
              <property name="orientation">
@@ -582,24 +739,6 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="0" column="2">
-            <widget class="QPushButton" name="to_order_btn">
-             <property name="minimumSize">
-              <size>
-               <width>120</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>주문하기</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>
@@ -634,7 +773,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
             </widget>
            </item>
            <item>
-            <widget class="QTableView" name="pay_tableView"/>
+            <widget class="QTableView" name="pay_tableView">
+             <property name="editTriggers">
+              <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QFrame" name="frame_17">
@@ -692,7 +835,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                  </font>
                 </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>0원</string>
                 </property>
                </widget>
               </item>
@@ -716,6 +859,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                   <height>30</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
                </widget>
               </item>
               <item row="1" column="2">
@@ -726,6 +874,11 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                   <height>30</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
                </widget>
               </item>
               <item row="1" column="1">
@@ -733,6 +886,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                 <property name="font">
                  <font>
                   <pointsize>12</pointsize>
+                  <bold>true</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -758,6 +912,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                 <property name="font">
                  <font>
                   <pointsize>12</pointsize>
+                  <bold>true</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -813,7 +968,8 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>12</pointsize>
+                  <pointsize>-1</pointsize>
+                  <bold>true</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -831,7 +987,8 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>12</pointsize>
+                  <pointsize>-1</pointsize>
+                  <bold>true</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -862,6 +1019,25 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
       </widget>
       <widget class="QWidget" name="shop_main_page">
        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="shop_title_text_label">
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+          <property name="margin">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QTabWidget" name="shopTabWidget">
           <property name="styleSheet">
@@ -896,7 +1072,7 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
 }</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="shop_orderWait_tab">
            <attribute name="title">
@@ -941,17 +1117,30 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
-                <widget class="QLabel" name="total_sales_text">
-                 <property name="text">
-                  <string>TextLabel</string>
+                <spacer name="horizontalSpacer_12">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
                  </property>
-                </widget>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
                <item>
                 <widget class="QPushButton" name="order_accept_btn">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <pointsize>-1</pointsize>
+                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -961,15 +1150,35 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
                </item>
                <item>
                 <widget class="QPushButton" name="order_deny_btn">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <pointsize>-1</pointsize>
+                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
                   <string>주문 거절</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_13">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </widget>
@@ -982,7 +1191,68 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
            </attribute>
            <layout class="QGridLayout" name="gridLayout_7">
             <item row="0" column="0">
-             <widget class="QTableView" name="orderAccept_tableView"/>
+             <widget class="QTableView" name="orderAccept_tableView">
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QFrame" name="frame_18">
+              <property name="frameShape">
+               <enum>QFrame::Shape::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Shadow::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <spacer name="horizontalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_7">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>총 매출 :</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="total_sales_text">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>0원</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -993,41 +1263,165 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
       <widget class="QWidget" name="rider_main_page">
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
-         <widget class="QFrame" name="frame_5">
-          <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
+         <widget class="QTabWidget" name="delTabWidget">
+          <property name="styleSheet">
+           <string notr="true">#delTabWidget QTabWidget::pane {
+    background-color: white;
+    border: 2px solid black;
+	border-radius:8px
+}
+
+#delTabWidget QTabBar::tab {
+    background: white;
+    border: 3px solid black;
+    border-radius: 8px; 
+    padding: 10px;
+	margin-right: 10px;
+	margin-bottom: 5px;
+	min-width: 100px;  
+    min-height: 24px;  
+	color: black;
+	font-size: 16px;
+}
+
+#delTabWidget QTabBar::tab:selected {
+    background: gray;
+	color: white;
+	font-weight: bold;
+    border-radius: 5px;
+}
+
+QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
+    left: 20px;  /* 탭 목록이 왼쪽으로 조금 이동 */
+}</string>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Shadow::Raised</enum>
+          <property name="currentIndex">
+           <number>0</number>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="font">
-              <font>
-               <pointsize>13</pointsize>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>  주문 목록</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTableView" name="deliWait_tableView">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>350</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTableView" name="deliAccept_tableView"/>
-           </item>
-          </layout>
+          <widget class="QWidget" name="delivery_sate_tab">
+           <attribute name="title">
+            <string>배달 하기</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>배달 대기목록</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableView" name="deliWait_tableView">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>280</height>
+               </size>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_9">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>내 배달목록</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableView" name="deliAccept_tableView">
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_19">
+              <property name="frameShape">
+               <enum>QFrame::Shape::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Shadow::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <spacer name="horizontalSpacer_15">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QPushButton" name="del_complete_btn">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>-1</pointsize>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>배달 완료</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_16">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="del_history_tab">
+           <attribute name="title">
+            <string>배달 내역</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
+             <widget class="QTableView" name="rider_history_tableView">
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -1041,8 +1435,8 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>931</width>
-     <height>22</height>
+     <width>815</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -1066,12 +1460,28 @@ QTabWidget::tab-bar {  /* 탭 버튼을 감싸는 바 */
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>401</x>
-     <y>204</y>
+     <x>457</x>
+     <y>200</y>
     </hint>
     <hint type="destinationlabel">
-     <x>523</x>
-     <y>207</y>
+     <x>543</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>del_request_text</sender>
+   <signal>returnPressed()</signal>
+   <receiver>pay_btn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>508</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>520</x>
+     <y>652</y>
     </hint>
    </hints>
   </connection>
